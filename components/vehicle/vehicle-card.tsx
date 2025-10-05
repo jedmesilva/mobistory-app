@@ -20,10 +20,9 @@ export const VehicleCard = ({
   return (
     <Pressable
       onPress={() => navigateToVehicleHistory(vehicle)}
-      style={({ pressed }) => [
+      style={[
         styles.card,
-        isHistorical && styles.cardHistorical,
-        pressed && styles.cardPressed
+        isHistorical && styles.cardHistorical
       ]}
     >
       <View style={styles.cardRow}>
@@ -82,9 +81,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardHistorical: {
-    opacity: 0.7,
-  },
-  cardPressed: {
     opacity: 0.7,
   },
   cardRow: {
