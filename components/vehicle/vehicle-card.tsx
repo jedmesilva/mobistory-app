@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Car, ChevronRight } from 'lucide-react-native';
 
 interface VehicleCardProps {
@@ -18,13 +18,13 @@ export const VehicleCard = ({
   const config = relationshipConfig[vehicle.relationshipType];
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => navigateToVehicleHistory(vehicle)}
-      style={[
+      style={({ pressed }) => [
         styles.card,
-        isHistorical && styles.cardHistorical
+        isHistorical && styles.cardHistorical,
+        pressed && styles.cardPressed
       ]}
-      activeOpacity={0.7}
     >
       <View style={styles.cardRow}>
         <View style={[styles.iconBox, isHistorical && styles.iconBoxHistorical]}>
@@ -68,7 +68,7 @@ export const VehicleCard = ({
           color={isHistorical ? "#9ca3af" : "#6b7280"}
         />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -82,6 +82,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardHistorical: {
+    opacity: 0.7,
+  },
+  cardPressed: {
     opacity: 0.7,
   },
   cardRow: {
