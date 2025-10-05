@@ -80,7 +80,6 @@ export default function Index() {
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
 
   const filteredVehicles = vehicles.filter(vehicle =>
@@ -185,8 +184,6 @@ export default function Index() {
                     <VehicleCard
                       key={vehicle.id}
                       vehicle={vehicle}
-                      selectedVehicle={selectedVehicle}
-                      setSelectedVehicle={setSelectedVehicle}
                       navigateToVehicleHistory={navigateToVehicleHistory}
                       relationshipConfig={relationshipConfig}
                     />
@@ -203,8 +200,6 @@ export default function Index() {
                           key={vehicle.id}
                           vehicle={vehicle}
                           isHistorical={true}
-                          selectedVehicle={selectedVehicle}
-                          setSelectedVehicle={setSelectedVehicle}
                           navigateToVehicleHistory={navigateToVehicleHistory}
                           relationshipConfig={relationshipConfig}
                         />
@@ -229,8 +224,6 @@ export default function Index() {
                     <VehicleCard
                       key={vehicle.id}
                       vehicle={vehicle}
-                      selectedVehicle={selectedVehicle}
-                      setSelectedVehicle={setSelectedVehicle}
                       navigateToVehicleHistory={navigateToVehicleHistory}
                       relationshipConfig={relationshipConfig}
                     />
@@ -253,8 +246,6 @@ export default function Index() {
                     <VehicleCard
                       key={vehicle.id}
                       vehicle={vehicle}
-                      selectedVehicle={selectedVehicle}
-                      setSelectedVehicle={setSelectedVehicle}
                       navigateToVehicleHistory={navigateToVehicleHistory}
                       relationshipConfig={relationshipConfig}
                     />

@@ -5,8 +5,6 @@ import { Car, ChevronRight } from 'lucide-react-native';
 interface VehicleCardProps {
   vehicle: any;
   isHistorical?: boolean;
-  selectedVehicle: number | null;
-  setSelectedVehicle: (id: number) => void;
   navigateToVehicleHistory: (vehicle: any) => void;
   relationshipConfig: {[key: string]: any};
 }
@@ -14,24 +12,16 @@ interface VehicleCardProps {
 export const VehicleCard = ({
   vehicle,
   isHistorical = false,
-  selectedVehicle,
-  setSelectedVehicle,
   navigateToVehicleHistory,
   relationshipConfig
 }: VehicleCardProps) => {
   const config = relationshipConfig[vehicle.relationshipType];
-  const isSelected = selectedVehicle === vehicle.id;
 
   return (
     <TouchableOpacity
-      onPress={() => {
-        setSelectedVehicle(vehicle.id);
-        // Navega após um pequeno delay para mostrar a seleção
-        setTimeout(() => navigateToVehicleHistory(vehicle), 150);
-      }}
+      onPress={() => navigateToVehicleHistory(vehicle)}
       style={[
         styles.card,
-        isSelected && styles.cardSelected,
         isHistorical && styles.cardHistorical
       ]}
       activeOpacity={0.7}
@@ -90,14 +80,6 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     marginBottom: 12,
     padding: 16,
-  },
-  cardSelected: {
-    borderColor: '#111827',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   cardHistorical: {
     opacity: 0.7,
