@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router'; // Adicione esta importação
+import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Bell, Car, ChevronDown, ChevronRight, ChevronUp, Clock, Menu, Plus, Search } from 'lucide-react-native';
+import { Bell, Menu, Plus, Search } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { VehicleCard, SectionHeader } from '../components/vehicle';
 
 export default function Index() {
   const router = useRouter(); // Adicione o hook do router
@@ -121,99 +122,8 @@ export default function Index() {
     });
   };
 
-  const VehicleCard = ({ vehicle, isHistorical = false }: any) => {
-    const config = relationshipConfig[vehicle.relationshipType];
-    const isSelected = selectedVehicle === vehicle.id;
-
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedVehicle(vehicle.id);
-          // Navega após um pequeno delay para mostrar a seleção
-          setTimeout(() => navigateToVehicleHistory(vehicle), 150);
-        }}
-        style={[
-          styles.card,
-          isSelected && styles.cardSelected,
-          isHistorical && styles.cardHistorical
-        ]}
-        activeOpacity={0.7}
-      >
-        <View style={styles.cardRow}>
-          <View style={[styles.iconBox, isHistorical && styles.iconBoxHistorical]}>
-            <Car size={28} color="#fff" />
-          </View>
-
-          <View style={styles.cardInfo}>
-            <Text style={[styles.cardTitle, isHistorical && styles.textHistorical]}>
-              {vehicle.name} {vehicle.model}
-            </Text>
-            
-            <Text style={styles.cardSubtitle}>
-              {vehicle.plate} • {vehicle.color} • {vehicle.year}
-            </Text>
-
-            <View style={[styles.badge, isHistorical && styles.badgeHistorical]}>
-              <Text style={[styles.badgeText, isHistorical && styles.badgeTextHistorical]}>
-                {config.label}
-              </Text>
-            </View>
-
-            <View style={styles.cardFooter}>
-              <View style={styles.footerItem}>
-                <Text style={styles.footerLabel}>INÍCIO</Text>
-                <Text style={[styles.footerValue, isHistorical && styles.textHistorical]}>
-                  {vehicle.relationshipStart}
-                </Text>
-              </View>
-              
-              <View style={styles.footerItem}>
-                <Text style={[styles.footerLabel, styles.footerLabelRight]}>ÚLTIMO EVENTO</Text>
-                <Text style={[styles.footerValue, styles.footerValueRight, isHistorical && styles.textHistorical]}>
-                  {vehicle.lastEvent}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <ChevronRight 
-            size={20} 
-            color={isHistorical ? "#9ca3af" : "#6b7280"} 
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const SectionHeader = ({ title, count, historicalCount, relationshipType }: any) => (
-    <View style={styles.sectionHeader}>
-      <View>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        <Text style={styles.sectionSubtitle}>
-          {count} {count === 1 ? 'veículo ativo' : 'veículos ativos'}
-        </Text>
-      </View>
-      {historicalCount > 0 && (
-        <TouchableOpacity
-          onPress={() => toggleHistory(relationshipType)}
-          style={styles.historyButton}
-        >
-          <Clock size={16} color="#4b5563" />
-          <Text style={styles.historyButtonText}>
-            Histórico ({historicalCount})
-          </Text>
-          {showHistoryFor[relationshipType] ? (
-            <ChevronUp size={16} color="#4b5563" />
-          ) : (
-            <ChevronDown size={16} color="#4b5563" />
-          )}
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar style="dark" />
       
       {/* Header */}
@@ -268,9 +178,18 @@ export default function Index() {
                     count={ownedVehicles.length}
                     historicalCount={formerOwnedVehicles.length}
                     relationshipType="owner"
+                    showHistoryFor={showHistoryFor}
+                    toggleHistory={toggleHistory}
                   />
                   {ownedVehicles.map((vehicle) => (
-                    <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                    <VehicleCard
+                      key={vehicle.id}
+                      vehicle={vehicle}
+                      selectedVehicle={selectedVehicle}
+                      setSelectedVehicle={setSelectedVehicle}
+                      navigateToVehicleHistory={navigateToVehicleHistory}
+                      relationshipConfig={relationshipConfig}
+                    />
                   ))}
                   {showHistoryFor.owner && (
                     <>
@@ -280,7 +199,15 @@ export default function Index() {
                         <View style={styles.dividerLine} />
                       </View>
                       {formerOwnedVehicles.map((vehicle) => (
-                        <VehicleCard key={vehicle.id} vehicle={vehicle} isHistorical={true} />
+                        <VehicleCard
+                          key={vehicle.id}
+                          vehicle={vehicle}
+                          isHistorical={true}
+                          selectedVehicle={selectedVehicle}
+                          setSelectedVehicle={setSelectedVehicle}
+                          navigateToVehicleHistory={navigateToVehicleHistory}
+                          relationshipConfig={relationshipConfig}
+                        />
                       ))}
                     </>
                   )}
@@ -295,9 +222,18 @@ export default function Index() {
                     count={rentedVehicles.length}
                     historicalCount={0}
                     relationshipType="renter"
+                    showHistoryFor={showHistoryFor}
+                    toggleHistory={toggleHistory}
                   />
                   {rentedVehicles.map((vehicle) => (
-                    <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                    <VehicleCard
+                      key={vehicle.id}
+                      vehicle={vehicle}
+                      selectedVehicle={selectedVehicle}
+                      setSelectedVehicle={setSelectedVehicle}
+                      navigateToVehicleHistory={navigateToVehicleHistory}
+                      relationshipConfig={relationshipConfig}
+                    />
                   ))}
                 </View>
               )}
@@ -310,9 +246,18 @@ export default function Index() {
                     count={authorizedDriverVehicles.length}
                     historicalCount={0}
                     relationshipType="authorized_driver"
+                    showHistoryFor={showHistoryFor}
+                    toggleHistory={toggleHistory}
                   />
                   {authorizedDriverVehicles.map((vehicle) => (
-                    <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                    <VehicleCard
+                      key={vehicle.id}
+                      vehicle={vehicle}
+                      selectedVehicle={selectedVehicle}
+                      setSelectedVehicle={setSelectedVehicle}
+                      navigateToVehicleHistory={navigateToVehicleHistory}
+                      relationshipConfig={relationshipConfig}
+                    />
                   ))}
                 </View>
               )}
@@ -409,138 +354,6 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 32,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  historyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f3f4f6',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-    gap: 6,
-  },
-  historyButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#4b5563',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-    marginBottom: 12,
-    padding: 16,
-  },
-  cardSelected: {
-    borderColor: '#111827',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  cardHistorical: {
-    opacity: 0.7,
-  },
-  cardRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-  },
-  iconBox: {
-    width: 56,
-    height: 56,
-    backgroundColor: '#1f2937',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconBoxHistorical: {
-    backgroundColor: '#9ca3af',
-  },
-  cardInfo: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 8,
-  },
-  badge: {
-    backgroundColor: '#f9fafb',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-    marginBottom: 12,
-  },
-  badgeHistorical: {
-    backgroundColor: '#f3f4f6',
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#374151',
-  },
-  badgeTextHistorical: {
-    color: '#6b7280',
-  },
-  textHistorical: {
-    color: '#6b7280',
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
-    gap: 16,
-  },
-  footerItem: {
-    flex: 1,
-  },
-  footerLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 4,
-    letterSpacing: 0.5,
-  },
-  footerLabelRight: {
-    textAlign: 'right',
-  },
-  footerValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  footerValueRight: {
-    textAlign: 'right',
   },
   divider: {
     flexDirection: 'row',

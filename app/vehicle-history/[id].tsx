@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import Svg, { Rect, Text as SvgText } from 'react-native-svg';
 import {
   Zap,
   ChevronRight,
@@ -29,42 +28,10 @@ import {
   CheckCircle,
   UserCheck,
   Calendar,
+  ArrowLeft,
 } from 'lucide-react-native';
-
-// Ícone do odômetro
-const OdometerIcon = ({ size = 24, color = 'currentColor' }: { size?: number; color?: string }) => {
-  const width = size * 1.6;
-  const height = size;
-
-  return (
-    <Svg width={width} height={height} viewBox="0 0 40 24">
-      <Rect x="2" y="2" width="36" height="20" fill={color} opacity="0.1" rx="1" />
-      <Rect x="3" y="3" width="34" height="18" fill="none" stroke={color} strokeWidth="1.5" rx="0.5" />
-      <Rect x="5" y="5" width="8" height="14" fill={color} opacity="0.15" rx="0.5" />
-      <SvgText x="9" y="15" fontSize="10" fill={color} textAnchor="middle" fontFamily="Arial Black" fontWeight="900">
-        4
-      </SvgText>
-      <Rect x="16" y="5" width="8" height="14" fill={color} opacity="0.15" rx="0.5" />
-      <SvgText x="20" y="15" fontSize="10" fill={color} textAnchor="middle" fontFamily="Arial Black" fontWeight="900">
-        5
-      </SvgText>
-      <Rect x="27" y="5" width="8" height="14" fill={color} opacity="0.15" rx="0.5" />
-      <SvgText x="31" y="15" fontSize="10" fill={color} textAnchor="middle" fontFamily="Arial Black" fontWeight="900">
-        2
-      </SvgText>
-    </Svg>
-  );
-};
-
-// Ícone do tanque de combustível
-const FuelTankIcon = ({ size = 24, color = '#fff', level = 0.6 }: { size?: number; color?: string; level?: number }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24">
-    <Rect x="6" y="6" width="12" height="14" rx="2" stroke={color} strokeWidth="2" fill="none" />
-    <Rect x="7" y={6 + 13 * (1 - level)} width="10" height={13 * level} rx="1" fill={color} opacity="0.3" />
-    <Rect x="18" y="10" width="2" height="4" rx="1" fill={color} />
-    <Rect x="18" y="11" width="2" height="2" fill={color} />
-  </Svg>
-);
+import { OdometerIcon, FuelTankIcon } from '../../components/icons';
+import { ActivityCard } from '../../components/vehicle';
 
 // Tipos
 interface ActivityDetail {
@@ -89,57 +56,6 @@ interface DateGroup {
   date: string;
   activities: Activity[];
 }
-
-// Componente de Card de Atividade
-const ActivityCard = ({ activity }: { activity: Activity }) => {
-  const IconComponent = activity.icon;
-
-  const getIconColor = () => {
-    if (activity.status === 'warning') return '#ea580c';
-    if (activity.type === 'link') return '#374151';
-    return '#374151';
-  };
-
-  return (
-    <View style={styles.activityCard}>
-      <View style={styles.activityCardContent}>
-        <View style={styles.activityIconContainer}>
-          <IconComponent size={20} color={getIconColor()} />
-        </View>
-
-        <View style={styles.activityInfo}>
-          <View style={styles.activityHeader}>
-            <View style={styles.activityTitleContainer}>
-              <View style={styles.activityTitleRow}>
-                <Text style={styles.activityTitle}>{activity.title}</Text>
-                {activity.isActive && (
-                  <View style={styles.activeBadge}>
-                    <Text style={styles.activeBadgeText}>Ativo</Text>
-                  </View>
-                )}
-              </View>
-              <Text style={styles.activityDescription}>{activity.description}</Text>
-            </View>
-            <Text style={styles.activityTime}>{activity.time}</Text>
-          </View>
-
-          {activity.details && activity.details.length > 0 && (
-            <View style={styles.activityDetails}>
-              <View style={styles.detailsGrid}>
-                {activity.details.map((detail, idx) => (
-                  <View key={idx} style={styles.detailItem}>
-                    <Text style={styles.detailLabel}>{detail.label}</Text>
-                    <Text style={styles.detailValue}>{detail.value}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-        </View>
-      </View>
-    </View>
-  );
-};
 
 export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
@@ -726,86 +642,6 @@ const styles = StyleSheet.create({
   },
   activitiesContainer: {
     gap: 16,
-  },
-  activityCard: {
-    backgroundColor: '#fff',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-    borderRadius: 16,
-    padding: 20,
-  },
-  activityCardContent: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  activityIconContainer: {
-    paddingTop: 2,
-  },
-  activityInfo: {
-    flex: 1,
-  },
-  activityHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-    marginBottom: 8,
-  },
-  activityTitleContainer: {
-    flex: 1,
-  },
-  activityTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  activityTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  activeBadge: {
-    backgroundColor: '#22c55e',
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  activeBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  activityDescription: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  activityTime: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  activityDetails: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
-  },
-  detailsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  detailItem: {
-    width: '47%',
-  },
-  detailLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 2,
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
   },
   footerSafeArea: {
     position: 'absolute',
