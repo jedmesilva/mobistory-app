@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router'; // Adicione esta importação
 import { StatusBar } from 'expo-status-bar';
 import { Bell, Car, ChevronDown, ChevronRight, ChevronUp, Clock, Menu, Plus, Search } from 'lucide-react-native';
 import React, { useState } from 'react';
@@ -12,6 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
+  const router = useRouter(); // Adicione o hook do router
+  
   const [vehicles] = useState([
     {
       id: 1,
@@ -103,13 +106,32 @@ export default function Index() {
     }));
   };
 
+  // Função para navegar para a tela de histórico
+  const navigateToVehicleHistory = (vehicle: any) => {
+    router.push({
+      pathname: '/vehicle-history/[id]',
+      params: {
+        id: vehicle.id,
+        name: vehicle.name,
+        model: vehicle.model,
+        plate: vehicle.plate,
+        year: vehicle.year,
+        color: vehicle.color
+      }
+    });
+  };
+
   const VehicleCard = ({ vehicle, isHistorical = false }: any) => {
     const config = relationshipConfig[vehicle.relationshipType];
     const isSelected = selectedVehicle === vehicle.id;
 
     return (
       <TouchableOpacity
-        onPress={() => setSelectedVehicle(vehicle.id)}
+        onPress={() => {
+          setSelectedVehicle(vehicle.id);
+          // Navega após um pequeno delay para mostrar a seleção
+          setTimeout(() => navigateToVehicleHistory(vehicle), 150);
+        }}
         style={[
           styles.card,
           isSelected && styles.cardSelected,
