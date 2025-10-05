@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -83,7 +83,7 @@ export default function VehicleHistoryScreen() {
   const scrollDistanceY = useRef(0);
   const isInitialLoad = useRef(true);
 
-  const [timelineData] = useState<DateGroup[]>([
+  const timelineData = useMemo<DateGroup[]>(() => [
     {
       date: '01 Jan 2024',
       activities: [
@@ -247,7 +247,7 @@ export default function VehicleHistoryScreen() {
         },
       ],
     },
-  ]);
+  ], []);
 
   // Scroll para o final ao carregar
   useEffect(() => {
