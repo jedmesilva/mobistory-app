@@ -169,7 +169,7 @@ export default function Index() {
               </Text>
             </View>
           ) : (
-            <>
+            <View>
               {/* Proprietário */}
               {ownedVehicles.length > 0 && (
                 <View style={styles.section}>
@@ -261,19 +261,19 @@ export default function Index() {
                   ))}
                 </View>
               )}
-
-              {/* Add Vehicle Button */}
-              <TouchableOpacity style={styles.addButton} activeOpacity={0.7}>
-                <View style={styles.addButtonIcon}>
-                  <Plus size={24} color="#fff" />
-                </View>
-                <View style={styles.addButtonTextContainer}>
-                  <Text style={styles.addButtonTitle}>Adicionar Veículo</Text>
-                  <Text style={styles.addButtonSubtitle}>Registre um novo vínculo</Text>
-                </View>
-              </TouchableOpacity>
-            </>
+            </View>
           )}
+
+          {/* Add Vehicle Button */}
+          <TouchableOpacity style={styles.addButton} activeOpacity={0.7}>
+            <View style={styles.addButtonIcon}>
+              <Plus size={24} color="#fff" />
+            </View>
+            <View style={styles.addButtonTextContainer}>
+              <Text style={styles.addButtonTitle}>Adicionar Veículo</Text>
+              <Text style={styles.addButtonSubtitle}>Registre um novo vínculo</Text>
+            </View>
+          </TouchableOpacity>
 
           <View style={{ height: 40 }} />
         </View>
