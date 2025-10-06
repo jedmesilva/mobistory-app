@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Bell, Menu, Plus, Search } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,13 +9,17 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Animated,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VehicleCard, SectionHeader } from '../components/vehicle';
 
 export default function Index() {
-  const router = useRouter(); // Adicione o hook do router
-  
+  const router = useRouter();
+  const scrollY = useRef(new Animated.Value(0)).current;
+
   const [vehicles] = useState([
     {
       id: 1,
@@ -121,27 +125,47 @@ export default function Index() {
     });
   };
 
+  const headerBorderWidth = scrollY.interpolate({
+    inputRange: [0, 10],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar style="dark" />
-      
+
       {/* Header */}
-      <View style={styles.header}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            borderBottomWidth: headerBorderWidth,
+          },
+        ]}
+      >
         <TouchableOpacity style={styles.headerButton}>
           <Menu size={24} color="#374151" />
         </TouchableOpacity>
-        
+
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
-        
+
         <TouchableOpacity style={styles.headerButton}>
           <Bell size={24} color="#374151" />
           <View style={styles.notificationBadge}>
             <Text style={styles.notificationBadgeText}>3</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <Animated.ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: false,
+        })}
+        scrollEventThrottle={16}
+      >
         {/* Search */}
         <View style={styles.searchContainer}>
           <Search size={20} color="#9ca3af" style={styles.searchIcon} />
@@ -268,7 +292,7 @@ export default function Index() {
 
           <View style={{ height: 40 }} />
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
@@ -284,8 +308,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    backgroundColor: '#fff',
+    borderBottomColor: '#e5e7eb',
   },
   headerButton: {
     width: 48,
