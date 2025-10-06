@@ -32,6 +32,7 @@ import {
 } from 'lucide-react-native';
 import { OdometerIcon, FuelTankIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
+import { ChatScreen } from '../../components/chat';
 
 // Tipos
 interface ActivityDetail {
@@ -78,6 +79,7 @@ export default function VehicleHistoryScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(true);
+  const [chatVisible, setChatVisible] = useState(false);
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollDistanceY = useRef(0);
@@ -374,7 +376,7 @@ export default function VehicleHistoryScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.chatButton}>
+            <TouchableOpacity style={styles.chatButton} onPress={() => setChatVisible(true)}>
               <MessageCircle size={24} color="#4b5563" />
             </TouchableOpacity>
           </View>
@@ -515,6 +517,13 @@ export default function VehicleHistoryScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Chat Screen */}
+      <ChatScreen
+        visible={chatVisible}
+        onClose={() => setChatVisible(false)}
+        vehicleName={`${selectedVehicle.name} ${selectedVehicle.model}`}
+      />
     </SafeAreaView>
   );
 }
