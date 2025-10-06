@@ -366,7 +366,10 @@ export default function VehicleHistoryScreen() {
                 <ChevronRight size={20} color="#4b5563" style={{ transform: [{ rotate: '180deg' }] }} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.headerTitleContainer}>
+              <TouchableOpacity
+                style={styles.headerTitleContainer}
+                onPress={() => router.push(`/vehicle-details/${selectedVehicle.id}`)}
+              >
                 <Text style={styles.headerTitle}>
                   {selectedVehicle.name} {selectedVehicle.model}
                 </Text>
