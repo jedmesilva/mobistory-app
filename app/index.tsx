@@ -280,7 +280,11 @@ export default function Index() {
           )}
 
           {/* Add Vehicle Button */}
-          <TouchableOpacity style={styles.addButton} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.addButton}
+            activeOpacity={0.7}
+            onPress={() => router.push('/add-vehicle')}
+          >
             <View style={styles.addButtonIcon}>
               <Plus size={24} color="#fff" />
             </View>
