@@ -10,21 +10,21 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Car,
-  MapPin,
-  Fuel,
-  Shield,
-  ChevronRight,
   UserPlus,
-  History,
-  ChevronDown,
-  ChevronUp,
   FileText,
   Upload,
-  Download,
   Eye,
   EyeOff,
   ArrowLeft,
 } from 'lucide-react-native';
+import {
+  VehicleInfoSection,
+  CollapsibleSection,
+  DocumentItem,
+  LinkSection,
+  Document,
+  LinkedPerson,
+} from '../../components/vehicle-details';
 
 interface Vehicle {
   marca: string;
@@ -45,34 +45,6 @@ interface Vehicle {
   paisLicenciamento: string;
   anoModelo: number;
   anoFabricacao: number;
-}
-
-interface Document {
-  id: number;
-  name: string;
-  type: string;
-  fileType: string;
-  size: string;
-  uploadDate: string;
-  url: string;
-}
-
-interface LinkedPerson {
-  id: number;
-  name: string;
-  email: string;
-  avatar: string | null;
-  relationshipType: 'owner' | 'renter' | 'authorized_driver';
-  status: 'active' | 'former';
-  linkedDate: string;
-  lastAccess: string;
-}
-
-interface PersonCardProps {
-  person: LinkedPerson;
-  onClick: (person: LinkedPerson) => void;
-  isSelected: boolean;
-  isHistorical?: boolean;
 }
 
 export default function VehicleDetailsScreen() {
@@ -197,12 +169,6 @@ export default function VehicleDetailsScreen() {
   const authorizedDrivers = linkedPeople.filter((p) => p.relationshipType === 'authorized_driver' && p.status === 'active');
   const formerAuthorizedDrivers = linkedPeople.filter((p) => p.relationshipType === 'authorized_driver' && p.status === 'former');
 
-  const relationshipConfig = {
-    owner: { label: 'Proprietário', badge: { bg: '#eff6ff', text: '#1d4ed8', border: '#dbeafe' } },
-    renter: { label: 'Locatário', badge: { bg: '#f0fdf4', text: '#15803d', border: '#dcfce7' } },
-    authorized_driver: { label: 'Condutor', badge: { bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' } },
-  };
-
   const toggleHistory = (type: string) => {
     setShowHistoryFor((prev) => ({ ...prev, [type]: !prev[type] }));
   };
@@ -212,81 +178,21 @@ export default function VehicleDetailsScreen() {
     return '•'.repeat(data.length - visibleChars) + data.slice(-visibleChars);
   };
 
-  const PersonCard = ({ person, onClick, isSelected, isHistorical = false }: PersonCardProps) => {
-    const config = relationshipConfig[person.relationshipType];
-    const initials = person.name
-      .split(' ')
-      .map((n) => n[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
-
-    return (
-      <TouchableOpacity
-        onPress={() => onClick(person)}
-        style={[
-          styles.personCard,
-          isSelected && styles.personCardSelected,
-          isHistorical && styles.personCardHistorical,
-        ]}
-      >
-        <View style={styles.personCardHeader}>
-          <View style={styles.personCardLeft}>
-            <View style={[styles.personAvatar, isHistorical && styles.personAvatarHistorical]}>
-              <Text style={styles.personAvatarText}>{initials}</Text>
-            </View>
-            <View>
-              <Text style={[styles.personName, isHistorical && styles.personNameHistorical]}>
-                {person.name}
-              </Text>
-              <Text style={styles.personEmail}>{person.email}</Text>
-            </View>
-          </View>
-          <View style={styles.personCardRight}>
-            <View
-              style={[
-                styles.personBadge,
-                {
-                  backgroundColor: isHistorical ? '#f3f4f6' : config.badge.bg,
-                  borderColor: isHistorical ? '#e5e7eb' : config.badge.border,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.personBadgeText,
-                  { color: isHistorical ? '#6b7280' : config.badge.text },
-                ]}
-              >
-                {config.label}
-              </Text>
-            </View>
-            <ChevronRight size={20} color="#9ca3af" />
-          </View>
-        </View>
-        <View style={styles.personCardFooter}>
-          <View style={styles.personCardFooterItem}>
-            <Text style={styles.personCardFooterLabel}>Vinculado em</Text>
-            <Text style={[styles.personCardFooterValue, isHistorical && styles.personCardFooterValueHistorical]}>
-              {person.linkedDate}
-            </Text>
-          </View>
-          <View style={styles.personCardFooterItem}>
-            <Text style={styles.personCardFooterLabel}>Último acesso</Text>
-            <Text style={[styles.personCardFooterValue, isHistorical && styles.personCardFooterValueHistorical]}>
-              {person.lastAccess}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   const headerOpacity = scrollY.interpolate({
     inputRange: [0, 10],
     outputRange: [0, 1],
     extrapolate: 'clamp',
   });
+
+  const vehicleInfoItems = [
+    { label: 'Placa', value: showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2), isBold: true },
+    { label: 'Ano', value: vehicle.ano.toString() },
+    { label: 'Marca', value: vehicle.marca },
+    { label: 'Modelo', value: vehicle.modelo },
+    { label: 'Cor', value: vehicle.cor },
+    { label: 'Tipo', value: vehicle.tipo },
+    { label: 'Categoria', value: vehicle.categoria, isFullWidth: true },
+  ];
 
   return (
     <View style={styles.container}>
@@ -328,210 +234,109 @@ export default function VehicleDetailsScreen() {
         scrollEventThrottle={16}
       >
         {/* Informações do Veículo */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Car size={20} color="#374151" />
-            <Text style={styles.sectionTitle}>Informações do Veículo</Text>
-          </View>
-          <View style={styles.sectionContent}>
-            <View style={styles.grid}>
-              <View style={styles.gridItem}>
-                <Text style={styles.gridLabel}>Placa</Text>
-                <Text style={styles.gridValueBold}>
-                  {showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)}
-                </Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={styles.gridLabel}>Ano</Text>
-                <Text style={styles.gridValue}>{vehicle.ano}</Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={styles.gridLabel}>Marca</Text>
-                <Text style={styles.gridValue}>{vehicle.marca}</Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={styles.gridLabel}>Modelo</Text>
-                <Text style={styles.gridValue}>{vehicle.modelo}</Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={styles.gridLabel}>Cor</Text>
-                <Text style={styles.gridValue}>{vehicle.cor}</Text>
-              </View>
-              <View style={styles.gridItem}>
-                <Text style={styles.gridLabel}>Tipo</Text>
-                <Text style={styles.gridValue}>{vehicle.tipo}</Text>
-              </View>
-              <View style={[styles.gridItem, styles.gridItemFull]}>
-                <Text style={styles.gridLabel}>Categoria</Text>
-                <Text style={styles.gridValue}>{vehicle.categoria}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
+        <VehicleInfoSection items={vehicleInfoItems} />
 
         {/* Documentação */}
-        <View style={styles.section}>
-          <TouchableOpacity
-            style={[
-              styles.sectionHeaderCollapsible,
-              isDocumentationExpanded && styles.sectionHeaderCollapsibleExpanded,
-            ]}
-            onPress={() => setIsDocumentationExpanded(!isDocumentationExpanded)}
-          >
-            <View style={styles.sectionHeaderLeft}>
-              <FileText size={20} color="#374151" />
-              <Text style={styles.sectionTitle}>Documentação</Text>
+        <CollapsibleSection
+          icon={FileText}
+          title="Documentação"
+          isExpanded={isDocumentationExpanded}
+          onToggle={() => setIsDocumentationExpanded(!isDocumentationExpanded)}
+        >
+          <View style={styles.infoList}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>RENAVAM</Text>
+              <Text style={styles.infoValueMono}>
+                {showSensitiveData ? vehicle.renavam : maskData(vehicle.renavam)}
+              </Text>
             </View>
-            <View style={styles.chevronContainer}>
-              {isDocumentationExpanded ? (
-                <ChevronUp size={20} color="#9ca3af" />
-              ) : (
-                <ChevronDown size={20} color="#9ca3af" />
-              )}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Chassi</Text>
+              <Text style={styles.infoValueMono}>
+                {showSensitiveData ? vehicle.chassi : maskData(vehicle.chassi, 4)}
+              </Text>
             </View>
-          </TouchableOpacity>
-          {isDocumentationExpanded && (
-            <View style={styles.sectionContent}>
-              <View style={styles.infoList}>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>RENAVAM</Text>
-                  <Text style={styles.infoValueMono}>
-                    {showSensitiveData ? vehicle.renavam : maskData(vehicle.renavam)}
-                  </Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Chassi</Text>
-                  <Text style={styles.infoValueMono}>
-                    {showSensitiveData ? vehicle.chassi : maskData(vehicle.chassi, 4)}
-                  </Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Motor</Text>
-                  <Text style={styles.infoValue}>{vehicle.motor}</Text>
-                </View>
-                <View style={styles.infoGrid}>
-                  <View style={styles.gridItem}>
-                    <Text style={styles.gridLabel}>Ano Fabricação</Text>
-                    <Text style={styles.gridValue}>{vehicle.anoFabricacao}</Text>
-                  </View>
-                  <View style={styles.gridItem}>
-                    <Text style={styles.gridLabel}>Ano Modelo</Text>
-                    <Text style={styles.gridValue}>{vehicle.anoModelo}</Text>
-                  </View>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>País de Origem</Text>
-                  <Text style={styles.infoValue}>{vehicle.paisOrigem}</Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>País de Licenciamento</Text>
-                  <Text style={styles.infoValue}>{vehicle.paisLicenciamento}</Text>
-                </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Motor</Text>
+              <Text style={styles.infoValue}>{vehicle.motor}</Text>
+            </View>
+            <View style={styles.infoGrid}>
+              <View style={styles.gridItem}>
+                <Text style={styles.gridLabel}>Ano Fabricação</Text>
+                <Text style={styles.gridValue}>{vehicle.anoFabricacao}</Text>
               </View>
-
-              <View style={styles.divider} />
-
-              <View style={styles.documentsSection}>
-                <View style={styles.documentsHeader}>
-                  <Text style={styles.documentsTitle}>Documentos Anexados</Text>
-                  <TouchableOpacity style={styles.uploadButton}>
-                    <Upload size={16} color="#fff" />
-                    <Text style={styles.uploadButtonText}>Adicionar</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.documentsList}>
-                  {documents.map((doc) => (
-                    <View key={doc.id} style={styles.documentItem}>
-                      <View style={styles.documentLeft}>
-                        <View style={styles.documentIcon}>
-                          <FileText size={20} color="#374151" />
-                        </View>
-                        <View style={styles.documentInfo}>
-                          <Text style={styles.documentName} numberOfLines={1}>
-                            {doc.name}
-                          </Text>
-                          <View style={styles.documentMeta}>
-                            <Text style={styles.documentMetaText}>{doc.fileType}</Text>
-                            <Text style={styles.documentMetaText}>•</Text>
-                            <Text style={styles.documentMetaText}>{doc.size}</Text>
-                            <Text style={styles.documentMetaText}>•</Text>
-                            <Text style={styles.documentMetaText}>{doc.uploadDate}</Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.documentActions}>
-                        <TouchableOpacity style={styles.documentActionButton}>
-                          <Eye size={16} color="#4b5563" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.documentActionButton}>
-                          <Download size={16} color="#4b5563" />
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  ))}
-                </View>
+              <View style={styles.gridItem}>
+                <Text style={styles.gridLabel}>Ano Modelo</Text>
+                <Text style={styles.gridValue}>{vehicle.anoModelo}</Text>
               </View>
             </View>
-          )}
-        </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>País de Origem</Text>
+              <Text style={styles.infoValue}>{vehicle.paisOrigem}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>País de Licenciamento</Text>
+              <Text style={styles.infoValue}>{vehicle.paisLicenciamento}</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.documentsSection}>
+            <View style={styles.documentsHeader}>
+              <Text style={styles.documentsTitle}>Documentos Anexados</Text>
+              <TouchableOpacity style={styles.uploadButton}>
+                <Upload size={16} color="#fff" />
+                <Text style={styles.uploadButtonText}>Adicionar</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.documentsList}>
+              {documents.map((doc) => (
+                <DocumentItem key={doc.id} document={doc} />
+              ))}
+            </View>
+          </View>
+        </CollapsibleSection>
 
         {/* Outras Informações */}
-        <View style={styles.section}>
-          <TouchableOpacity
-            style={[
-              styles.sectionHeaderCollapsible,
-              isOtherInfoExpanded && styles.sectionHeaderCollapsibleExpanded,
-            ]}
-            onPress={() => setIsOtherInfoExpanded(!isOtherInfoExpanded)}
-          >
-            <View style={styles.sectionHeaderLeft}>
-              <Car size={20} color="#374151" />
-              <Text style={styles.sectionTitle}>Outras Informações</Text>
+        <CollapsibleSection
+          icon={Car}
+          title="Outras Informações"
+          isExpanded={isOtherInfoExpanded}
+          onToggle={() => setIsOtherInfoExpanded(!isOtherInfoExpanded)}
+        >
+          <View style={styles.infoList}>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Combustível</Text>
+              <Text style={styles.infoValue}>{vehicle.combustivel}</Text>
             </View>
-            <View style={styles.chevronContainer}>
-              {isOtherInfoExpanded ? (
-                <ChevronUp size={20} color="#9ca3af" />
-              ) : (
-                <ChevronDown size={20} color="#9ca3af" />
-              )}
-            </View>
-          </TouchableOpacity>
-          {isOtherInfoExpanded && (
-            <View style={styles.sectionContent}>
-              <View style={styles.infoList}>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Combustível</Text>
-                  <Text style={styles.infoValue}>{vehicle.combustivel}</Text>
+            <View style={styles.tireInfo}>
+              <Text style={styles.tireInfoTitle}>Calibragem dos Pneus</Text>
+              <View style={styles.tireGrid}>
+                <View style={styles.tireItem}>
+                  <Text style={styles.tireLabel}>Dianteiros</Text>
+                  <Text style={styles.tireValue}>32 PSI</Text>
                 </View>
-                <View style={styles.tireInfo}>
-                  <Text style={styles.tireInfoTitle}>Calibragem dos Pneus</Text>
-                  <View style={styles.tireGrid}>
-                    <View style={styles.tireItem}>
-                      <Text style={styles.tireLabel}>Dianteiros</Text>
-                      <Text style={styles.tireValue}>32 PSI</Text>
-                    </View>
-                    <View style={styles.tireItem}>
-                      <Text style={styles.tireLabel}>Traseiros</Text>
-                      <Text style={styles.tireValue}>32 PSI</Text>
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Capacidade do Tanque</Text>
-                  <Text style={styles.infoValue}>50 L</Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Óleo do Motor</Text>
-                  <Text style={styles.infoValue}>5W-30</Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Capacidade de Óleo</Text>
-                  <Text style={styles.infoValue}>4.2 L</Text>
+                <View style={styles.tireItem}>
+                  <Text style={styles.tireLabel}>Traseiros</Text>
+                  <Text style={styles.tireValue}>32 PSI</Text>
                 </View>
               </View>
             </View>
-          )}
-        </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Capacidade do Tanque</Text>
+              <Text style={styles.infoValue}>50 L</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Óleo do Motor</Text>
+              <Text style={styles.infoValue}>5W-30</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Capacidade de Óleo</Text>
+              <Text style={styles.infoValue}>4.2 L</Text>
+            </View>
+          </View>
+        </CollapsibleSection>
 
         {/* Vínculos */}
         <View style={styles.linksHeader}>
@@ -549,133 +354,44 @@ export default function VehicleDetailsScreen() {
 
         {/* Proprietários */}
         {(owners.length > 0 || formerOwners.length > 0) && (
-          <View style={styles.linkSection}>
-            <View style={styles.linkSectionHeader}>
-              <Text style={styles.linkSectionTitle}>Proprietários ({owners.length})</Text>
-              {formerOwners.length > 0 && (
-                <TouchableOpacity
-                  style={styles.historyButton}
-                  onPress={() => toggleHistory('owner')}
-                >
-                  <History size={16} color="#6b7280" />
-                  <Text style={styles.historyButtonText}>Anteriores ({formerOwners.length})</Text>
-                  {showHistoryFor.owner ? (
-                    <ChevronUp size={16} color="#6b7280" />
-                  ) : (
-                    <ChevronDown size={16} color="#6b7280" />
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-            <View style={styles.linkList}>
-              {owners.map((person) => (
-                <PersonCard
-                  key={person.id}
-                  person={person}
-                  onClick={setSelectedPerson}
-                  isSelected={selectedPerson?.id === person.id}
-                />
-              ))}
-              {showHistoryFor.owner &&
-                formerOwners.map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    onClick={setSelectedPerson}
-                    isSelected={selectedPerson?.id === person.id}
-                    isHistorical={true}
-                  />
-                ))}
-            </View>
-          </View>
+          <LinkSection
+            title="Proprietários"
+            count={owners.length}
+            people={owners}
+            formerPeople={formerOwners}
+            showHistory={showHistoryFor.owner || false}
+            onToggleHistory={() => toggleHistory('owner')}
+            selectedPerson={selectedPerson}
+            onSelectPerson={setSelectedPerson}
+          />
         )}
 
         {/* Locatários */}
         {(renters.length > 0 || formerRenters.length > 0) && (
-          <View style={styles.linkSection}>
-            <View style={styles.linkSectionHeader}>
-              <Text style={styles.linkSectionTitle}>Locatários ({renters.length})</Text>
-              {formerRenters.length > 0 && (
-                <TouchableOpacity
-                  style={styles.historyButton}
-                  onPress={() => toggleHistory('renter')}
-                >
-                  <History size={16} color="#6b7280" />
-                  <Text style={styles.historyButtonText}>Anteriores ({formerRenters.length})</Text>
-                  {showHistoryFor.renter ? (
-                    <ChevronUp size={16} color="#6b7280" />
-                  ) : (
-                    <ChevronDown size={16} color="#6b7280" />
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-            <View style={styles.linkList}>
-              {renters.map((person) => (
-                <PersonCard
-                  key={person.id}
-                  person={person}
-                  onClick={setSelectedPerson}
-                  isSelected={selectedPerson?.id === person.id}
-                />
-              ))}
-              {showHistoryFor.renter &&
-                formerRenters.map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    onClick={setSelectedPerson}
-                    isSelected={selectedPerson?.id === person.id}
-                    isHistorical={true}
-                  />
-                ))}
-            </View>
-          </View>
+          <LinkSection
+            title="Locatários"
+            count={renters.length}
+            people={renters}
+            formerPeople={formerRenters}
+            showHistory={showHistoryFor.renter || false}
+            onToggleHistory={() => toggleHistory('renter')}
+            selectedPerson={selectedPerson}
+            onSelectPerson={setSelectedPerson}
+          />
         )}
 
         {/* Condutores */}
         {(authorizedDrivers.length > 0 || formerAuthorizedDrivers.length > 0) && (
-          <View style={styles.linkSection}>
-            <View style={styles.linkSectionHeader}>
-              <Text style={styles.linkSectionTitle}>Condutores ({authorizedDrivers.length})</Text>
-              {formerAuthorizedDrivers.length > 0 && (
-                <TouchableOpacity
-                  style={styles.historyButton}
-                  onPress={() => toggleHistory('authorized_driver')}
-                >
-                  <History size={16} color="#6b7280" />
-                  <Text style={styles.historyButtonText}>
-                    Anteriores ({formerAuthorizedDrivers.length})
-                  </Text>
-                  {showHistoryFor.authorized_driver ? (
-                    <ChevronUp size={16} color="#6b7280" />
-                  ) : (
-                    <ChevronDown size={16} color="#6b7280" />
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-            <View style={styles.linkList}>
-              {authorizedDrivers.map((person) => (
-                <PersonCard
-                  key={person.id}
-                  person={person}
-                  onClick={setSelectedPerson}
-                  isSelected={selectedPerson?.id === person.id}
-                />
-              ))}
-              {showHistoryFor.authorized_driver &&
-                formerAuthorizedDrivers.map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    onClick={setSelectedPerson}
-                    isSelected={selectedPerson?.id === person.id}
-                    isHistorical={true}
-                  />
-                ))}
-            </View>
-          </View>
+          <LinkSection
+            title="Condutores"
+            count={authorizedDrivers.length}
+            people={authorizedDrivers}
+            formerPeople={formerAuthorizedDrivers}
+            showHistory={showHistoryFor.authorized_driver || false}
+            onToggleHistory={() => toggleHistory('authorized_driver')}
+            selectedPerson={selectedPerson}
+            onSelectPerson={setSelectedPerson}
+          />
         )}
       </Animated.ScrollView>
     </View>
@@ -730,77 +446,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
-  section: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  sectionHeaderCollapsible: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 12,
-  },
-  sectionHeaderCollapsibleExpanded: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  sectionHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  chevronContainer: {
-    padding: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
-  sectionContent: {
-    padding: 16,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  gridItem: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 8,
-    padding: 12,
-    width: '48%',
-  },
-  gridItemFull: {
-    width: '100%',
-  },
-  gridLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  gridValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  gridValueBold: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
   infoList: {
     gap: 12,
   },
@@ -830,6 +475,22 @@ const styles = StyleSheet.create({
   infoGrid: {
     flexDirection: 'row',
     gap: 12,
+  },
+  gridItem: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 8,
+    padding: 12,
+    flex: 1,
+  },
+  gridLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 4,
+  },
+  gridValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
   },
   tireInfo: {
     backgroundColor: '#f9fafb',
@@ -895,58 +556,6 @@ const styles = StyleSheet.create({
   documentsList: {
     gap: 8,
   },
-  documentItem: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 8,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  documentLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-  },
-  documentIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  documentInfo: {
-    flex: 1,
-  },
-  documentName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  documentMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  documentMetaText: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  documentActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  documentActionButton: {
-    width: 32,
-    height: 32,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   linksHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -981,125 +590,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '500',
-  },
-  linkSection: {
-    marginBottom: 24,
-  },
-  linkSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  linkSectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  historyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  historyButtonText: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  linkList: {
-    gap: 12,
-  },
-  personCard: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-  },
-  personCardSelected: {
-    borderColor: '#1f2937',
-  },
-  personCardHistorical: {
-    opacity: 0.6,
-  },
-  personCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  personCardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-  },
-  personAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#1f2937',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  personAvatarHistorical: {
-    backgroundColor: '#9ca3af',
-  },
-  personAvatarText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  personName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  personNameHistorical: {
-    color: '#6b7280',
-  },
-  personEmail: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginTop: 2,
-  },
-  personCardRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  personBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  personBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  personCardFooter: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 16,
-  },
-  personCardFooterItem: {
-    flex: 1,
-  },
-  personCardFooterLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  personCardFooterValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  personCardFooterValueHistorical: {
-    color: '#6b7280',
   },
 });
