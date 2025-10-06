@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -214,6 +214,15 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
   const [moreOptionsVisible, setMoreOptionsVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const translateY = useRef(new Animated.Value(0)).current;
+  const backdropOpacity = useRef(new Animated.Value(1)).current;
+
+  // Reset position when modal opens
+  useEffect(() => {
+    if (visible) {
+      translateY.setValue(0);
+      backdropOpacity.setValue(1);
+    }
+  }, [visible, translateY, backdropOpacity]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -224,16 +233,26 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dy > 0) {
           translateY.setValue(gestureState.dy);
+          // Gradually increase transparency as user drags down
+          // From opacity 1 to 0.3 over 150px drag (never fully transparent while dragging)
+          const opacity = Math.max(0.3, 1 - (gestureState.dy / 150) * 0.7);
+          backdropOpacity.setValue(opacity);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dy > 150) {
           onClose();
         } else {
-          Animated.spring(translateY, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
+          Animated.parallel([
+            Animated.spring(translateY, {
+              toValue: 0,
+              useNativeDriver: true,
+            }),
+            Animated.spring(backdropOpacity, {
+              toValue: 1,
+              useNativeDriver: true,
+            }),
+          ]).start();
         }
       },
     })
@@ -316,26 +335,35 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
       visible={visible}
       animationType="slide"
       onRequestClose={onClose}
-      presentationStyle="fullScreen"
+      transparent={true}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
+      <Animated.View
+        style={[
+          styles.backdrop,
+          {
+            backgroundColor: backdropOpacity.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)'],
+            }),
+          }
+        ]}
       >
-        {/* Header */}
-        <Animated.View
-          style={[styles.header, { transform: [{ translateY }] }]}
-          {...panResponder.panHandlers}
-        >
-          <View>
-            <Text style={styles.headerTitle}>ChatMonitor</Text>
-            <Text style={styles.headerSubtitle}>{vehicleName}</Text>
+        <Animated.View style={[styles.modalContainer, { transform: [{ translateY }] }]}>
+          <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={0}
+          >
+          {/* Header */}
+          <View style={styles.header} {...panResponder.panHandlers}>
+            <View>
+              <Text style={styles.headerTitle}>ChatMonitor</Text>
+              <Text style={styles.headerSubtitle}>{vehicleName}</Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <X size={24} color="#374151" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <X size={24} color="#374151" />
-          </TouchableOpacity>
-        </Animated.View>
 
         {/* Messages */}
         <ScrollView
@@ -436,12 +464,21 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
           onClose={() => setMoreOptionsVisible(false)}
           onOptionSelect={handleMoreOptions}
         />
-      </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
