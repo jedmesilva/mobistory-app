@@ -284,13 +284,13 @@ export default function VehicleHistoryScreen() {
       scrollDistanceY.current = Math.min(0, scrollDistanceY.current + scrollDiff);
     }
 
-    // MOSTRA se rolou 100px PARA BAIXO (em direção ao fundo)
-    if (scrollDistanceY.current >= 100) {
+    // MOSTRA se rolou 20px PARA BAIXO (em direção ao fundo)
+    if (scrollDistanceY.current >= 20) {
       if (!isHeaderVisible || !isFooterVisible) {
         setIsHeaderVisible(true);
         setIsFooterVisible(true);
       }
-      scrollDistanceY.current = 100; // Mantém no limite
+      scrollDistanceY.current = 20; // Mantém no limite
     }
 
     // ESCONDE se rolou 120px PARA CIMA (em direção ao topo)

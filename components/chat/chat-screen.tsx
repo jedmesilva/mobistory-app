@@ -241,11 +241,13 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
 
   const handleSend = () => {
     if (inputText.trim()) {
+      const now = new Date();
       const newMessage: ChatMessage = {
         id: messages.length + 1,
         type: 'user',
         message: inputText.trim(),
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        date: now.toISOString().split('T')[0],
       };
       setMessages([...messages, newMessage]);
       setInputText('');
@@ -500,7 +502,9 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#e5e7eb',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
