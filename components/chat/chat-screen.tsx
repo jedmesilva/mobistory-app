@@ -13,7 +13,7 @@ import {
   Platform,
   Keyboard,
 } from 'react-native';
-import { X, ArrowUp, Plus, Mic, Camera, Calendar } from 'lucide-react-native';
+import { ChevronDown, ArrowUp, Plus, Mic, Camera, Calendar } from 'lucide-react-native';
 import { MessageBubble } from './message-bubble';
 import { FuelAnalysisCard } from './fuel-analysis-card';
 import { PriceComparisonCard } from './price-comparison-card';
@@ -361,7 +361,7 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
               <Text style={styles.headerSubtitle}>{vehicleName}</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color="#374151" />
+              <ChevronDown size={24} color="#374151" />
             </TouchableOpacity>
           </View>
 
