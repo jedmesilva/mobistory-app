@@ -1,33 +1,27 @@
 import React, { useState, useRef } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  TouchableOpacity,
-  TextInput,
   ScrollView,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
-  ArrowLeft,
-  Zap,
-  ChevronRight,
   Car,
-  Check,
   Edit3,
-  Sparkles,
   Search,
 } from 'lucide-react-native';
 import {
   SearchableInput,
   StepHeader,
-  ColorSelector,
   FuelTypeSelector,
-  ProgressCircle,
-  ConfirmationField,
   CaptureModal,
+  VehicleHeader,
+  ProcessingState,
+  ConfirmationScreen,
+  ActionFooter,
+  YearInput,
+  PlateAndColorStep,
   type ColorOption,
   type FuelTypeOption,
 } from '../components/add-vehicle';
@@ -394,53 +388,23 @@ export default function AddVehicleScreen() {
 
       case 3:
         return (
-          <View style={styles.stepContainer}>
-            <StepHeader
-              title="Ano do veículo"
-              subtitle="Em que ano foi fabricado?"
-            />
-
-            <TextInput
-              value={vehicleData.year}
-              onChangeText={(text) => handleInputChange('year', text)}
-              placeholder="Ex: 2020"
-              keyboardType="number-pad"
-              maxLength={4}
-              style={[styles.input, styles.inputCenter]}
-              onSubmitEditing={() => canProceed() && handleNext()}
-              returnKeyType="next"
-              autoFocus
-            />
-          </View>
+          <YearInput
+            value={vehicleData.year}
+            onChangeText={(text) => handleInputChange('year', text)}
+            onSubmitEditing={() => canProceed() && handleNext()}
+          />
         );
 
       case 4:
         return (
-          <View style={styles.stepContainer}>
-            <StepHeader
-              title="Placa e Cor"
-              subtitle="Últimas informações básicas"
-            />
-
-            <View style={styles.fieldGroup}>
-              <TextInput
-                value={vehicleData.plate}
-                onChangeText={(text) => handleInputChange('plate', text)}
-                placeholder="Placa (Ex: ABC-1234)"
-                maxLength={8}
-                autoCapitalize="characters"
-                style={[styles.input, styles.inputCenter, styles.inputMono]}
-                onSubmitEditing={() => canProceed() && handleNext()}
-                returnKeyType="next"
-              />
-
-              <ColorSelector
-                colors={colors}
-                selectedColor={vehicleData.color}
-                onSelectColor={(colorId) => handleInputChange('color', colorId)}
-              />
-            </View>
-          </View>
+          <PlateAndColorStep
+            plateValue={vehicleData.plate}
+            selectedColor={vehicleData.color}
+            colors={colors}
+            onPlateChange={(text) => handleInputChange('plate', text)}
+            onColorSelect={(colorId) => handleInputChange('color', colorId)}
+            onSubmitEditing={() => canProceed() && handleNext()}
+          />
         );
 
       case 5:
@@ -467,60 +431,13 @@ export default function AddVehicleScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.backButton}
-        >
-          <ArrowLeft size={24} color="#4b5563" />
-        </TouchableOpacity>
-
-        <View style={styles.headerContent}>
-          {hasAutoData ? (
-            <View style={styles.headerComplete}>
-              <View style={styles.headerIcon}>
-                <Car size={20} color="#fff" />
-              </View>
-              <View style={styles.headerInfo}>
-                <Text style={styles.headerTitle} numberOfLines={1}>
-                  {vehicleData.brand} {vehicleData.model}
-                </Text>
-                <Text style={styles.headerSubtitle} numberOfLines={1}>
-                  {vehicleData.plate}
-                  {vehicleData.year && ` • ${vehicleData.year}`}
-                  {vehicleData.color &&
-                    ` • ${colors.find((c) => c.id === vehicleData.color)?.label}`}
-                </Text>
-              </View>
-              <Check size={32} color="#10b981" />
-            </View>
-          ) : (
-            <View style={styles.headerProgress}>
-              <View style={styles.headerIcon}>
-                <Car size={20} color="#fff" />
-              </View>
-              <View style={styles.headerInfo}>
-                <Text style={styles.headerTitle} numberOfLines={1}>
-                  {vehicleData.brand
-                    ? `${vehicleData.brand}${vehicleData.model ? ` ${vehicleData.model}` : ''}`
-                    : 'Novo Veículo'}
-                </Text>
-                {(vehicleData.plate || vehicleData.year || vehicleData.color) && (
-                  <Text style={styles.headerSubtitle} numberOfLines={1}>
-                    {vehicleData.plate && vehicleData.plate}
-                    {vehicleData.plate && vehicleData.year && ' • '}
-                    {vehicleData.year && vehicleData.year}
-                    {(vehicleData.plate || vehicleData.year) && vehicleData.color && ' • '}
-                    {vehicleData.color &&
-                      colors.find((c) => c.id === vehicleData.color)?.label}
-                  </Text>
-                )}
-              </View>
-              <ProgressCircle progress={getStepProgress()} />
-            </View>
-          )}
-        </View>
-      </View>
+      <VehicleHeader
+        onBack={handleBack}
+        hasAutoData={hasAutoData}
+        vehicleData={vehicleData}
+        colors={colors}
+        progress={getStepProgress()}
+      />
 
       {/* Content */}
       <ScrollView
@@ -530,146 +447,30 @@ export default function AddVehicleScreen() {
         keyboardShouldPersistTaps="always"
       >
           {isProcessing ? (
-            <View style={styles.processingContainer}>
-              <View style={styles.processingIcon}>
-                <Sparkles size={32} color="#fff" />
-              </View>
-              <Text style={styles.processingTitle}>Identificando seu veículo...</Text>
-              <Text style={styles.processingSubtitle}>
-                Processando informações automaticamente
-              </Text>
-            </View>
+            <ProcessingState />
           ) : hasAutoData ? (
-            <View style={styles.confirmationContainer}>
-              <StepHeader
-                icon={<Check size={32} color="#fff" />}
-                title="Confirme os dados do veículo"
-                subtitle="Revise e edite se necessário"
-                isSuccess
-              />
-
-              <View style={styles.confirmationCard}>
-                <ConfirmationField
-                  label="Marca"
-                  value={vehicleData.brand}
-                  onEdit={() => handleEdit(0)}
-                />
-
-                <ConfirmationField
-                  label="Modelo"
-                  value={vehicleData.model}
-                  onEdit={() => handleEdit(1)}
-                />
-
-                <ConfirmationField
-                  label="Versão"
-                  value={vehicleData.name}
-                  onEdit={() => handleEdit(2)}
-                />
-
-                <View style={styles.confirmationRow}>
-                  <ConfirmationField
-                    label="Ano"
-                    value={vehicleData.year}
-                    onEdit={() => handleEdit(3)}
-                    isHalf
-                  />
-
-                  <ConfirmationField
-                    label="Placa"
-                    value={vehicleData.plate}
-                    onEdit={() => handleEdit(4)}
-                    isHalf
-                  />
-                </View>
-
-                <View style={styles.confirmationRow}>
-                  <ConfirmationField
-                    label="Cor"
-                    value={colors.find((c) => c.id === vehicleData.color)?.label || ''}
-                    onEdit={() => handleEdit(4)}
-                    isHalf
-                    renderValue={() => (
-                      <View style={styles.confirmationColorRow}>
-                        <View
-                          style={[
-                            styles.confirmationColorCircle,
-                            {
-                              backgroundColor: colors.find(
-                                (c) => c.id === vehicleData.color
-                              )?.hex,
-                            },
-                          ]}
-                        />
-                        <Text style={styles.confirmationValue}>
-                          {colors.find((c) => c.id === vehicleData.color)?.label}
-                        </Text>
-                      </View>
-                    )}
-                  />
-
-                  <ConfirmationField
-                    label="Combustível"
-                    value={fuelTypes.find((f) => f.id === vehicleData.fuelType)?.label || ''}
-                    onEdit={() => handleEdit(5)}
-                    isHalf
-                  />
-                </View>
-              </View>
-            </View>
+            <ConfirmationScreen
+              vehicleData={vehicleData}
+              colors={colors}
+              fuelTypes={fuelTypes}
+              onEdit={handleEdit}
+            />
           ) : (
             renderStep()
           )}
       </ScrollView>
 
       {/* Footer */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          {!hasAutoData && !isProcessing && (
-            <TouchableOpacity
-              onPress={() => setShowCaptureModal(true)}
-              style={styles.autoCaptureButton}
-            >
-              <View style={styles.autoCaptureIcon}>
-                <Zap size={20} color="#fff" />
-              </View>
-              <View style={styles.autoCaptureText}>
-                <Text style={styles.autoCaptureTitle}>Captura Automática</Text>
-                <Text style={styles.autoCaptureSubtitle}>
-                  Envie documento ou foto do veículo
-                </Text>
-              </View>
-              <ChevronRight size={20} color="#9ca3af" />
-            </TouchableOpacity>
-          )}
-
-          <View style={styles.footerActions}>
-            {hasAutoData ? (
-              <TouchableOpacity onPress={handleSaveVehicle} style={styles.primaryButton}>
-                <Text style={styles.primaryButtonText}>Confirmar e Cadastrar</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={handleNext}
-                disabled={!canProceed() || isProcessing}
-                style={[
-                  styles.primaryButton,
-                  (!canProceed() || isProcessing) && styles.primaryButtonDisabled,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.primaryButtonText,
-                    (!canProceed() || isProcessing) && styles.primaryButtonTextDisabled,
-                  ]}
-                >
-                  {isEditMode ? 'Salvar Alteração' : currentStep === 5 ? 'Revisar dados' : 'Continuar'}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </SafeAreaView>
+      <ActionFooter
+        hasAutoData={hasAutoData}
+        isProcessing={isProcessing}
+        canProceed={canProceed()}
+        isEditMode={isEditMode}
+        currentStep={currentStep}
+        onShowCaptureModal={() => setShowCaptureModal(true)}
+        onSaveVehicle={handleSaveVehicle}
+        onNext={handleNext}
+      />
 
       {/* Capture Modal */}
       <CaptureModal
@@ -686,51 +487,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 8,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerComplete: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerProgress: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerInfo: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
   scrollView: {
     flex: 1,
   },
@@ -740,175 +496,5 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     gap: 24,
-  },
-  successBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#d1fae5',
-    borderWidth: 1,
-    borderColor: '#a7f3d0',
-    borderRadius: 16,
-    padding: 16,
-  },
-  successText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#065f46',
-  },
-  previewBanner: {
-    backgroundColor: '#dbeafe',
-    borderWidth: 1,
-    borderColor: '#bfdbfe',
-    borderRadius: 16,
-    padding: 16,
-  },
-  previewText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1e40af',
-    textAlign: 'center',
-  },
-  input: {
-    fontSize: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 16,
-    color: '#111827',
-  },
-  inputCenter: {
-    textAlign: 'center',
-  },
-  inputMono: {
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  fieldGroup: {
-    gap: 24,
-  },
-  processingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 64,
-  },
-  processingIcon: {
-    width: 64,
-    height: 64,
-    backgroundColor: '#1f2937',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  processingTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  processingSubtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-  },
-  confirmationContainer: {
-    gap: 24,
-  },
-  confirmationCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    gap: 16,
-  },
-  confirmationRow: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  confirmationValue: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  confirmationColorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 4,
-  },
-  confirmationColorCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-  },
-  footerSafeArea: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-  },
-  footer: {
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    borderLeftWidth: 1,
-    borderLeftColor: '#e5e7eb',
-    borderRightWidth: 1,
-    borderRightColor: '#e5e7eb',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    overflow: 'hidden',
-  },
-  autoCaptureButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  autoCaptureIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  autoCaptureText: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  autoCaptureTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  autoCaptureSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  footerActions: {
-    padding: 16,
-  },
-  primaryButton: {
-    backgroundColor: '#1f2937',
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  primaryButtonDisabled: {
-    backgroundColor: '#d1d5db',
-  },
-  primaryButtonText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#fff',
-  },
-  primaryButtonTextDisabled: {
-    color: '#6b7280',
   },
 });
