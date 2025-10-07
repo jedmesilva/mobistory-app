@@ -5,6 +5,7 @@ export { CaptureModal } from './CaptureModal';
 // Station Components
 export { StationCard } from './StationCard';
 export { SelectedStationCard } from './SelectedStationCard';
+export { SelectedStationBanner } from './SelectedStationBanner';
 export type { Station } from './StationCard';
 
 // Fuel Input Components

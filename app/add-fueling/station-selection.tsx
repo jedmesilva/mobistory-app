@@ -1,0 +1,622 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import {
+  ArrowLeft,
+  MapPin,
+  Search,
+  Clock,
+  Star,
+  X,
+  Plus,
+} from 'lucide-react-native';
+import {
+  ProgressIndicator,
+  StationCard,
+  SelectedStationCard,
+  type Station,
+} from '@/components/add-fueling';
+
+export default function StationSelectionScreen() {
+  const router = useRouter();
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
+  const [stationSearch, setStationSearch] = useState('');
+  const [showStationSearch, setShowStationSearch] = useState(false);
+  const [showAddStation, setShowAddStation] = useState(false);
+  const [newStationForm, setNewStationForm] = useState({
+    name: '',
+    address: '',
+  });
+
+  const currentVehicle = {
+    name: 'Honda Civic',
+    year: '2020',
+    plate: 'ABC-1234',
+  };
+
+  const savedStations: Station[] = [
+    {
+      id: 1,
+      name: 'Shell Select',
+      brand: 'Shell',
+      address: 'Av. Paulista, 1500 - Bela Vista',
+      distance: '0.8 km',
+      isFavorite: true,
+      lastVisit: '2024-09-15',
+      prices: {
+        gasolina_comum: '5.49',
+        gasolina_aditivada: '5.69',
+        etanol: '3.89',
+        diesel: '5.99',
+      },
+    },
+    {
+      id: 2,
+      name: 'Posto Ipiranga',
+      brand: 'Ipiranga',
+      address: 'R. Augusta, 2000 - Consolação',
+      distance: '1.2 km',
+      isFavorite: false,
+      lastVisit: '2024-09-10',
+      prices: {
+        gasolina_comum: '5.45',
+        gasolina_aditivada: '5.65',
+        etanol: '3.85',
+      },
+    },
+    {
+      id: 3,
+      name: 'BR Mania',
+      brand: 'BR',
+      address: 'Av. Rebouças, 800 - Pinheiros',
+      distance: '2.1 km',
+      isFavorite: true,
+      lastVisit: '2024-09-08',
+      prices: {
+        gasolina_comum: '5.52',
+        gasolina_aditivada: '5.72',
+        etanol: '3.92',
+        diesel: '6.05',
+      },
+    },
+  ];
+
+  const nearbyStations: Station[] = [
+    {
+      id: 4,
+      name: 'Posto Ale',
+      brand: 'Ale',
+      address: 'R. da Consolação, 1200',
+      distance: '0.5 km',
+      isFavorite: false,
+      prices: {
+        gasolina_comum: '5.47',
+        etanol: '3.87',
+      },
+    },
+    {
+      id: 5,
+      name: 'Texaco Express',
+      brand: 'Texaco',
+      address: 'Av. São Luís, 500',
+      distance: '1.5 km',
+      isFavorite: false,
+      prices: {
+        gasolina_comum: '5.51',
+        gasolina_aditivada: '5.71',
+        etanol: '3.91',
+      },
+    },
+  ];
+
+  const filteredStations = () => {
+    const allStations = [...savedStations, ...nearbyStations];
+    if (!stationSearch.trim()) return allStations;
+
+    return allStations.filter(
+      (station) =>
+        station.name.toLowerCase().includes(stationSearch.toLowerCase()) ||
+        station.brand.toLowerCase().includes(stationSearch.toLowerCase()) ||
+        station.address.toLowerCase().includes(stationSearch.toLowerCase())
+    );
+  };
+
+  const handleStationSelect = (station: Station) => {
+    setSelectedStation(station);
+    setShowStationSearch(false);
+    setShowAddStation(false);
+    setStationSearch('');
+  };
+
+  const clearSearch = () => {
+    setStationSearch('');
+    setShowStationSearch(false);
+    setShowAddStation(false);
+  };
+
+  const handleAddStation = () => {
+    setShowAddStation(true);
+    setShowStationSearch(false);
+  };
+
+  const handleSaveNewStation = () => {
+    if (!newStationForm.name.trim()) {
+      alert('Por favor, informe o nome do posto');
+      return;
+    }
+
+    const newStation: Station = {
+      id: Date.now(),
+      name: newStationForm.name.trim(),
+      brand: 'Personalizado',
+      address: newStationForm.address.trim() || 'Endereço não informado',
+      distance: 'N/A',
+      isFavorite: false,
+      isUserAdded: true,
+      prices: {},
+    };
+
+    setSelectedStation(newStation);
+    setNewStationForm({ name: '', address: '' });
+    setShowAddStation(false);
+    setStationSearch('');
+  };
+
+  const cancelAddStation = () => {
+    setShowAddStation(false);
+    setNewStationForm({ name: '', address: '' });
+  };
+
+  const handleContinue = () => {
+    router.push('/add-fueling/fuel-input');
+  };
+
+  const favoriteStations = savedStations.filter((s) => s.isFavorite);
+  const recentStations = savedStations.filter((s) => !s.isFavorite);
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+          <ArrowLeft size={20} color="#4b5563" />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>Selecionar Posto</Text>
+          <Text style={styles.headerSubtitle}>
+            {currentVehicle.name} • {currentVehicle.plate}
+          </Text>
+        </View>
+        <ProgressIndicator currentStep={1} totalSteps={3} />
+      </View>
+
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={styles.content}>
+          {/* Selected Station */}
+          {selectedStation && (
+            <SelectedStationCard
+              station={selectedStation}
+              onRemove={() => setSelectedStation(null)}
+            />
+          )}
+
+          {/* Search Box */}
+          <View style={styles.card}>
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Search size={16} color="#9ca3af" style={styles.searchIcon} />
+                <TextInput
+                  value={stationSearch}
+                  onChangeText={setStationSearch}
+                  onFocus={() => setShowStationSearch(true)}
+                  placeholder="Buscar posto por nome ou localização"
+                  placeholderTextColor="#9ca3af"
+                  style={styles.searchInput}
+                />
+                {stationSearch.length > 0 && (
+                  <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+                    <X size={16} color="#9ca3af" />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {showStationSearch && (
+                <View style={styles.searchResults}>
+                  {filteredStations().slice(0, 8).map((station) => (
+                    <StationCard
+                      key={station.id}
+                      station={station}
+                      onPress={() => handleStationSelect(station)}
+                    />
+                  ))}
+
+                  {filteredStations().length === 0 && (
+                    <View style={styles.noResults}>
+                      <Text style={styles.noResultsTitle}>Nenhum posto encontrado</Text>
+                      <Text style={styles.noResultsSubtitle}>
+                        Não encontrou o posto que procura?
+                      </Text>
+                      <TouchableOpacity onPress={handleAddStation} style={styles.addButton}>
+                        <Plus size={16} color="#fff" />
+                        <Text style={styles.addButtonText}>Adicionar Posto Manualmente</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Add Station Form */}
+          {showAddStation && (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Plus size={16} color="#4b5563" />
+                <Text style={styles.cardHeaderText}>Adicionar Novo Posto</Text>
+              </View>
+
+              <View style={styles.cardBody}>
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>Nome do Posto *</Text>
+                  <TextInput
+                    value={newStationForm.name}
+                    onChangeText={(text) =>
+                      setNewStationForm((prev) => ({ ...prev, name: text }))
+                    }
+                    placeholder="Ex: Shell da Esquina, Posto do João, etc."
+                    placeholderTextColor="#9ca3af"
+                    style={styles.input}
+                  />
+                  <Text style={styles.hint}>
+                    Pode ser o nome oficial ou um apelido que você usa
+                  </Text>
+                </View>
+
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>Endereço ou Referência</Text>
+                  <TextInput
+                    value={newStationForm.address}
+                    onChangeText={(text) =>
+                      setNewStationForm((prev) => ({ ...prev, address: text }))
+                    }
+                    placeholder="Ex: Av. Paulista, 1000 ou próximo ao shopping"
+                    placeholderTextColor="#9ca3af"
+                    style={styles.input}
+                  />
+                  <Text style={styles.hint}>
+                    Endereço completo ou uma referência que te ajude a lembrar
+                  </Text>
+                </View>
+
+                <View style={styles.formActions}>
+                  <TouchableOpacity onPress={handleSaveNewStation} style={styles.saveButton}>
+                    <Text style={styles.saveButtonText}>Adicionar Posto</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={cancelAddStation} style={styles.cancelButton}>
+                    <Text style={styles.cancelButtonText}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* Stations Lists */}
+          {!showStationSearch && !showAddStation && (
+            <>
+              {/* Favorite Stations */}
+              {favoriteStations.length > 0 && (
+                <View style={styles.card}>
+                  <View style={[styles.cardHeader, styles.sectionHeader]}>
+                    <Star size={16} color="#eab308" fill="#eab308" />
+                    <Text style={styles.sectionTitle}>Postos Favoritos</Text>
+                  </View>
+
+                  <View style={styles.stationsList}>
+                    {favoriteStations.map((station) => (
+                      <StationCard
+                        key={station.id}
+                        station={station}
+                        onPress={() => handleStationSelect(station)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {/* Recent Stations */}
+              {recentStations.length > 0 && (
+                <View style={styles.card}>
+                  <View style={[styles.cardHeader, styles.sectionHeader]}>
+                    <Clock size={16} color="#4b5563" />
+                    <Text style={styles.sectionTitle}>Postos Recentes</Text>
+                  </View>
+
+                  <View style={styles.stationsList}>
+                    {recentStations.map((station) => (
+                      <StationCard
+                        key={station.id}
+                        station={station}
+                        onPress={() => handleStationSelect(station)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {/* Nearby Stations */}
+              <View style={styles.card}>
+                <View style={[styles.cardHeader, styles.sectionHeader]}>
+                  <MapPin size={16} color="#4b5563" />
+                  <Text style={styles.sectionTitle}>Postos Próximos</Text>
+                </View>
+
+                <View style={styles.stationsList}>
+                  {nearbyStations.map((station) => (
+                    <StationCard
+                      key={station.id}
+                      station={station}
+                      onPress={() => handleStationSelect(station)}
+                    />
+                  ))}
+                </View>
+              </View>
+            </>
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+          <Text style={styles.continueButtonText}>
+            {selectedStation ? `Continuar com ${selectedStation.name}` : 'Continuar sem Posto'}
+          </Text>
+        </TouchableOpacity>
+
+        {selectedStation && (
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedStation(null);
+              handleContinue();
+            }}
+            style={styles.skipButton}
+          >
+            <Text style={styles.skipButtonText}>Continuar sem Posto</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  headerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerCenter: {
+    flex: 1,
+    marginHorizontal: 16,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 160,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    backgroundColor: '#f9fafb',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  sectionHeader: {
+    backgroundColor: '#f9fafb',
+  },
+  cardHeaderText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  cardBody: {
+    padding: 16,
+  },
+  searchContainer: {
+    padding: 16,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#111827',
+  },
+  clearButton: {
+    padding: 4,
+  },
+  searchResults: {
+    marginTop: 16,
+    maxHeight: 400,
+  },
+  noResults: {
+    alignItems: 'center',
+    paddingVertical: 24,
+  },
+  noResultsTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6b7280',
+    marginBottom: 4,
+  },
+  noResultsSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginBottom: 16,
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+  },
+  addButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#fff',
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#111827',
+  },
+  hint: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
+  },
+  formActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  saveButton: {
+    flex: 1,
+    paddingVertical: 12,
+    backgroundColor: '#1f2937',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  stationsList: {
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  continueButton: {
+    paddingVertical: 16,
+    backgroundColor: '#1f2937',
+    borderRadius: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  continueButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  skipButton: {
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  skipButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6b7280',
+  },
+});
