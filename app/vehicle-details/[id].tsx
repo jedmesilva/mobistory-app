@@ -196,36 +196,34 @@ export default function VehicleDetailsScreen() {
   ];
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
-        <Animated.View
-          style={[
-            styles.header,
-            {
-              shadowOpacity: headerOpacity,
-              borderBottomWidth: headerOpacity,
-            },
-          ]}
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            shadowOpacity: headerOpacity,
+            borderBottomWidth: headerOpacity,
+          },
+        ]}
+      >
+        <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+          <ArrowLeft size={20} color="#4b5563" />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle} numberOfLines={1}>
+            {vehicle.marca} {vehicle.modelo}
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => setShowSensitiveData(!showSensitiveData)}
         >
-          <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
-            <ArrowLeft size={20} color="#4b5563" />
-          </TouchableOpacity>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle} numberOfLines={1}>
-              {vehicle.marca} {vehicle.modelo}
-            </Text>
-            <Text style={styles.headerSubtitle}>
-              {showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => setShowSensitiveData(!showSensitiveData)}
-          >
-            {showSensitiveData ? <EyeOff size={20} color="#4b5563" /> : <Eye size={20} color="#4b5563" />}
-          </TouchableOpacity>
-        </Animated.View>
-      </SafeAreaView>
+          {showSensitiveData ? <EyeOff size={20} color="#4b5563" /> : <Eye size={20} color="#4b5563" />}
+        </TouchableOpacity>
+      </Animated.View>
 
       <Animated.ScrollView
         style={styles.scrollView}
@@ -397,16 +395,13 @@ export default function VehicleDetailsScreen() {
           />
         )}
       </Animated.ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  headerSafeArea: {
     backgroundColor: '#fff',
   },
   header: {

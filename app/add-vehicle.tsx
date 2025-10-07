@@ -6,29 +6,31 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  Modal,
-  Pressable,
-  Animated,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import Svg, { Circle } from 'react-native-svg';
 import {
   ArrowLeft,
   Zap,
   ChevronRight,
-  Camera,
-  Mic,
-  Image as ImageIcon,
   Car,
   Check,
   Edit3,
   Sparkles,
-  Plus,
   Search,
-  Fuel,
 } from 'lucide-react-native';
+import {
+  SearchableInput,
+  StepHeader,
+  ColorSelector,
+  FuelTypeSelector,
+  ProgressCircle,
+  ConfirmationField,
+  CaptureModal,
+  type ColorOption,
+  type FuelTypeOption,
+} from '../components/add-vehicle';
 
 interface VehicleData {
   brand: string;
@@ -55,16 +57,25 @@ const modelsByBrand: { [key: string]: string[] } = {
   'Fiat': ['Argo', 'Cronos', 'Ducato', 'Mobi', 'Palio', 'Siena', 'Strada', 'Toro', 'Uno'],
 };
 
-const fuelTypes = [
-  { id: 'gasoline', label: 'Gasolina' },
-  { id: 'ethanol', label: 'Etanol' },
-  { id: 'flex', label: 'Flex (Gasolina + Etanol)' },
-  { id: 'diesel', label: 'Diesel' },
-  { id: 'electric', label: 'Elétrico' },
-  { id: 'hybrid', label: 'Híbrido' },
+const versionsByModel: { [key: string]: string[] } = {
+  'Civic': ['LX', 'LXR', 'LXS', 'EX', 'EXL', 'Sport', 'Touring', 'Si', 'Type R'],
+  'Corolla': ['GLi', 'XEi', 'Altis', 'XRS', 'Hybrid'],
+  'Gol': ['1.0', '1.6', 'Trendline', 'Comfortline', 'Highline', 'GTI'],
+  'Onix': ['Joy', 'LT', 'LTZ', 'Premier', 'RS'],
+  'Ka': ['SE', 'SE Plus', 'SEL', 'Freestyle'],
+  'Argo': ['Drive', 'Trekking', 'Precision', 'HGT'],
+};
+
+const fuelTypes: FuelTypeOption[] = [
+  { id: 'gasoline', label: 'Gasolina', icon: 'fuel' },
+  { id: 'ethanol', label: 'Etanol', icon: 'fuel' },
+  { id: 'flex', label: 'Flex (Gasolina + Etanol)', icon: 'fuel' },
+  { id: 'diesel', label: 'Diesel', icon: 'fuel' },
+  { id: 'electric', label: 'Elétrico', icon: 'electric' },
+  { id: 'hybrid', label: 'Híbrido', icon: 'hybrid' },
 ];
 
-const colors = [
+const colors: ColorOption[] = [
   { id: 'white', label: 'Branco', hex: '#FFFFFF' },
   { id: 'black', label: 'Preto', hex: '#1F2937' },
   { id: 'gray', label: 'Cinza', hex: '#6B7280' },
@@ -85,8 +96,10 @@ export default function AddVehicleScreen() {
 
   const [brandSearch, setBrandSearch] = useState('');
   const [modelSearch, setModelSearch] = useState('');
+  const [versionSearch, setVersionSearch] = useState('');
   const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
   const [showModelSuggestions, setShowModelSuggestions] = useState(false);
+  const [showVersionSuggestions, setShowVersionSuggestions] = useState(false);
 
   const [vehicleData, setVehicleData] = useState<VehicleData>({
     brand: '',
@@ -113,6 +126,14 @@ export default function AddVehicleScreen() {
     );
   };
 
+  const getFilteredVersions = () => {
+    const versions = versionsByModel[vehicleData.model] || [];
+    if (!versionSearch) return versions;
+    return versions.filter((version) =>
+      version.toLowerCase().includes(versionSearch.toLowerCase())
+    );
+  };
+
   const simulateAutoCapture = (method: string) => {
     setShowCaptureModal(false);
     setIsProcessing(true);
@@ -131,6 +152,7 @@ export default function AddVehicleScreen() {
       setVehicleData(mockData);
       setBrandSearch('Honda');
       setModelSearch('Civic');
+      setVersionSearch('EXL');
       setHasAutoData(true);
       setIsProcessing(false);
       setCurrentStep(5);
@@ -157,6 +179,15 @@ export default function AddVehicleScreen() {
     setModelSearch(model);
     handleInputChange('model', model);
     setShowModelSuggestions(false);
+    // Limpa versão ao trocar de modelo
+    handleInputChange('name', '');
+    setVersionSearch('');
+  };
+
+  const handleVersionSelect = (version: string) => {
+    setVersionSearch(version);
+    handleInputChange('name', version);
+    setShowVersionSuggestions(false);
   };
 
   const handleCreateNewBrand = () => {
@@ -168,6 +199,12 @@ export default function AddVehicleScreen() {
   const handleCreateNewModel = () => {
     if (modelSearch.trim()) {
       handleModelSelect(modelSearch);
+    }
+  };
+
+  const handleCreateNewVersion = () => {
+    if (versionSearch.trim()) {
+      handleVersionSelect(versionSearch);
     }
   };
 
@@ -230,191 +267,138 @@ export default function AddVehicleScreen() {
       case 0:
         return (
           <View style={styles.stepContainer}>
-            {!vehicleData.brand && (
-              <View style={styles.stepHeader}>
-                <View style={styles.stepIcon}>
-                  <Search size={32} color="#fff" />
-                </View>
-                <Text style={styles.stepTitle}>Qual a marca do veículo?</Text>
-                <Text style={styles.stepSubtitle}>Digite para buscar na lista</Text>
-              </View>
-            )}
+            <StepHeader
+              icon={<Search size={32} color="#fff" />}
+              title="Qual a marca do veículo?"
+              subtitle="Digite para buscar na lista"
+            />
 
-            {vehicleData.brand && (
-              <View style={styles.successBanner}>
-                <Check size={20} color="#10b981" />
-                <Text style={styles.successText}>Marca selecionada: {vehicleData.brand}</Text>
-              </View>
-            )}
-
-            <View>
-              <TextInput
-                value={brandSearch}
-                onChangeText={(text) => {
-                  setBrandSearch(text);
-                  setShowBrandSuggestions(true);
-                }}
-                onFocus={() => {
-                  console.log('Brand input focused');
-                  setShowBrandSuggestions(true);
-                }}
-                placeholder="Ex: Honda, Toyota, Volkswagen..."
-                style={styles.input}
-                autoFocus
-              />
-
-              {showBrandSuggestions && (
-                <Pressable onPress={(e) => e.stopPropagation()}>
-                  <View style={styles.suggestionsContainer}>
-                <ScrollView
-                  style={styles.suggestionsList}
-                  nestedScrollEnabled
-                  keyboardShouldPersistTaps="always"
-                >
-                  {getFilteredBrands().map((brand) => (
-                    <TouchableOpacity
-                      key={brand}
-                      onPress={() => handleBrandSelect(brand)}
-                      style={styles.suggestionItem}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.suggestionText}>{brand}</Text>
-                    </TouchableOpacity>
-                  ))}
-
-                  <TouchableOpacity
-                    onPress={handleCreateNewBrand}
-                    style={styles.createNewItem}
-                    activeOpacity={0.7}
-                  >
-                    <Plus size={16} color="#3b82f6" />
-                    <Text style={styles.createNewText}>
-                      {brandSearch && getFilteredBrands().length === 0
-                        ? `Criar nova marca: "${brandSearch}"`
-                        : 'Criar nova marca'}
-                    </Text>
-                  </TouchableOpacity>
-                  </ScrollView>
-                </View>
-                </Pressable>
-              )}
-            </View>
+            <SearchableInput
+              value={brandSearch}
+              onChangeText={(text) => {
+                setBrandSearch(text);
+                setShowBrandSuggestions(true);
+              }}
+              onFocus={() => {
+                console.log('Brand input focused');
+                setShowBrandSuggestions(true);
+              }}
+              placeholder="Ex: Honda, Toyota, Volkswagen..."
+              showSuggestions={showBrandSuggestions}
+              suggestions={getFilteredBrands()}
+              selectedValue={vehicleData.brand}
+              onSelectSuggestion={handleBrandSelect}
+              onCreateNew={handleCreateNewBrand}
+              createNewLabel={
+                brandSearch && getFilteredBrands().length === 0
+                  ? `Nova marca: "${brandSearch}"`
+                  : brandSearch
+                  ? 'Nova marca'
+                  : 'Digite o nome da marca acima'
+              }
+              successMessage={vehicleData.brand ? `Marca selecionada: ${vehicleData.brand}` : undefined}
+              onClear={() => {
+                setBrandSearch('');
+                setShowBrandSuggestions(true);
+              }}
+              onSubmitEditing={() => canProceed() && handleNext()}
+              autoFocus
+            />
           </View>
         );
 
       case 1:
         return (
           <View style={styles.stepContainer}>
-            {!vehicleData.model && (
-              <View style={styles.stepHeader}>
-                <View style={styles.stepIcon}>
-                  <Car size={32} color="#fff" />
-                </View>
-                <Text style={styles.stepTitle}>Modelo da {vehicleData.brand}</Text>
-                <Text style={styles.stepSubtitle}>Digite para buscar ou criar novo</Text>
-              </View>
-            )}
+            <StepHeader
+              icon={<Car size={32} color="#fff" />}
+              title={`Modelo da ${vehicleData.brand}`}
+              subtitle="Digite para buscar ou criar novo"
+            />
 
-            {vehicleData.model && (
-              <View style={styles.successBanner}>
-                <Check size={20} color="#10b981" />
-                <Text style={styles.successText}>
-                  Modelo selecionado: {vehicleData.brand} {vehicleData.model}
-                </Text>
-              </View>
-            )}
-
-            <View>
-              <TextInput
-                value={modelSearch}
-                onChangeText={(text) => {
-                  setModelSearch(text);
-                  setShowModelSuggestions(true);
-                }}
-                onFocus={() => {
-                  console.log('Model input focused');
-                  setShowModelSuggestions(true);
-                }}
-                placeholder="Ex: Civic, Corolla, Gol..."
-                style={styles.input}
-                autoFocus
-              />
-
-              {showModelSuggestions && (
-                <Pressable onPress={(e) => e.stopPropagation()}>
-                  <View style={styles.suggestionsContainer}>
-                <ScrollView
-                  style={styles.suggestionsList}
-                  nestedScrollEnabled
-                  keyboardShouldPersistTaps="always"
-                >
-                  {getFilteredModels().map((model) => (
-                    <TouchableOpacity
-                      key={model}
-                      onPress={() => handleModelSelect(model)}
-                      style={styles.suggestionItem}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.suggestionText}>{model}</Text>
-                    </TouchableOpacity>
-                  ))}
-
-                  <TouchableOpacity
-                    onPress={handleCreateNewModel}
-                    style={styles.createNewItem}
-                    activeOpacity={0.7}
-                  >
-                    <Plus size={16} color="#3b82f6" />
-                    <Text style={styles.createNewText}>
-                      {modelSearch && getFilteredModels().length === 0
-                        ? `Criar novo modelo: "${modelSearch}"`
-                        : 'Criar novo modelo'}
-                    </Text>
-                  </TouchableOpacity>
-                  </ScrollView>
-                </View>
-                </Pressable>
-              )}
-            </View>
+            <SearchableInput
+              value={modelSearch}
+              onChangeText={(text) => {
+                setModelSearch(text);
+                setShowModelSuggestions(true);
+              }}
+              onFocus={() => {
+                console.log('Model input focused');
+                setShowModelSuggestions(true);
+              }}
+              placeholder="Ex: Civic, Corolla, Gol..."
+              showSuggestions={showModelSuggestions}
+              suggestions={getFilteredModels()}
+              selectedValue={vehicleData.model}
+              onSelectSuggestion={handleModelSelect}
+              onCreateNew={handleCreateNewModel}
+              createNewLabel={
+                modelSearch && getFilteredModels().length === 0
+                  ? `Novo modelo: "${modelSearch}"`
+                  : modelSearch
+                  ? 'Novo modelo'
+                  : 'Digite o nome do modelo acima'
+              }
+              successMessage={vehicleData.model ? `Modelo selecionado: ${vehicleData.brand} ${vehicleData.model}` : undefined}
+              onClear={() => {
+                setModelSearch('');
+                setShowModelSuggestions(true);
+              }}
+              onSubmitEditing={() => canProceed() && handleNext()}
+              autoFocus
+            />
           </View>
         );
 
       case 2:
         return (
           <View style={styles.stepContainer}>
-            <View style={styles.stepHeader}>
-              <View style={styles.stepIcon}>
-                <Edit3 size={32} color="#fff" />
-              </View>
-              <Text style={styles.stepTitle}>Versão ou especificação</Text>
-              <Text style={styles.stepSubtitle}>Ex: EXL, GLI, Comfort, Highline...</Text>
-            </View>
-
-            <TextInput
-              value={vehicleData.name}
-              onChangeText={(text) => handleInputChange('name', text)}
-              placeholder="Ex: EXL, G4, Comfort..."
-              style={styles.input}
-              autoFocus
+            <StepHeader
+              icon={<Edit3 size={32} color="#fff" />}
+              title="Versão ou especificação"
+              subtitle="Digite para buscar ou criar nova"
             />
 
-            {vehicleData.name && (
-              <View style={styles.previewBanner}>
-                <Text style={styles.previewText}>
-                  {vehicleData.brand} {vehicleData.model} {vehicleData.name}
-                </Text>
-              </View>
-            )}
+            <SearchableInput
+              value={versionSearch}
+              onChangeText={(text) => {
+                setVersionSearch(text);
+                setShowVersionSuggestions(true);
+              }}
+              onFocus={() => {
+                setShowVersionSuggestions(true);
+              }}
+              placeholder="Ex: EXL, GLi, Comfort..."
+              showSuggestions={showVersionSuggestions}
+              suggestions={getFilteredVersions()}
+              selectedValue={vehicleData.name}
+              onSelectSuggestion={handleVersionSelect}
+              onCreateNew={handleCreateNewVersion}
+              createNewLabel={
+                versionSearch && getFilteredVersions().length === 0
+                  ? `Nova versão: "${versionSearch}"`
+                  : versionSearch
+                  ? 'Nova versão'
+                  : 'Digite o nome da versão acima'
+              }
+              successMessage={vehicleData.name ? `${vehicleData.brand} ${vehicleData.model} ${vehicleData.name}` : undefined}
+              onClear={() => {
+                setVersionSearch('');
+                setShowVersionSuggestions(true);
+              }}
+              onSubmitEditing={() => canProceed() && handleNext()}
+              autoFocus
+            />
           </View>
         );
 
       case 3:
         return (
           <View style={styles.stepContainer}>
-            <View style={styles.stepHeader}>
-              <Text style={styles.stepTitle}>Ano do veículo</Text>
-              <Text style={styles.stepSubtitle}>Em que ano foi fabricado?</Text>
-            </View>
+            <StepHeader
+              title="Ano do veículo"
+              subtitle="Em que ano foi fabricado?"
+            />
 
             <TextInput
               value={vehicleData.year}
@@ -423,6 +407,8 @@ export default function AddVehicleScreen() {
               keyboardType="number-pad"
               maxLength={4}
               style={[styles.input, styles.inputCenter]}
+              onSubmitEditing={() => canProceed() && handleNext()}
+              returnKeyType="next"
               autoFocus
             />
           </View>
@@ -431,40 +417,28 @@ export default function AddVehicleScreen() {
       case 4:
         return (
           <View style={styles.stepContainer}>
-            <View style={styles.stepHeader}>
-              <Text style={styles.stepTitle}>Placa e Cor</Text>
-              <Text style={styles.stepSubtitle}>Últimas informações básicas</Text>
-            </View>
+            <StepHeader
+              title="Placa e Cor"
+              subtitle="Últimas informações básicas"
+            />
 
             <View style={styles.fieldGroup}>
               <TextInput
                 value={vehicleData.plate}
-                onChangeText={(text) => handleInputChange('plate', text.toUpperCase())}
+                onChangeText={(text) => handleInputChange('plate', text)}
                 placeholder="Placa (Ex: ABC-1234)"
                 maxLength={8}
+                autoCapitalize="characters"
                 style={[styles.input, styles.inputCenter, styles.inputMono]}
+                onSubmitEditing={() => canProceed() && handleNext()}
+                returnKeyType="next"
               />
 
-              <View style={styles.colorSection}>
-                <Text style={styles.colorLabel}>Cor do veículo</Text>
-                <View style={styles.colorGrid}>
-                  {colors.map((color) => (
-                    <TouchableOpacity
-                      key={color.id}
-                      onPress={() => handleInputChange('color', color.id)}
-                      style={[
-                        styles.colorButton,
-                        vehicleData.color === color.id && styles.colorButtonActive,
-                      ]}
-                    >
-                      <View
-                        style={[styles.colorCircle, { backgroundColor: color.hex }]}
-                      />
-                      <Text style={styles.colorText}>{color.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
+              <ColorSelector
+                colors={colors}
+                selectedColor={vehicleData.color}
+                onSelectColor={(colorId) => handleInputChange('color', colorId)}
+              />
             </View>
           </View>
         );
@@ -472,26 +446,16 @@ export default function AddVehicleScreen() {
       case 5:
         return (
           <View style={styles.stepContainer}>
-            <View style={styles.stepHeader}>
-              <Text style={styles.stepTitle}>Tipo de Combustível</Text>
-              <Text style={styles.stepSubtitle}>Que combustível seu veículo aceita?</Text>
-            </View>
+            <StepHeader
+              title="Tipo de Combustível"
+              subtitle="Que combustível seu veículo aceita?"
+            />
 
-            <View style={styles.fuelTypeList}>
-              {fuelTypes.map((fuel) => (
-                <TouchableOpacity
-                  key={fuel.id}
-                  onPress={() => handleInputChange('fuelType', fuel.id)}
-                  style={[
-                    styles.fuelTypeButton,
-                    vehicleData.fuelType === fuel.id && styles.fuelTypeButtonActive,
-                  ]}
-                >
-                  <Fuel size={24} color="#4b5563" />
-                  <Text style={styles.fuelTypeText}>{fuel.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <FuelTypeSelector
+              fuelTypes={fuelTypes}
+              selectedFuelType={vehicleData.fuelType}
+              onSelectFuelType={(fuelId) => handleInputChange('fuelType', fuelId)}
+            />
           </View>
         );
 
@@ -507,7 +471,6 @@ export default function AddVehicleScreen() {
         <TouchableOpacity
           onPress={handleBack}
           style={styles.backButton}
-          disabled={currentStep === 0 && !hasAutoData}
         >
           <ArrowLeft size={24} color="#4b5563" />
         </TouchableOpacity>
@@ -553,53 +516,19 @@ export default function AddVehicleScreen() {
                   </Text>
                 )}
               </View>
-              <View style={styles.progressCircle}>
-                <Svg width={48} height={48} style={styles.progressSvg}>
-                  <Circle
-                    cx={24}
-                    cy={24}
-                    r={20}
-                    stroke="#E5E7EB"
-                    strokeWidth={4}
-                    fill="none"
-                  />
-                  <Circle
-                    cx={24}
-                    cy={24}
-                    r={20}
-                    stroke="#3B82F6"
-                    strokeWidth={4}
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 20}`}
-                    strokeDashoffset={`${2 * Math.PI * 20 * (1 - getStepProgress() / 100)}`}
-                    strokeLinecap="round"
-                    rotation="-90"
-                    origin="24, 24"
-                  />
-                </Svg>
-                <View style={styles.progressTextContainer}>
-                  <Text style={styles.progressText}>{Math.round(getStepProgress())}%</Text>
-                </View>
-              </View>
+              <ProgressCircle progress={getStepProgress()} />
             </View>
           )}
         </View>
       </View>
 
       {/* Content */}
-      <Pressable
-        style={styles.content}
-        onPress={() => {
-          setShowBrandSuggestions(false);
-          setShowModelSuggestions(false);
-        }}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
       >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="always"
-        >
           {isProcessing ? (
             <View style={styles.processingContainer}>
               <View style={styles.processingIcon}>
@@ -612,108 +541,86 @@ export default function AddVehicleScreen() {
             </View>
           ) : hasAutoData ? (
             <View style={styles.confirmationContainer}>
-              <View style={styles.stepHeader}>
-                <View style={[styles.stepIcon, styles.stepIconSuccess]}>
-                  <Check size={32} color="#fff" />
-                </View>
-                <Text style={styles.stepTitle}>Confirme os dados do veículo</Text>
-                <Text style={styles.stepSubtitle}>Confira e edite se necessário</Text>
-              </View>
+              <StepHeader
+                icon={<Check size={32} color="#fff" />}
+                title="Confirme os dados do veículo"
+                subtitle="Revise e edite se necessário"
+                isSuccess
+              />
 
               <View style={styles.confirmationCard}>
-                <TouchableOpacity
-                  onPress={() => handleEdit(0)}
-                  style={styles.confirmationField}
-                >
-                  <View>
-                    <Text style={styles.confirmationLabel}>Marca</Text>
-                    <Text style={styles.confirmationValue}>{vehicleData.brand}</Text>
-                  </View>
-                  <Edit3 size={16} color="#9ca3af" />
-                </TouchableOpacity>
+                <ConfirmationField
+                  label="Marca"
+                  value={vehicleData.brand}
+                  onEdit={() => handleEdit(0)}
+                />
 
-                <TouchableOpacity
-                  onPress={() => handleEdit(1)}
-                  style={styles.confirmationField}
-                >
-                  <View>
-                    <Text style={styles.confirmationLabel}>Modelo</Text>
-                    <Text style={styles.confirmationValue}>{vehicleData.model}</Text>
-                  </View>
-                  <Edit3 size={16} color="#9ca3af" />
-                </TouchableOpacity>
+                <ConfirmationField
+                  label="Modelo"
+                  value={vehicleData.model}
+                  onEdit={() => handleEdit(1)}
+                />
 
-                <TouchableOpacity
-                  onPress={() => handleEdit(2)}
-                  style={styles.confirmationField}
-                >
-                  <View>
-                    <Text style={styles.confirmationLabel}>Versão</Text>
-                    <Text style={styles.confirmationValue}>{vehicleData.name}</Text>
-                  </View>
-                  <Edit3 size={16} color="#9ca3af" />
-                </TouchableOpacity>
+                <ConfirmationField
+                  label="Versão"
+                  value={vehicleData.name}
+                  onEdit={() => handleEdit(2)}
+                />
 
                 <View style={styles.confirmationRow}>
-                  <TouchableOpacity
-                    onPress={() => handleEdit(3)}
-                    style={styles.confirmationFieldHalf}
-                  >
-                    <Text style={styles.confirmationLabel}>Ano</Text>
-                    <Text style={styles.confirmationValue}>{vehicleData.year}</Text>
-                  </TouchableOpacity>
+                  <ConfirmationField
+                    label="Ano"
+                    value={vehicleData.year}
+                    onEdit={() => handleEdit(3)}
+                    isHalf
+                  />
 
-                  <TouchableOpacity
-                    onPress={() => handleEdit(4)}
-                    style={styles.confirmationFieldHalf}
-                  >
-                    <Text style={styles.confirmationLabel}>Placa</Text>
-                    <Text style={[styles.confirmationValue, styles.confirmationValueMono]}>
-                      {vehicleData.plate}
-                    </Text>
-                  </TouchableOpacity>
+                  <ConfirmationField
+                    label="Placa"
+                    value={vehicleData.plate}
+                    onEdit={() => handleEdit(4)}
+                    isHalf
+                  />
                 </View>
 
                 <View style={styles.confirmationRow}>
-                  <TouchableOpacity
-                    onPress={() => handleEdit(4)}
-                    style={styles.confirmationFieldHalf}
-                  >
-                    <Text style={styles.confirmationLabel}>Cor</Text>
-                    <View style={styles.confirmationColorRow}>
-                      <View
-                        style={[
-                          styles.confirmationColorCircle,
-                          {
-                            backgroundColor: colors.find(
-                              (c) => c.id === vehicleData.color
-                            )?.hex,
-                          },
-                        ]}
-                      />
-                      <Text style={styles.confirmationValue}>
-                        {colors.find((c) => c.id === vehicleData.color)?.label}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                  <ConfirmationField
+                    label="Cor"
+                    value={colors.find((c) => c.id === vehicleData.color)?.label || ''}
+                    onEdit={() => handleEdit(4)}
+                    isHalf
+                    renderValue={() => (
+                      <View style={styles.confirmationColorRow}>
+                        <View
+                          style={[
+                            styles.confirmationColorCircle,
+                            {
+                              backgroundColor: colors.find(
+                                (c) => c.id === vehicleData.color
+                              )?.hex,
+                            },
+                          ]}
+                        />
+                        <Text style={styles.confirmationValue}>
+                          {colors.find((c) => c.id === vehicleData.color)?.label}
+                        </Text>
+                      </View>
+                    )}
+                  />
 
-                  <TouchableOpacity
-                    onPress={() => handleEdit(5)}
-                    style={styles.confirmationFieldHalf}
-                  >
-                    <Text style={styles.confirmationLabel}>Combustível</Text>
-                    <Text style={styles.confirmationValue}>
-                      {fuelTypes.find((f) => f.id === vehicleData.fuelType)?.label}
-                    </Text>
-                  </TouchableOpacity>
+                  <ConfirmationField
+                    label="Combustível"
+                    value={fuelTypes.find((f) => f.id === vehicleData.fuelType)?.label || ''}
+                    onEdit={() => handleEdit(5)}
+                    isHalf
+                  />
                 </View>
               </View>
             </View>
           ) : (
             renderStep()
           )}
-        </ScrollView>
-      </Pressable>
+      </ScrollView>
 
       {/* Footer */}
       <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
@@ -756,7 +663,7 @@ export default function AddVehicleScreen() {
                     (!canProceed() || isProcessing) && styles.primaryButtonTextDisabled,
                   ]}
                 >
-                  {isEditMode ? 'Salvar Alteração' : currentStep === 5 ? 'Finalizar' : 'Continuar'}
+                  {isEditMode ? 'Salvar Alteração' : currentStep === 5 ? 'Revisar dados' : 'Continuar'}
                 </Text>
               </TouchableOpacity>
             )}
@@ -765,80 +672,11 @@ export default function AddVehicleScreen() {
       </SafeAreaView>
 
       {/* Capture Modal */}
-      <Modal
+      <CaptureModal
         visible={showCaptureModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowCaptureModal(false)}
-      >
-        <Pressable style={styles.modalOverlay} onPress={() => setShowCaptureModal(false)}>
-          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
-            <View style={styles.modalHandle} />
-
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Captura Automática</Text>
-              <Text style={styles.modalSubtitle}>
-                Envie documento ou foto para preenchimento automático
-              </Text>
-            </View>
-
-            <View style={styles.modalOptions}>
-              <TouchableOpacity
-                onPress={() => simulateAutoCapture('camera')}
-                style={styles.modalOption}
-              >
-                <View style={styles.modalOptionIcon}>
-                  <Camera size={24} color="#fff" />
-                </View>
-                <View style={styles.modalOptionText}>
-                  <Text style={styles.modalOptionTitle}>Tirar Foto</Text>
-                  <Text style={styles.modalOptionSubtitle}>Do documento ou veículo</Text>
-                </View>
-                <ChevronRight size={20} color="#9ca3af" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => simulateAutoCapture('voice')}
-                style={styles.modalOption}
-              >
-                <View style={styles.modalOptionIcon}>
-                  <Mic size={24} color="#fff" />
-                </View>
-                <View style={styles.modalOptionText}>
-                  <Text style={styles.modalOptionTitle}>Comando de Voz</Text>
-                  <Text style={styles.modalOptionSubtitle}>
-                    Fale as informações do veículo
-                  </Text>
-                </View>
-                <ChevronRight size={20} color="#9ca3af" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => simulateAutoCapture('gallery')}
-                style={styles.modalOption}
-              >
-                <View style={styles.modalOptionIcon}>
-                  <ImageIcon size={24} color="#fff" />
-                </View>
-                <View style={styles.modalOptionText}>
-                  <Text style={styles.modalOptionTitle}>Enviar da Galeria</Text>
-                  <Text style={styles.modalOptionSubtitle}>
-                    Foto ou arquivo do documento
-                  </Text>
-                </View>
-                <ChevronRight size={20} color="#9ca3af" />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              onPress={() => setShowCaptureModal(false)}
-              style={styles.modalCancel}
-            >
-              <Text style={styles.modalCancelText}>Cancelar</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
+        onClose={() => setShowCaptureModal(false)}
+        onSelectOption={simulateAutoCapture}
+      />
     </SafeAreaView>
   );
 }
@@ -893,33 +731,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
   },
-  progressCircle: {
-    width: 48,
-    height: 48,
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  progressSvg: {
-    position: 'absolute',
-  },
-  progressTextContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  progressText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#3b82f6',
-  },
-  content: {
-    flex: 1,
-  },
   scrollView: {
     flex: 1,
   },
@@ -929,33 +740,6 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     gap: 24,
-  },
-  stepHeader: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepIcon: {
-    width: 64,
-    height: 64,
-    backgroundColor: '#1f2937',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  stepIconSuccess: {
-    backgroundColor: '#10b981',
-  },
-  stepTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#111827',
-    textAlign: 'center',
-  },
-  stepSubtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
   },
   successBanner: {
     flexDirection: 'row',
@@ -1000,102 +784,8 @@ const styles = StyleSheet.create({
   inputMono: {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  suggestionsContainer: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 16,
-    backgroundColor: '#fff',
-    maxHeight: 240,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    marginTop: 8,
-  },
-  suggestionsList: {
-    maxHeight: 238,
-  },
-  suggestionItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  suggestionText: {
-    fontSize: 16,
-    color: '#111827',
-  },
-  createNewItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 12,
-  },
-  createNewText: {
-    fontSize: 16,
-    color: '#3b82f6',
-  },
   fieldGroup: {
     gap: 24,
-  },
-  colorSection: {
-    gap: 12,
-  },
-  colorLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  colorGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  colorButton: {
-    width: '22%',
-    padding: 12,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-    alignItems: 'center',
-  },
-  colorButtonActive: {
-    borderColor: '#1f2937',
-    backgroundColor: '#f9fafb',
-  },
-  colorCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    marginBottom: 4,
-  },
-  colorText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  fuelTypeList: {
-    gap: 12,
-  },
-  fuelTypeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
-  },
-  fuelTypeButtonActive: {
-    borderColor: '#1f2937',
-    backgroundColor: '#f9fafb',
-  },
-  fuelTypeText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
   },
   processingContainer: {
     flex: 1,
@@ -1132,36 +822,14 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 16,
   },
-  confirmationField: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    backgroundColor: '#f9fafb',
-    borderRadius: 12,
-  },
-  confirmationFieldHalf: {
-    flex: 1,
-    padding: 12,
-    backgroundColor: '#f9fafb',
-    borderRadius: 12,
-  },
   confirmationRow: {
     flexDirection: 'row',
     gap: 16,
-  },
-  confirmationLabel: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 4,
   },
   confirmationValue: {
     fontSize: 16,
     fontWeight: '500',
     color: '#111827',
-  },
-  confirmationValueMono: {
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   confirmationColorRow: {
     flexDirection: 'row',
@@ -1241,83 +909,6 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   primaryButtonTextDisabled: {
-    color: '#6b7280',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-  },
-  modalHandle: {
-    width: 48,
-    height: 4,
-    backgroundColor: '#d1d5db',
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 24,
-  },
-  modalHeader: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-  },
-  modalOptions: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  modalOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    padding: 16,
-    backgroundColor: '#f9fafb',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 16,
-  },
-  modalOptionIcon: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalOptionText: {
-    flex: 1,
-  },
-  modalOptionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  modalOptionSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  modalCancel: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  modalCancelText: {
-    fontSize: 16,
-    fontWeight: '500',
     color: '#6b7280',
   },
 });
