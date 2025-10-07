@@ -374,7 +374,7 @@ export default function VehicleHistoryScreen() {
                   {selectedVehicle.name} {selectedVehicle.model}
                 </Text>
                 <Text style={styles.headerSubtitle}>
-                  {selectedVehicle.year} • {selectedVehicle.plate}
+                  {selectedVehicle.plate} • {selectedVehicle.year} • {selectedVehicle.color}
                 </Text>
               </TouchableOpacity>
             </View>

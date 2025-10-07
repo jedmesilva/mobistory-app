@@ -214,7 +214,7 @@ export default function VehicleDetailsScreen() {
             {vehicle.marca} {vehicle.modelo}
           </Text>
           <Text style={styles.headerSubtitle}>
-            {showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)}
+            {showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)} • {vehicle.ano} • {vehicle.cor}
           </Text>
         </View>
         <TouchableOpacity
