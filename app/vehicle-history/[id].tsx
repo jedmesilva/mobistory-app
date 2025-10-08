@@ -14,7 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ChevronRight,
   Fuel,
-  Wrench,
   AlertTriangle,
   MessageCircle,
   Gauge,
@@ -22,8 +21,10 @@ import {
   UserCheck,
   Calendar,
   ArrowLeft,
+  Wrench,
+  Droplet,
 } from 'lucide-react-native';
-import { OdometerIcon, FuelTankIcon } from '../../components/icons';
+import { OdometerIcon, FuelTankIcon, OilIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
 import { CaptureButton } from '../../components/ui/CaptureButton';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
@@ -411,10 +412,10 @@ export default function VehicleHistoryScreen() {
               <FuelTankIcon size={24} color="#fff" level={0.6} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Wrench size={24} color="#fff" />
+              <Gauge size={24} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <AlertTriangle size={24} color="#fff" />
+              <Droplet size={24} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
