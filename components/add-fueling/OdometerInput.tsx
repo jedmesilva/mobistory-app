@@ -11,12 +11,6 @@ interface OdometerInputProps {
 export const OdometerInput = ({ km, lastKm, lastDate, onChangeText }: OdometerInputProps) => {
   return (
     <View style={styles.container}>
-      <View style={styles.lastKmBox}>
-        <Text style={styles.lastKmLabel}>Última quilometragem registrada</Text>
-        <Text style={styles.lastKmValue}>{lastKm.toLocaleString('pt-BR')} km</Text>
-        <Text style={styles.lastKmDate}>Em {new Date(lastDate).toLocaleDateString('pt-BR')}</Text>
-      </View>
-
       <View style={styles.inputGroup}>
         <Text style={styles.inputLabel}>Quilometragem atual</Text>
         <TextInput
@@ -29,6 +23,12 @@ export const OdometerInput = ({ km, lastKm, lastDate, onChangeText }: OdometerIn
         />
         <Text style={styles.inputHint}>quilômetros</Text>
       </View>
+
+      <View style={styles.lastKmBox}>
+        <Text style={styles.lastKmLabel}>Última quilometragem registrada</Text>
+        <Text style={styles.lastKmValue}>{lastKm.toLocaleString('pt-BR')} km</Text>
+        <Text style={styles.lastKmDate}>Em {new Date(lastDate).toLocaleDateString('pt-BR')}</Text>
+      </View>
     </View>
   );
 };
@@ -37,27 +37,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
   },
-  lastKmBox: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  lastKmLabel: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 8,
-  },
-  lastKmValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  lastKmDate: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 24,
   },
   inputLabel: {
     fontSize: 14,
@@ -81,5 +62,26 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     textAlign: 'center',
     marginTop: 8,
+  },
+  lastKmBox: {
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
+  },
+  lastKmLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 8,
+  },
+  lastKmValue: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  lastKmDate: {
+    fontSize: 12,
+    color: '#9ca3af',
   },
 });
