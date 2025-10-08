@@ -11,10 +11,10 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, Check, MapPin, AlertCircle, Gauge, Zap, ChevronRight } from 'lucide-react-native';
 import {
   ProgressIndicator,
-  CaptureModal,
   OdometerInput,
   ConsumptionDisplay,
 } from '@/components/add-fueling';
+import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
 
 export default function OdometerInputScreen() {
   const router = useRouter();
@@ -286,50 +286,57 @@ export default function OdometerInputScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
-          <View style={styles.captureButtonContent}>
-            <View style={styles.captureIcon}>
-              <Zap size={20} color="#fff" />
+      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
+            <View style={styles.captureButtonContent}>
+              <View style={styles.captureIcon}>
+                <Zap size={20} color="#fff" />
+              </View>
+              <View style={styles.captureTextContainer}>
+                <Text style={styles.captureTitle}>Captura Automática</Text>
+                <Text style={styles.captureSubtitle}>Detectar quilometragem automaticamente</Text>
+              </View>
             </View>
-            <View style={styles.captureTextContainer}>
-              <Text style={styles.captureTitle}>Captura Automática</Text>
-              <Text style={styles.captureSubtitle}>Detectar quilometragem automaticamente</Text>
-            </View>
+            <ChevronRight size={20} color="#9ca3af" />
+          </TouchableOpacity>
+
+          <View style={styles.footerActions}>
+            <TouchableOpacity
+              onPress={skipKm}
+              disabled={isProcessing}
+              style={[styles.skipButton, isProcessing && styles.buttonDisabled]}
+            >
+              <Text style={styles.skipButtonText}>
+                {isProcessing && actionType === 'skip' ? 'Pulando...' : 'Pular'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleSubmit}
+              disabled={isProcessing}
+              style={[styles.submitButton, isProcessing && styles.buttonDisabled]}
+            >
+              <Text style={styles.submitButtonText}>
+                {isProcessing && actionType === 'submit' ? 'Finalizando...' : km ? `Finalizar com KM ${km}` : 'Finalizar com KM'}
+              </Text>
+            </TouchableOpacity>
           </View>
-          <ChevronRight size={20} color="#9ca3af" />
-        </TouchableOpacity>
-
-        <View style={styles.footerActions}>
-          <TouchableOpacity
-            onPress={skipKm}
-            disabled={isProcessing}
-            style={[styles.skipButton, isProcessing && styles.buttonDisabled]}
-          >
-            <Text style={styles.skipButtonText}>
-              {isProcessing && actionType === 'skip' ? 'Pulando...' : 'Pular'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={isProcessing}
-            style={[styles.submitButton, isProcessing && styles.buttonDisabled]}
-          >
-            <Text style={styles.submitButtonText}>
-              {isProcessing && actionType === 'submit' ? 'Finalizando...' : km ? `Finalizar com KM ${km}` : 'Finalizar com KM'}
-            </Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
 
       {/* Capture Modal */}
-      <CaptureModal
+      <SmartCaptureModal
         visible={showCaptureModal}
         onClose={() => setShowCaptureModal(false)}
         onCapture={simulateKmCapture}
-        title="Captura Automática"
-        subtitle="Escolha como detectar a quilometragem do odômetro"
+        title="Captura Rápida"
+        subtitle="Preencha automaticamente a quilometragem"
+        options={{
+          camera: 'Fotografe o painel do odômetro',
+          voice: 'Fale a quilometragem atual',
+          gallery: 'Selecione foto do painel',
+        }}
         disabled={isProcessing}
       />
     </SafeAreaView>
@@ -567,11 +574,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
   },
-  footer: {
+  footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: '#fff',
+  },
+  footer: {
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',

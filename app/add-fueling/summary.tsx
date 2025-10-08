@@ -319,15 +319,17 @@ export default function SummaryScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.reviewButton}>
-          <Text style={styles.reviewButtonText}>Revisar</Text>
-        </TouchableOpacity>
+      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.reviewButton}>
+            <Text style={styles.reviewButtonText}>Revisar</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
-          <Text style={styles.completeButtonText}>Concluir e Fechar</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
+            <Text style={styles.completeButtonText}>Concluir e Fechar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -408,11 +410,14 @@ const styles = StyleSheet.create({
   detailValue: { fontSize: 14, fontWeight: '500', color: '#111827' },
   detailLabelGray: { fontSize: 14, color: '#9ca3af' },
   detailValueGray: { fontSize: 14, color: '#6b7280' },
-  footer: {
+  footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: '#fff',
+  },
+  footer: {
     flexDirection: 'row',
     gap: 12,
     padding: 16,

@@ -374,25 +374,27 @@ export default function StationSelectionScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
-          <Text style={styles.continueButtonText}>
-            {selectedStation ? `Continuar com ${selectedStation.name}` : 'Continuar sem Posto'}
-          </Text>
-        </TouchableOpacity>
-
-        {selectedStation && (
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedStation(null);
-              handleContinue();
-            }}
-            style={styles.skipButton}
-          >
-            <Text style={styles.skipButtonText}>Continuar sem Posto</Text>
+      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+            <Text style={styles.continueButtonText}>
+              {selectedStation ? `Continuar com ${selectedStation.name}` : 'Continuar sem Posto'}
+            </Text>
           </TouchableOpacity>
-        )}
-      </View>
+
+          {selectedStation && (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedStation(null);
+                handleContinue();
+              }}
+              style={styles.skipButton}
+            >
+              <Text style={styles.skipButtonText}>Continuar sem Posto</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -585,11 +587,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#f3f4f6',
   },
-  footer: {
+  footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: '#fff',
+  },
+  footer: {
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,

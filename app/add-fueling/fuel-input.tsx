@@ -11,12 +11,12 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, AlertCircle, Zap, ChevronRight } from 'lucide-react-native';
 import {
   ProgressIndicator,
-  CaptureModal,
   SelectedStationBanner,
   FuelItemCard,
   AddFuelForm,
   FuelSummaryCard,
 } from '@/components/add-fueling';
+import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
 
 interface FuelItem {
   id: number;
@@ -333,38 +333,45 @@ export default function FuelInputScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
-          <View style={styles.captureButtonContent}>
-            <View style={styles.captureIcon}>
-              <Zap size={20} color="#fff" />
+      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
+            <View style={styles.captureButtonContent}>
+              <View style={styles.captureIcon}>
+                <Zap size={20} color="#fff" />
+              </View>
+              <View style={styles.captureTextContainer}>
+                <Text style={styles.captureTitle}>Captura Automática</Text>
+                <Text style={styles.captureSubtitle}>Detectar valores automaticamente</Text>
+              </View>
             </View>
-            <View style={styles.captureTextContainer}>
-              <Text style={styles.captureTitle}>Captura Automática</Text>
-              <Text style={styles.captureSubtitle}>Detectar valores automaticamente</Text>
-            </View>
-          </View>
-          <ChevronRight size={20} color="#9ca3af" />
-        </TouchableOpacity>
+            <ChevronRight size={20} color="#9ca3af" />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={handleContinue}
-          disabled={fuelItems.length === 0 || isProcessing}
-          style={[styles.continueButton, (fuelItems.length === 0 || isProcessing) && styles.continueButtonDisabled]}
-        >
-          <Text style={[styles.continueButtonText, (fuelItems.length === 0 || isProcessing) && styles.continueButtonTextDisabled]}>
-            {isProcessing ? 'Processando...' : `Continuar (${fuelItems.length} item${fuelItems.length > 1 ? 's' : ''})`}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={handleContinue}
+            disabled={fuelItems.length === 0 || isProcessing}
+            style={[styles.continueButton, (fuelItems.length === 0 || isProcessing) && styles.continueButtonDisabled]}
+          >
+            <Text style={[styles.continueButtonText, (fuelItems.length === 0 || isProcessing) && styles.continueButtonTextDisabled]}>
+              {isProcessing ? 'Processando...' : `Continuar (${fuelItems.length} item${fuelItems.length > 1 ? 's' : ''})`}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
 
       {/* Capture Modal */}
-      <CaptureModal
+      <SmartCaptureModal
         visible={showCaptureModal}
         onClose={() => setShowCaptureModal(false)}
         onCapture={simulateFuelCapture}
-        title="Captura Automática"
-        subtitle="Escolha como detectar os valores do abastecimento"
+        title="Captura Rápida"
+        subtitle="Preencha automaticamente os litros abastecidos"
+        options={{
+          camera: 'Fotografe o painel da bomba',
+          voice: 'Fale a quantidade de litros',
+          gallery: 'Selecione foto do painel',
+        }}
         disabled={isProcessing}
       />
     </SafeAreaView>
@@ -480,11 +487,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
   },
-  footer: {
+  footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: '#fff',
+  },
+  footer: {
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
