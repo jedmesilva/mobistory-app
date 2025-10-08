@@ -256,6 +256,81 @@ export default function AddVehicleScreen() {
     }
   };
 
+  const getCaptureModalContent = () => {
+    switch (currentStep) {
+      case 0:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Identifique automaticamente a marca',
+          options: {
+            camera: 'Fotografe a marca, no veículo ou no documento',
+            voice: 'Fale a marca do veículo',
+            gallery: 'Selecione uma foto da marca do veículo',
+          },
+        };
+      case 1:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Identifique automaticamente o modelo',
+          options: {
+            camera: 'Fotografe o modelo, no veículo ou no documento',
+            voice: 'Fale o modelo do veículo',
+            gallery: 'Selecione uma foto do modelo do veículo',
+          },
+        };
+      case 2:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Preencha automaticamente a versão',
+          options: {
+            camera: 'Fotografe a versão, no veículo ou no documento',
+            voice: 'Fale a versão do veículo',
+            gallery: 'Selecione uma foto da versão do veículo',
+          },
+        };
+      case 3:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Preencha automaticamente o ano',
+          options: {
+            camera: 'Fotografe o ano no documento do veículo',
+            voice: 'Fale o ano de fabricação',
+            gallery: 'Selecione uma foto do ano do veículo',
+          },
+        };
+      case 4:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Preencha automaticamente placa e cor',
+          options: {
+            camera: 'Fotografe a placa e cor, no veículo ou no documento',
+            voice: 'Fale a placa e cor do veículo',
+            gallery: 'Selecione uma foto da placa e cor do veículo',
+          },
+        };
+      case 5:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Identifique automaticamente o tipo de combustível',
+          options: {
+            camera: 'Fotografe o tipo de combustível, na tampa ou no documento',
+            voice: 'Fale o tipo de combustível',
+            gallery: 'Selecione uma foto do tipo de combustível do veículo',
+          },
+        };
+      default:
+        return {
+          title: 'Captura Rápida',
+          subtitle: 'Preencha automaticamente com documento do veículo',
+          options: {
+            camera: 'Fotografe o documento do veículo',
+            voice: 'Fale as informações do veículo',
+            gallery: 'Selecione foto do documento',
+          },
+        };
+    }
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -477,13 +552,7 @@ export default function AddVehicleScreen() {
         visible={showCaptureModal}
         onClose={() => setShowCaptureModal(false)}
         onCapture={simulateAutoCapture}
-        title="Captura Automática"
-        subtitle="Envie documento ou foto para preenchimento automático"
-        options={{
-          camera: 'Do documento ou veículo',
-          voice: 'Fale as informações do veículo',
-          gallery: 'Foto ou arquivo do documento',
-        }}
+        {...getCaptureModalContent()}
       />
     </SafeAreaView>
   );

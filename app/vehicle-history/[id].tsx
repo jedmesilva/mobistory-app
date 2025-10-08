@@ -6,19 +6,13 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Modal,
   StyleSheet,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as ImagePicker from 'expo-image-picker';
 import {
   ChevronRight,
-  Camera,
-  Mic,
-  Image as ImageIcon,
   Fuel,
   Wrench,
   AlertTriangle,
@@ -32,6 +26,7 @@ import {
 import { OdometerIcon, FuelTankIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
 import { CaptureButton } from '../../components/ui/CaptureButton';
+import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
 import { ChatScreen } from '../../components/chat';
 
 // Tipos
@@ -305,7 +300,7 @@ export default function VehicleHistoryScreen() {
     lastScrollY.current = currentScrollY;
   };
 
-  const simulateFuelCapture = (method: string) => {
+  const handleCapture = (method: 'camera' | 'voice' | 'gallery') => {
     setShowCaptureModal(false);
     setIsProcessing(true);
 
@@ -315,42 +310,6 @@ export default function VehicleHistoryScreen() {
     }, 2000);
   };
 
-  const handleImagePicker = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      Alert.alert('Permissão necessária', 'É necessário permitir o acesso à galeria');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      simulateFuelCapture('gallery');
-    }
-  };
-
-  const handleCamera = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      Alert.alert('Permissão necessária', 'É necessário permitir o acesso à câmera');
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      simulateFuelCapture('camera');
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -463,59 +422,18 @@ export default function VehicleHistoryScreen() {
       )}
 
       {/* Modal */}
-      <Modal visible={showCaptureModal} transparent animationType="slide" onRequestClose={() => setShowCaptureModal(false)}>
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setShowCaptureModal(false)} />
-
-          <View style={styles.modalContent}>
-            <View style={styles.modalHandle} />
-
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Captura inteligente</Text>
-              <Text style={styles.modalSubtitle}>Selecione uma opção para registrar um novo evento</Text>
-            </View>
-
-            <View style={styles.modalOptions}>
-              <TouchableOpacity onPress={handleCamera} style={styles.modalOption}>
-                <View style={styles.modalOptionIcon}>
-                  <Camera size={24} color="#fff" />
-                </View>
-                <View style={styles.modalOptionText}>
-                  <Text style={styles.modalOptionTitle}>Tirar Foto</Text>
-                  <Text style={styles.modalOptionSubtitle}>Fotografe os dados</Text>
-                </View>
-                <ChevronRight size={20} color="#9ca3af" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => simulateFuelCapture('voice')} style={styles.modalOption}>
-                <View style={styles.modalOptionIcon}>
-                  <Mic size={24} color="#fff" />
-                </View>
-                <View style={styles.modalOptionText}>
-                  <Text style={styles.modalOptionTitle}>Falar</Text>
-                  <Text style={styles.modalOptionSubtitle}>Fale os dados</Text>
-                </View>
-                <ChevronRight size={20} color="#9ca3af" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleImagePicker} style={styles.modalOption}>
-                <View style={styles.modalOptionIcon}>
-                  <ImageIcon size={24} color="#fff" />
-                </View>
-                <View style={styles.modalOptionText}>
-                  <Text style={styles.modalOptionTitle}>Enviar da Galeria</Text>
-                  <Text style={styles.modalOptionSubtitle}>Selecione arquivo do dispositivo</Text>
-                </View>
-                <ChevronRight size={20} color="#9ca3af" />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity onPress={() => setShowCaptureModal(false)} style={styles.modalCancel}>
-              <Text style={styles.modalCancelText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <SmartCaptureModal
+        visible={showCaptureModal}
+        onClose={() => setShowCaptureModal(false)}
+        onCapture={handleCapture}
+        title="Captura Rápida"
+        subtitle="Selecione uma opção para registrar um novo evento"
+        options={{
+          camera: 'Fotografe os dados do evento',
+          voice: 'Fale os dados do evento',
+          gallery: 'Selecione uma foto com os dados',
+        }}
+      />
 
       {/* Chat Screen */}
       <ChatScreen
@@ -684,89 +602,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  modalBackdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-  },
-  modalHandle: {
-    width: 48,
-    height: 4,
-    backgroundColor: '#d1d5db',
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 24,
-  },
-  modalHeader: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-  },
-  modalOptions: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  modalOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 16,
-    padding: 16,
-    gap: 16,
-  },
-  modalOptionIcon: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalOptionText: {
-    flex: 1,
-  },
-  modalOptionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  modalOptionSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  modalCancel: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  modalCancelText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#6b7280',
   },
 });

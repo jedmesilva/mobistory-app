@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
-import { Camera, Mic, Upload, ChevronRight } from 'lucide-react-native';
+import { Camera, Mic, Image, ChevronRight } from 'lucide-react-native';
 
 interface CaptureOption {
   camera: string;
@@ -77,7 +77,7 @@ export const SmartCaptureModal = ({
               style={[styles.option, disabled && styles.optionDisabled]}
             >
               <View style={styles.optionIcon}>
-                <Upload size={24} color="#fff" />
+                <Image size={24} color="#fff" />
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Enviar da Galeria</Text>

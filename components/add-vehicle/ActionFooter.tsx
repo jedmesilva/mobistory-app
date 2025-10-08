@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Zap, ChevronRight } from 'lucide-react-native';
+import { CaptureButton } from '../ui/CaptureButton';
 
 interface ActionFooterProps {
   hasAutoData: boolean;
@@ -28,21 +28,11 @@ export const ActionFooter = ({
     <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
       <View style={styles.footer}>
         {!hasAutoData && !isProcessing && (
-          <TouchableOpacity
+          <CaptureButton
             onPress={onShowCaptureModal}
-            style={styles.autoCaptureButton}
-          >
-            <View style={styles.autoCaptureIcon}>
-              <Zap size={20} color="#fff" />
-            </View>
-            <View style={styles.autoCaptureText}>
-              <Text style={styles.autoCaptureTitle}>Captura Automática</Text>
-              <Text style={styles.autoCaptureSubtitle}>
-                Envie documento ou foto do veículo
-              </Text>
-            </View>
-            <ChevronRight size={20} color="#9ca3af" />
-          </TouchableOpacity>
+            title="Captura Rápida"
+            subtitle="Envie documento ou foto do veículo"
+          />
         )}
 
         <View style={styles.footerActions}>
@@ -94,34 +84,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     overflow: 'hidden',
-  },
-  autoCaptureButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  autoCaptureIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  autoCaptureText: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  autoCaptureTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  autoCaptureSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
   },
   footerActions: {
     padding: 16,
