@@ -280,10 +280,22 @@ export default function FuelInputScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          {/* Selected Station */}
-          <SelectedStationBanner
-            station={selectedStation}
-            onChangeStation={() => router.back()}
+          {/* Add Fuel Form */}
+          <AddFuelForm
+            currentItem={currentItem}
+            fuelTypes={fuelTypes}
+            editingIndex={editingIndex}
+            showFuelDropdown={showFuelDropdown}
+            canAddItem={canAddItem()}
+            calculatedValue={getCalculatedValues()}
+            onInputChange={handleInputChange}
+            onFuelTypeSelect={handleFuelTypeSelect}
+            onToggleDropdown={() => setShowFuelDropdown(!showFuelDropdown)}
+            onAddItem={addFuelItem}
+            onCancelEdit={() => {
+              setEditingIndex(null);
+              setCurrentItem({ liters: '', pricePerLiter: '', totalPrice: '', fuelType: '' });
+            }}
           />
 
           {/* Added Fuels */}
@@ -311,23 +323,16 @@ export default function FuelInputScreen() {
             </View>
           )}
 
-          {/* Add Fuel Form */}
-          <AddFuelForm
-            currentItem={currentItem}
-            fuelTypes={fuelTypes}
-            editingIndex={editingIndex}
-            showFuelDropdown={showFuelDropdown}
-            canAddItem={canAddItem()}
-            calculatedValue={getCalculatedValues()}
-            onInputChange={handleInputChange}
-            onFuelTypeSelect={handleFuelTypeSelect}
-            onToggleDropdown={() => setShowFuelDropdown(!showFuelDropdown)}
-            onAddItem={addFuelItem}
-            onCancelEdit={() => {
-              setEditingIndex(null);
-              setCurrentItem({ liters: '', pricePerLiter: '', totalPrice: '', fuelType: '' });
-            }}
-          />
+          {/* Context Section Divider */}
+          <View style={styles.contextSection}>
+            <Text style={styles.contextTitle}>Resumo das Etapas</Text>
+
+            {/* Selected Station */}
+            <SelectedStationBanner
+              station={selectedStation}
+              onChangeStation={() => router.back()}
+            />
+          </View>
 
           {error && (
             <View style={styles.errorBox}>
@@ -499,6 +504,18 @@ const styles = StyleSheet.create({
   processingText: {
     fontSize: 14,
     color: '#6b7280',
+  },
+  contextSection: {
+    marginTop: 32,
+  },
+  contextTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#9ca3af',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+    paddingHorizontal: 4,
   },
   footerSafeArea: {
     position: 'absolute',

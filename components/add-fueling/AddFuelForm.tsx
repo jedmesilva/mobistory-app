@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#e5e7eb',
+    marginBottom: 16,
     overflow: 'hidden',
   },
   header: {

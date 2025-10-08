@@ -170,68 +170,6 @@ export default function OdometerInputScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          {/* Station Card */}
-          <View style={styles.card}>
-            <View style={[styles.cardHeader, styles.greenHeader]}>
-              <Check size={16} color="#16a34a" />
-              <Text style={styles.greenHeaderText}>Posto Confirmado</Text>
-            </View>
-
-            <View style={styles.cardBody}>
-              <Text style={styles.stationName}>{selectedStation.name}</Text>
-              <View style={styles.addressRow}>
-                <MapPin size={12} color="#6b7280" />
-                <Text style={styles.stationAddress}>{selectedStation.address}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Fuel Summary */}
-          <View style={styles.card}>
-            <View style={[styles.cardHeader, styles.sectionHeader]}>
-              <Text style={styles.sectionTitle}>Resumo do Abastecimento</Text>
-            </View>
-
-            <View style={styles.cardBody}>
-              <View style={styles.summaryGrid}>
-                <View style={styles.summaryItem}>
-                  <Text style={styles.summaryValue}>{totalLiters.toFixed(1)} L</Text>
-                  <Text style={styles.summaryLabel}>Total de litros</Text>
-                </View>
-                <View style={styles.summaryItemRight}>
-                  <Text style={styles.summaryValue}>R$ {totalValue.toFixed(2).replace('.', ',')}</Text>
-                  <Text style={styles.summaryLabel}>Valor total</Text>
-                </View>
-              </View>
-
-              <View style={styles.fuelsList}>
-                {fuelItems.map((item) => {
-                  const itemLiters = parseFloat(item.liters.replace(',', '.'));
-                  const percentage = ((itemLiters / totalLiters) * 100).toFixed(1);
-                  const colors = getFuelTypeColor(item.fuelType);
-
-                  return (
-                    <View key={item.id} style={styles.fuelItem}>
-                      <View style={styles.fuelItemHeader}>
-                        <View style={[styles.fuelBadge, { backgroundColor: colors.bg }]}>
-                          <Text style={[styles.fuelBadgeText, { color: colors.text }]}>{item.fuelType}</Text>
-                        </View>
-                        <View style={styles.percentageBadge}>
-                          <Text style={styles.percentageText}>{percentage}%</Text>
-                        </View>
-                      </View>
-                      <View style={styles.fuelItemMeta}>
-                        <Text style={styles.fuelLiters}>{item.liters} L</Text>
-                        <Text style={styles.fuelMetaText}>R$ {item.pricePerLiter.replace('.', ',')}/L</Text>
-                        <Text style={styles.fuelMetaText}>R$ {item.totalPrice.replace('.', ',')}</Text>
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-          </View>
-
           {/* Odometer Input */}
           <View style={styles.card}>
             <View style={[styles.cardHeader, styles.blueHeader]}>
@@ -254,6 +192,73 @@ export default function OdometerInputScreen() {
                   estimatedConsumption={getEstimatedConsumption()}
                 />
               )}
+            </View>
+          </View>
+
+          {/* Context Section Divider */}
+          <View style={styles.contextSection}>
+            <Text style={styles.contextTitle}>Resumo das Etapas</Text>
+
+            {/* Station Card */}
+            <View style={styles.card}>
+              <View style={[styles.cardHeader, styles.greenHeader]}>
+                <Check size={16} color="#16a34a" />
+                <Text style={styles.greenHeaderText}>Posto Confirmado</Text>
+              </View>
+
+              <View style={styles.cardBody}>
+                <Text style={styles.stationName}>{selectedStation.name}</Text>
+                <View style={styles.addressRow}>
+                  <MapPin size={12} color="#6b7280" />
+                  <Text style={styles.stationAddress}>{selectedStation.address}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Fuel Summary */}
+            <View style={styles.card}>
+              <View style={[styles.cardHeader, styles.sectionHeader]}>
+                <Text style={styles.sectionTitle}>Resumo do Abastecimento</Text>
+              </View>
+
+              <View style={styles.cardBody}>
+                <View style={styles.summaryGrid}>
+                  <View style={styles.summaryItem}>
+                    <Text style={styles.summaryValue}>{totalLiters.toFixed(1)} L</Text>
+                    <Text style={styles.summaryLabel}>Total de litros</Text>
+                  </View>
+                  <View style={styles.summaryItemRight}>
+                    <Text style={styles.summaryValue}>R$ {totalValue.toFixed(2).replace('.', ',')}</Text>
+                    <Text style={styles.summaryLabel}>Valor total</Text>
+                  </View>
+                </View>
+
+                <View style={styles.fuelsList}>
+                  {fuelItems.map((item) => {
+                    const itemLiters = parseFloat(item.liters.replace(',', '.'));
+                    const percentage = ((itemLiters / totalLiters) * 100).toFixed(1);
+                    const colors = getFuelTypeColor(item.fuelType);
+
+                    return (
+                      <View key={item.id} style={styles.fuelItem}>
+                        <View style={styles.fuelItemHeader}>
+                          <View style={[styles.fuelBadge, { backgroundColor: colors.bg }]}>
+                            <Text style={[styles.fuelBadgeText, { color: colors.text }]}>{item.fuelType}</Text>
+                          </View>
+                          <View style={styles.percentageBadge}>
+                            <Text style={styles.percentageText}>{percentage}%</Text>
+                          </View>
+                        </View>
+                        <View style={styles.fuelItemMeta}>
+                          <Text style={styles.fuelLiters}>{item.liters} L</Text>
+                          <Text style={styles.fuelMetaText}>R$ {item.pricePerLiter.replace('.', ',')}/L</Text>
+                          <Text style={styles.fuelMetaText}>R$ {item.totalPrice.replace('.', ',')}</Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
             </View>
           </View>
 
@@ -573,6 +578,18 @@ const styles = StyleSheet.create({
   processingText: {
     fontSize: 14,
     color: '#6b7280',
+  },
+  contextSection: {
+    marginTop: 32,
+  },
+  contextTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#9ca3af',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+    paddingHorizontal: 4,
   },
   footerSafeArea: {
     position: 'absolute',
