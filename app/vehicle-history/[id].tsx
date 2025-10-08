@@ -15,7 +15,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import {
-  Zap,
   ChevronRight,
   Camera,
   Mic,
@@ -32,6 +31,7 @@ import {
 } from 'lucide-react-native';
 import { OdometerIcon, FuelTankIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
+import { CaptureButton } from '../../components/ui/CaptureButton';
 import { ChatScreen } from '../../components/chat';
 
 // Tipos
@@ -432,18 +432,11 @@ export default function VehicleHistoryScreen() {
       {isFooterVisible && (
         <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
           <View style={styles.footer}>
-          <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
-            <View style={styles.captureButtonContent}>
-              <View style={styles.captureIcon}>
-                <Zap size={20} color="#fff" />
-              </View>
-              <View style={styles.captureTextContainer}>
-                <Text style={styles.captureTitle}>Captura inteligente</Text>
-                <Text style={styles.captureSubtitle}>Identificação inteligente de dados</Text>
-              </View>
-            </View>
-            <ChevronRight size={20} color="#9ca3af" />
-          </TouchableOpacity>
+          <CaptureButton
+            onPress={() => setShowCaptureModal(true)}
+            title="Captura Rápida"
+            subtitle="Identificação inteligente de dados"
+          />
 
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.actionButton}>
@@ -676,39 +669,6 @@ const styles = StyleSheet.create({
     borderLeftColor: '#e5e7eb',
     borderRightColor: '#e5e7eb',
     overflow: 'hidden',
-  },
-  captureButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  captureButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  captureIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  captureTextContainer: {
-    gap: 2,
-  },
-  captureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  captureSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
   },
   actionButtons: {
     flexDirection: 'row',

@@ -16,10 +16,13 @@ export const OdometerInput = ({ km, lastKm, lastDate, onChangeText }: OdometerIn
         <TextInput
           value={km}
           onChangeText={onChangeText}
-          placeholder="90.000"
+          placeholder="90000"
           placeholderTextColor="#9ca3af"
           keyboardType="numeric"
           style={styles.input}
+          scrollEnabled={false}
+          editable={true}
+          multiline={false}
         />
         <Text style={styles.inputHint}>quilômetros</Text>
       </View>

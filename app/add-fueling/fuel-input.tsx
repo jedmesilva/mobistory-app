@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, AlertCircle, Zap, ChevronRight, Check, Edit3 } from 'lucide-react-native';
+import { ArrowLeft, AlertCircle, Check, Edit3 } from 'lucide-react-native';
 import {
   ProgressIndicator,
   SelectedStationBanner,
@@ -17,6 +17,7 @@ import {
   FuelSummaryCard,
 } from '@/components/add-fueling';
 import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
+import { CaptureButton } from '@/components/ui/CaptureButton';
 
 interface FuelItem {
   id: number;
@@ -475,18 +476,10 @@ export default function FuelInputScreen() {
       {/* Footer */}
       <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
-            <View style={styles.captureButtonContent}>
-              <View style={styles.captureIcon}>
-                <Zap size={20} color="#fff" />
-              </View>
-              <View style={styles.captureTextContainer}>
-                <Text style={styles.captureTitle}>Captura Automática</Text>
-                <Text style={styles.captureSubtitle}>Detectar valores automaticamente</Text>
-              </View>
-            </View>
-            <ChevronRight size={20} color="#9ca3af" />
-          </TouchableOpacity>
+          <CaptureButton
+            onPress={() => setShowCaptureModal(true)}
+            subtitle="Detectar valores automaticamente"
+          />
 
           <TouchableOpacity
             onPress={handleContinue}
@@ -680,39 +673,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
-  },
-  captureButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  captureButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  captureIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  captureTextContainer: {
-    flex: 1,
-  },
-  captureTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  captureSubtitle: {
-    fontSize: 12,
-    color: '#6b7280',
   },
   continueButton: {
     margin: 16,

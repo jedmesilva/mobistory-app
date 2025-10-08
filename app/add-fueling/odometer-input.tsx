@@ -8,13 +8,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, Check, MapPin, AlertCircle, Zap, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, Check, MapPin, AlertCircle } from 'lucide-react-native';
 import {
   ProgressIndicator,
   OdometerInput,
   ConsumptionDisplay,
 } from '@/components/add-fueling';
 import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
+import { CaptureButton } from '@/components/ui/CaptureButton';
 import { OdometerIcon } from '@/components/icons';
 
 export default function OdometerInputScreen() {
@@ -291,18 +292,10 @@ export default function OdometerInputScreen() {
       {/* Footer */}
       <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => setShowCaptureModal(true)} style={styles.captureButton}>
-            <View style={styles.captureButtonContent}>
-              <View style={styles.captureIcon}>
-                <Zap size={20} color="#fff" />
-              </View>
-              <View style={styles.captureTextContainer}>
-                <Text style={styles.captureTitle}>Captura Automática</Text>
-                <Text style={styles.captureSubtitle}>Detectar quilometragem automaticamente</Text>
-              </View>
-            </View>
-            <ChevronRight size={20} color="#9ca3af" />
-          </TouchableOpacity>
+          <CaptureButton
+            onPress={() => setShowCaptureModal(true)}
+            subtitle="Detectar quilometragem automaticamente"
+          />
 
           <View style={styles.footerActions}>
             <TouchableOpacity
@@ -595,44 +588,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#fff',
+    maxWidth: '100%',
   },
   footer: {
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
-  },
-  captureButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  captureButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  captureIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  captureTextContainer: {
-    flex: 1,
-  },
-  captureTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  captureSubtitle: {
-    fontSize: 12,
-    color: '#6b7280',
+    width: '100%',
   },
   footerActions: {
     flexDirection: 'row',
