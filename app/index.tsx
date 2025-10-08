@@ -6,7 +6,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   Animated,
@@ -15,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VehicleCard, SectionHeader } from '../components/vehicle';
+import { SearchInput } from '../components/ui';
 
 export default function Index() {
   const router = useRouter();
@@ -167,14 +167,11 @@ export default function Index() {
         scrollEventThrottle={16}
       >
         {/* Search */}
-        <View style={styles.searchContainer}>
-          <Search size={20} color="#9ca3af" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar por modelo, placa ou cor..."
+        <View style={styles.searchWrapper}>
+          <SearchInput
             value={searchTerm}
             onChangeText={setSearchTerm}
-            placeholderTextColor="#9ca3af"
+            placeholder="Buscar veículo..."
           />
         </View>
 
@@ -348,24 +345,10 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  searchWrapper: {
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 8,
-    backgroundColor: '#f9fafb',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 16,
-    fontSize: 16,
-    color: '#111827',
   },
   content: {
     paddingHorizontal: 16,

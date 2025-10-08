@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, AlertCircle, Zap, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, AlertCircle, Zap, ChevronRight, Check } from 'lucide-react-native';
 import {
   ProgressIndicator,
   SelectedStationBanner,
@@ -301,8 +301,9 @@ export default function FuelInputScreen() {
           {/* Added Fuels */}
           {fuelItems.length > 0 && (
             <View style={styles.card}>
-              <View style={[styles.cardHeader, styles.sectionHeader]}>
-                <Text style={styles.sectionTitle}>Combustíveis Adicionados</Text>
+              <View style={[styles.cardHeader, styles.greenHeader]}>
+                <Check size={16} color="#166534" />
+                <Text style={styles.greenHeaderText}>Combustíveis Adicionados</Text>
               </View>
 
               <View style={styles.fuelsList}>
@@ -462,6 +463,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#111827',
+  },
+  greenHeader: {
+    backgroundColor: '#f0fdf4',
+  },
+  greenHeaderText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#166534',
   },
   fuelsList: {
     borderTopWidth: 1,

@@ -12,7 +12,7 @@ export const SelectedStationCard = ({ station, onRemove }: SelectedStationCardPr
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Check size={16} color="#4b5563" />
+        <Check size={16} color="#166534" />
         <Text style={styles.headerText}>Posto Selecionado</Text>
       </View>
 
@@ -86,14 +86,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f0fdf4',
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
   headerText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: '#166534',
   },
   body: {
     padding: 16,

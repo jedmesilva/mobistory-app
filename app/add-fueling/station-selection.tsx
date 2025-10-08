@@ -13,10 +13,8 @@ import { useRouter } from 'expo-router';
 import {
   ArrowLeft,
   MapPin,
-  Search,
   Clock,
   Star,
-  X,
   Plus,
 } from 'lucide-react-native';
 import {
@@ -25,6 +23,7 @@ import {
   SelectedStationCard,
   type Station,
 } from '@/components/add-fueling';
+import { SearchInput } from '@/components/ui';
 
 export default function StationSelectionScreen() {
   const router = useRouter();
@@ -225,12 +224,12 @@ export default function StationSelectionScreen() {
 
           {/* Search Box */}
           <Pressable onPress={(e) => e.stopPropagation()}>
-            <View style={styles.searchContainer}>
-              <Search size={20} color="#9ca3af" style={styles.searchIcon} />
-              <TextInput
+            <View style={styles.searchWrapper}>
+              <SearchInput
                 ref={searchInputRef}
                 value={stationSearch}
                 onChangeText={setStationSearch}
+                onClear={clearSearch}
                 onFocus={() => setShowStationSearch(true)}
                 onBlur={() => {
                   // Pequeno delay para permitir cliques nos resultados
@@ -240,15 +239,8 @@ export default function StationSelectionScreen() {
                     }
                   }, 150);
                 }}
-                placeholder="Buscar posto por nome ou localização..."
-                placeholderTextColor="#9ca3af"
-                style={styles.searchInput}
+                placeholder="Buscar posto..."
               />
-              {stationSearch.length > 0 && (
-                <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-                  <X size={16} color="#9ca3af" />
-                </TouchableOpacity>
-              )}
             </View>
           </Pressable>
 
@@ -505,26 +497,8 @@ const styles = StyleSheet.create({
   cardBody: {
     padding: 16,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  searchWrapper: {
     marginBottom: 16,
-  },
-  searchIcon: {
-    marginRight: 12,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#111827',
-  },
-  clearButton: {
-    padding: 4,
-    marginLeft: 8,
   },
   searchResultsCard: {
     backgroundColor: '#fff',

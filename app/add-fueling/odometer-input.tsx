@@ -8,13 +8,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, Check, MapPin, AlertCircle, Gauge, Zap, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, Check, MapPin, AlertCircle, Zap, ChevronRight } from 'lucide-react-native';
 import {
   ProgressIndicator,
   OdometerInput,
   ConsumptionDisplay,
 } from '@/components/add-fueling';
 import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
+import { OdometerIcon } from '@/components/icons';
 
 export default function OdometerInputScreen() {
   const router = useRouter();
@@ -173,7 +174,7 @@ export default function OdometerInputScreen() {
           {/* Odometer Input */}
           <View style={styles.card}>
             <View style={[styles.cardHeader, styles.blueHeader]}>
-              <Gauge size={16} color="#3b82f6" />
+              <OdometerIcon size={16} color="#3b82f6" />
               <Text style={styles.blueHeaderText}>Quilometragem do Odômetro</Text>
             </View>
 
@@ -217,8 +218,9 @@ export default function OdometerInputScreen() {
 
             {/* Fuel Summary */}
             <View style={styles.card}>
-              <View style={[styles.cardHeader, styles.sectionHeader]}>
-                <Text style={styles.sectionTitle}>Resumo do Abastecimento</Text>
+              <View style={[styles.cardHeader, styles.greenHeader]}>
+                <Check size={16} color="#166534" />
+                <Text style={styles.greenHeaderText}>Resumo do Abastecimento</Text>
               </View>
 
               <View style={styles.cardBody}>

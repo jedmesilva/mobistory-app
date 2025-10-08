@@ -449,7 +449,10 @@ export default function VehicleHistoryScreen() {
             <TouchableOpacity style={styles.actionButton}>
               <OdometerIcon size={24} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => router.push(`/fuel-history/${selectedVehicle.id}`)}
+            >
               <Fuel size={24} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
