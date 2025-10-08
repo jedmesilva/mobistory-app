@@ -35,7 +35,7 @@ export const OdometerInput = ({ km, lastKm, lastDate, onChangeText }: OdometerIn
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 0,
   },
   inputGroup: {
     marginBottom: 24,
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     paddingVertical: 16,
+    paddingHorizontal: 16,
     borderWidth: 2,
     borderColor: '#e5e7eb',
     borderRadius: 12,

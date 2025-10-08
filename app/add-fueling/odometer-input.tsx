@@ -169,7 +169,11 @@ export default function OdometerInputScreen() {
         <ProgressIndicator currentStep={3} totalSteps={3} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.content}>
           {/* Odometer Input */}
           <View style={styles.card}>
@@ -185,14 +189,6 @@ export default function OdometerInputScreen() {
                 lastDate={currentVehicle.lastFuel.date}
                 onChangeText={handleInputChange}
               />
-
-              {km && (
-                <ConsumptionDisplay
-                  km={km}
-                  lastKm={currentVehicle.lastKm}
-                  estimatedConsumption={getEstimatedConsumption()}
-                />
-              )}
             </View>
           </View>
 
