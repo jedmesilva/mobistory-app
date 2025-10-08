@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -35,6 +36,7 @@ export default function StationSelectionScreen() {
     name: '',
     address: '',
   });
+  const searchInputRef = useRef<TextInput>(null);
 
   const currentVehicle = {
     name: 'Honda Civic',
@@ -136,10 +138,12 @@ export default function StationSelectionScreen() {
     setStationSearch('');
   };
 
+
   const clearSearch = () => {
     setStationSearch('');
     setShowStationSearch(false);
     setShowAddStation(false);
+    searchInputRef.current?.blur();
   };
 
   const handleAddStation = () => {
@@ -198,8 +202,19 @@ export default function StationSelectionScreen() {
         <ProgressIndicator currentStep={1} totalSteps={3} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Pressable
+          style={styles.content}
+          onPress={() => {
+            if (showStationSearch) {
+              searchInputRef.current?.blur();
+            }
+          }}
+        >
           {/* Selected Station */}
           {selectedStation && (
             <SelectedStationCard
@@ -209,51 +224,61 @@ export default function StationSelectionScreen() {
           )}
 
           {/* Search Box */}
-          <View style={styles.card}>
+          <Pressable onPress={(e) => e.stopPropagation()}>
             <View style={styles.searchContainer}>
-              <View style={styles.searchInputContainer}>
-                <Search size={16} color="#9ca3af" style={styles.searchIcon} />
-                <TextInput
-                  value={stationSearch}
-                  onChangeText={setStationSearch}
-                  onFocus={() => setShowStationSearch(true)}
-                  placeholder="Buscar posto por nome ou localização"
-                  placeholderTextColor="#9ca3af"
-                  style={styles.searchInput}
-                />
-                {stationSearch.length > 0 && (
-                  <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-                    <X size={16} color="#9ca3af" />
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              {showStationSearch && (
-                <View style={styles.searchResults}>
-                  {filteredStations().slice(0, 8).map((station) => (
-                    <StationCard
-                      key={station.id}
-                      station={station}
-                      onPress={() => handleStationSelect(station)}
-                    />
-                  ))}
-
-                  {filteredStations().length === 0 && (
-                    <View style={styles.noResults}>
-                      <Text style={styles.noResultsTitle}>Nenhum posto encontrado</Text>
-                      <Text style={styles.noResultsSubtitle}>
-                        Não encontrou o posto que procura?
-                      </Text>
-                      <TouchableOpacity onPress={handleAddStation} style={styles.addButton}>
-                        <Plus size={16} color="#fff" />
-                        <Text style={styles.addButtonText}>Adicionar Posto Manualmente</Text>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
+              <Search size={20} color="#9ca3af" style={styles.searchIcon} />
+              <TextInput
+                ref={searchInputRef}
+                value={stationSearch}
+                onChangeText={setStationSearch}
+                onFocus={() => setShowStationSearch(true)}
+                onBlur={() => {
+                  // Pequeno delay para permitir cliques nos resultados
+                  setTimeout(() => {
+                    if (stationSearch === '') {
+                      setShowStationSearch(false);
+                    }
+                  }, 150);
+                }}
+                placeholder="Buscar posto por nome ou localização..."
+                placeholderTextColor="#9ca3af"
+                style={styles.searchInput}
+              />
+              {stationSearch.length > 0 && (
+                <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+                  <X size={16} color="#9ca3af" />
+                </TouchableOpacity>
               )}
             </View>
-          </View>
+          </Pressable>
+
+          {/* Search Results */}
+          {showStationSearch && (
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <View style={styles.searchResultsCard}>
+                {filteredStations().slice(0, 8).map((station) => (
+                  <StationCard
+                    key={station.id}
+                    station={station}
+                    onPress={() => handleStationSelect(station)}
+                  />
+                ))}
+
+                {filteredStations().length === 0 && (
+                  <View style={styles.noResults}>
+                    <Text style={styles.noResultsTitle}>Nenhum posto encontrado</Text>
+                    <Text style={styles.noResultsSubtitle}>
+                      Não encontrou o posto que procura?
+                    </Text>
+                    <TouchableOpacity onPress={handleAddStation} style={styles.addButton}>
+                      <Plus size={16} color="#fff" />
+                      <Text style={styles.addButtonText}>Adicionar Posto Manualmente</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            </Pressable>
+          )}
 
           {/* Add Station Form */}
           {showAddStation && (
@@ -310,7 +335,7 @@ export default function StationSelectionScreen() {
 
           {/* Stations Lists */}
           {!showStationSearch && !showAddStation && (
-            <>
+            <Pressable onPress={(e) => e.stopPropagation()}>
               {/* Favorite Stations */}
               {favoriteStations.length > 0 && (
                 <View style={styles.card}>
@@ -368,29 +393,35 @@ export default function StationSelectionScreen() {
                   ))}
                 </View>
               </View>
-            </>
+            </Pressable>
           )}
-        </View>
+        </Pressable>
       </ScrollView>
 
       {/* Footer */}
       <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
         <View style={styles.footer}>
-          <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
-            <Text style={styles.continueButtonText}>
-              {selectedStation ? `Continuar com ${selectedStation.name}` : 'Continuar sem Posto'}
-            </Text>
-          </TouchableOpacity>
+          {selectedStation ? (
+            <View style={styles.footerActions}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedStation(null);
+                  handleContinue();
+                }}
+                style={styles.skipButton}
+              >
+                <Text style={styles.skipButtonText}>Pular</Text>
+              </TouchableOpacity>
 
-          {selectedStation && (
-            <TouchableOpacity
-              onPress={() => {
-                setSelectedStation(null);
-                handleContinue();
-              }}
-              style={styles.skipButton}
-            >
-              <Text style={styles.skipButtonText}>Continuar sem Posto</Text>
+              <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+                <Text style={styles.continueButtonText}>
+                  Continuar com {selectedStation.name}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity onPress={handleContinue} style={styles.continueButtonFull}>
+              <Text style={styles.continueButtonText}>Continuar sem Posto</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -402,7 +433,7 @@ export default function StationSelectionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -475,31 +506,33 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   searchContainer: {
-    padding: 16,
-  },
-  searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    backgroundColor: '#f9fafb',
     borderRadius: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: 12,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 12,
-    fontSize: 14,
+    fontSize: 16,
     color: '#111827',
   },
   clearButton: {
     padding: 4,
+    marginLeft: 8,
   },
-  searchResults: {
-    marginTop: 16,
-    maxHeight: 400,
+  searchResultsCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    marginBottom: 16,
+    overflow: 'hidden',
   },
   noResults: {
     alignItems: 'center',
@@ -600,28 +633,41 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
   },
+  footerActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  skipButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  skipButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
   continueButton: {
+    flex: 1,
     paddingVertical: 16,
     backgroundColor: '#1f2937',
     borderRadius: 16,
     alignItems: 'center',
-    marginBottom: 12,
+    justifyContent: 'center',
   },
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#fff',
   },
-  skipButton: {
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+  continueButtonFull: {
+    paddingVertical: 16,
+    backgroundColor: '#1f2937',
     borderRadius: 16,
     alignItems: 'center',
-  },
-  skipButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6b7280',
   },
 });
