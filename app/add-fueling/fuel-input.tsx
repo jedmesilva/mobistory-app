@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, AlertCircle, Zap, ChevronRight, Check } from 'lucide-react-native';
+import { ArrowLeft, AlertCircle, Zap, ChevronRight, Check, Edit3 } from 'lucide-react-native';
 import {
   ProgressIndicator,
   SelectedStationBanner,
@@ -35,9 +35,16 @@ export default function FuelInputScreen() {
     totalPrice: '',
     fuelType: '',
   });
+  const [editingItem, setEditingItem] = useState({
+    liters: '',
+    pricePerLiter: '',
+    totalPrice: '',
+    fuelType: '',
+  });
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showFuelDropdown, setShowFuelDropdown] = useState(false);
+  const [showEditDropdown, setShowEditDropdown] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showCaptureModal, setShowCaptureModal] = useState(false);
 
@@ -145,6 +152,48 @@ export default function FuelInputScreen() {
     setShowFuelDropdown(false);
   };
 
+  const handleEditInputChange = (field: string, value: string) => {
+    let formattedValue = value;
+
+    if (field === 'liters' || field === 'pricePerLiter' || field === 'totalPrice') {
+      formattedValue = formatPrice(value);
+    }
+    setEditingItem((prev) => ({ ...prev, [field]: formattedValue }));
+  };
+
+  const handleEditFuelTypeSelect = (type: typeof fuelTypes[0]) => {
+    setEditingItem((prev) => ({ ...prev, fuelType: type.name }));
+    setShowEditDropdown(false);
+  };
+
+  const canEditItem = () => {
+    const hasType = !!editingItem.fuelType;
+    const hasLiters = !!editingItem.liters;
+    const hasPrice = !!editingItem.pricePerLiter;
+    const hasTotal = !!editingItem.totalPrice;
+
+    return hasType && ((hasLiters && hasPrice) || (hasTotal && hasPrice) || (hasTotal && hasLiters));
+  };
+
+  const getEditCalculatedValues = () => {
+    const liters = parseFloat(editingItem.liters.replace(',', '.') || '0');
+    const price = parseFloat(editingItem.pricePerLiter.replace(',', '.') || '0');
+    const total = parseFloat(editingItem.totalPrice.replace(',', '.') || '0');
+
+    if (editingItem.liters && editingItem.pricePerLiter && !editingItem.totalPrice) {
+      const calculatedTotal = (liters * price).toFixed(2);
+      return `Total: R$ ${calculatedTotal.replace('.', ',')}`;
+    } else if (editingItem.totalPrice && editingItem.pricePerLiter && !editingItem.liters) {
+      const calculatedLiters = (total / price).toFixed(2);
+      return `Litros: ${calculatedLiters.replace('.', ',')} L`;
+    } else if (editingItem.totalPrice && editingItem.liters && !editingItem.pricePerLiter) {
+      const calculatedPrice = (total / liters).toFixed(3);
+      return `Preço/L: R$ ${calculatedPrice.replace('.', ',')}`;
+    }
+
+    return null;
+  };
+
   const addFuelItem = () => {
     if (validateCurrentItem()) {
       const liters = parseFloat(currentItem.liters.replace(',', '.') || '0');
@@ -168,22 +217,14 @@ export default function FuelInputScreen() {
       }
 
       const newItem: FuelItem = {
-        id: editingIndex !== null ? fuelItems[editingIndex].id : Date.now(),
+        id: Date.now(),
         fuelType: currentItem.fuelType,
         liters: finalLiters!,
         pricePerLiter: finalPrice!,
         totalPrice: finalTotal!,
       };
 
-      if (editingIndex !== null) {
-        const updatedItems = [...fuelItems];
-        updatedItems[editingIndex] = newItem;
-        setFuelItems(updatedItems);
-        setEditingIndex(null);
-      } else {
-        setFuelItems((prev) => [...prev, newItem]);
-      }
-
+      setFuelItems((prev) => [...prev, newItem]);
       setCurrentItem({
         liters: '',
         pricePerLiter: '',
@@ -193,9 +234,52 @@ export default function FuelInputScreen() {
     }
   };
 
+  const updateFuelItem = () => {
+    if (editingIndex === null) return;
+
+    const liters = parseFloat(editingItem.liters.replace(',', '.') || '0');
+    const price = parseFloat(editingItem.pricePerLiter.replace(',', '.') || '0');
+    const total = parseFloat(editingItem.totalPrice.replace(',', '.') || '0');
+
+    let finalLiters, finalPrice, finalTotal;
+
+    if (editingItem.liters && editingItem.pricePerLiter) {
+      finalLiters = editingItem.liters;
+      finalPrice = editingItem.pricePerLiter;
+      finalTotal = (liters * price).toFixed(2).replace('.', ',');
+    } else if (editingItem.totalPrice && editingItem.pricePerLiter) {
+      finalTotal = editingItem.totalPrice;
+      finalPrice = editingItem.pricePerLiter;
+      finalLiters = (total / price).toFixed(2).replace('.', ',');
+    } else if (editingItem.totalPrice && editingItem.liters) {
+      finalTotal = editingItem.totalPrice;
+      finalLiters = editingItem.liters;
+      finalPrice = (total / liters).toFixed(3).replace('.', ',');
+    }
+
+    const updatedItem: FuelItem = {
+      id: fuelItems[editingIndex].id,
+      fuelType: editingItem.fuelType,
+      liters: finalLiters!,
+      pricePerLiter: finalPrice!,
+      totalPrice: finalTotal!,
+    };
+
+    const updatedItems = [...fuelItems];
+    updatedItems[editingIndex] = updatedItem;
+    setFuelItems(updatedItems);
+    setEditingIndex(null);
+    setEditingItem({
+      liters: '',
+      pricePerLiter: '',
+      totalPrice: '',
+      fuelType: '',
+    });
+  };
+
   const editFuelItem = (index: number) => {
     const item = fuelItems[index];
-    setCurrentItem({
+    setEditingItem({
       liters: item.liters,
       pricePerLiter: item.pricePerLiter,
       totalPrice: item.totalPrice,
@@ -207,7 +291,7 @@ export default function FuelInputScreen() {
   const removeFuelItem = (index: number) => {
     setFuelItems((prev) => prev.filter((_, i) => i !== index));
     if (editingIndex === index) {
-      setCurrentItem({
+      setEditingItem({
         liters: '',
         pricePerLiter: '',
         totalPrice: '',
@@ -280,11 +364,11 @@ export default function FuelInputScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          {/* Add Fuel Form */}
+          {/* Add Fuel Form - Always visible */}
           <AddFuelForm
             currentItem={currentItem}
             fuelTypes={fuelTypes}
-            editingIndex={editingIndex}
+            editingIndex={null}
             showFuelDropdown={showFuelDropdown}
             canAddItem={canAddItem()}
             calculatedValue={getCalculatedValues()}
@@ -292,14 +376,51 @@ export default function FuelInputScreen() {
             onFuelTypeSelect={handleFuelTypeSelect}
             onToggleDropdown={() => setShowFuelDropdown(!showFuelDropdown)}
             onAddItem={addFuelItem}
-            onCancelEdit={() => {
-              setEditingIndex(null);
-              setCurrentItem({ liters: '', pricePerLiter: '', totalPrice: '', fuelType: '' });
-            }}
+            onCancelEdit={() => {}}
           />
 
-          {/* Added Fuels */}
-          {fuelItems.length > 0 && (
+          {/* Editing Form - Show when editing (replaces the list) */}
+          {editingIndex !== null && (
+            <View style={styles.card}>
+              <View style={[styles.cardHeader, styles.editHeader]}>
+                <Edit3 size={16} color="#1e40af" />
+                <View style={styles.headerContent}>
+                  <Text style={styles.editHeaderText}>Editando Combustível</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setEditingIndex(null);
+                      setEditingItem({ liters: '', pricePerLiter: '', totalPrice: '', fuelType: '' });
+                    }}
+                  >
+                    <Text style={styles.cancelLink}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.cardBody}>
+                <AddFuelForm
+                  currentItem={editingItem}
+                  fuelTypes={fuelTypes}
+                  editingIndex={editingIndex}
+                  showFuelDropdown={showEditDropdown}
+                  canAddItem={canEditItem()}
+                  calculatedValue={getEditCalculatedValues()}
+                  onInputChange={handleEditInputChange}
+                  onFuelTypeSelect={handleEditFuelTypeSelect}
+                  onToggleDropdown={() => setShowEditDropdown(!showEditDropdown)}
+                  onAddItem={updateFuelItem}
+                  onCancelEdit={() => {
+                    setEditingIndex(null);
+                    setEditingItem({ liters: '', pricePerLiter: '', totalPrice: '', fuelType: '' });
+                  }}
+                  inline={true}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Added Fuels - Only show when NOT editing */}
+          {fuelItems.length > 0 && editingIndex === null && (
             <View style={styles.card}>
               <View style={[styles.cardHeader, styles.greenHeader]}>
                 <Check size={16} color="#166534" />
@@ -456,6 +577,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
+  headerContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  cardBody: {
+    padding: 16,
+  },
+  cancelLink: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6b7280',
+  },
   sectionHeader: {
     backgroundColor: '#f9fafb',
   },
@@ -471,6 +606,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#166534',
+  },
+  editHeader: {
+    backgroundColor: '#eff6ff',
+  },
+  editHeaderText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1e40af',
   },
   fuelsList: {
     borderTopWidth: 1,

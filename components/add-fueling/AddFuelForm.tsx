@@ -25,6 +25,7 @@ interface AddFuelFormProps {
   onToggleDropdown: () => void;
   onAddItem: () => void;
   onCancelEdit: () => void;
+  inline?: boolean;
 }
 
 export const AddFuelForm = ({
@@ -39,21 +40,24 @@ export const AddFuelForm = ({
   onToggleDropdown,
   onAddItem,
   onCancelEdit,
+  inline = false,
 }: AddFuelFormProps) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>
-          {editingIndex !== null ? 'Editando Combustível' : 'Adicionar Combustível'}
-        </Text>
-        {editingIndex !== null && (
-          <TouchableOpacity onPress={onCancelEdit}>
-            <Text style={styles.cancelText}>Cancelar</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+  const formContent = (
+    <View>
+      {!inline && (
+        <View style={styles.header}>
+          <Text style={styles.title}>
+            {editingIndex !== null ? 'Editando Combustível' : 'Adicionar Combustível'}
+          </Text>
+          {editingIndex !== null && (
+            <TouchableOpacity onPress={onCancelEdit}>
+              <Text style={styles.cancelText}>Cancelar</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
-      <View style={styles.body}>
+      <View style={inline ? styles.bodyInline : styles.body}>
         {/* Fuel Type Dropdown */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Tipo de combustível</Text>
@@ -138,6 +142,16 @@ export const AddFuelForm = ({
       </View>
     </View>
   );
+
+  if (inline) {
+    return formContent;
+  }
+
+  return (
+    <View style={styles.container}>
+      {formContent}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -168,6 +182,9 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: 16,
+  },
+  bodyInline: {
+    padding: 0,
   },
   formGroup: {
     marginBottom: 16,
