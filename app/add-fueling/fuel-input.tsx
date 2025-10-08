@@ -232,11 +232,24 @@ export default function FuelInputScreen() {
     setTimeout(() => {
       const mockLiters = (Math.random() * 30 + 20).toFixed(1).replace('.', ',');
       const mockPrice = (Math.random() * 2 + 4).toFixed(2).replace('.', ',');
-      setCurrentItem((prev) => ({
-        ...prev,
+      const mockFuelType = fuelTypes[Math.floor(Math.random() * 3)]; // Gasolina Comum, Aditivada ou Etanol
+
+      // Calcula o total
+      const litersNum = parseFloat(mockLiters.replace(',', '.'));
+      const priceNum = parseFloat(mockPrice.replace(',', '.'));
+      const totalPrice = (litersNum * priceNum).toFixed(2).replace('.', ',');
+
+      // Cria o item completo
+      const newItem: FuelItem = {
+        id: Date.now(),
+        fuelType: mockFuelType.name,
         liters: mockLiters,
         pricePerLiter: mockPrice,
-      }));
+        totalPrice: totalPrice,
+      };
+
+      // Adiciona diretamente na lista
+      setFuelItems((prev) => [...prev, newItem]);
       setIsProcessing(false);
     }, 2000);
   };
@@ -381,7 +394,7 @@ export default function FuelInputScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
