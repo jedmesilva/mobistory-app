@@ -2,27 +2,35 @@ import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Camera, Mic, Upload, ChevronRight } from 'lucide-react-native';
 
-interface CaptureModalProps {
+interface CaptureOption {
+  camera: string;
+  voice: string;
+  gallery: string;
+}
+
+interface SmartCaptureModalProps {
   visible: boolean;
   onClose: () => void;
   onCapture: (method: 'camera' | 'voice' | 'gallery') => void;
   title: string;
   subtitle: string;
+  options: CaptureOption;
   disabled?: boolean;
 }
 
-export const CaptureModal = ({
+export const SmartCaptureModal = ({
   visible,
   onClose,
   onCapture,
   title,
   subtitle,
+  options,
   disabled = false,
-}: CaptureModalProps) => {
+}: SmartCaptureModalProps) => {
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backdrop} onPress={onClose} />
+        <TouchableOpacity style={styles.backdrop} onPress={onClose} activeOpacity={1} />
 
         <View style={styles.content}>
           <View style={styles.handle} />
@@ -43,7 +51,7 @@ export const CaptureModal = ({
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Tirar Foto</Text>
-                <Text style={styles.optionSubtitle}>Fotografe o painel da bomba</Text>
+                <Text style={styles.optionSubtitle}>{options.camera}</Text>
               </View>
               <ChevronRight size={20} color="#9ca3af" />
             </TouchableOpacity>
@@ -58,7 +66,7 @@ export const CaptureModal = ({
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Comando de Voz</Text>
-                <Text style={styles.optionSubtitle}>Fale os valores</Text>
+                <Text style={styles.optionSubtitle}>{options.voice}</Text>
               </View>
               <ChevronRight size={20} color="#9ca3af" />
             </TouchableOpacity>
@@ -73,7 +81,7 @@ export const CaptureModal = ({
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Enviar da Galeria</Text>
-                <Text style={styles.optionSubtitle}>Selecione uma foto já tirada</Text>
+                <Text style={styles.optionSubtitle}>{options.gallery}</Text>
               </View>
               <ChevronRight size={20} color="#9ca3af" />
             </TouchableOpacity>
@@ -128,6 +136,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: '#6b7280',
+    textAlign: 'center',
   },
   body: {
     gap: 12,
@@ -158,13 +167,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
     color: '#111827',
     marginBottom: 2,
   },
   optionSubtitle: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#6b7280',
   },
   cancelButton: {
@@ -172,7 +181,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
     color: '#6b7280',
   },

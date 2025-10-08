@@ -1,6 +1,5 @@
 // Shared Components
 export { ProgressIndicator } from './ProgressIndicator';
-export { CaptureModal } from './CaptureModal';
 
 // Station Components
 export { StationCard } from './StationCard';

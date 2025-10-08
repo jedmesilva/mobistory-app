@@ -15,7 +15,6 @@ import {
   SearchableInput,
   StepHeader,
   FuelTypeSelector,
-  CaptureModal,
   VehicleHeader,
   ProcessingState,
   ConfirmationScreen,
@@ -25,6 +24,7 @@ import {
   type ColorOption,
   type FuelTypeOption,
 } from '../components/add-vehicle';
+import { SmartCaptureModal } from '../components/ui/SmartCaptureModal';
 
 interface VehicleData {
   brand: string;
@@ -473,10 +473,17 @@ export default function AddVehicleScreen() {
       />
 
       {/* Capture Modal */}
-      <CaptureModal
+      <SmartCaptureModal
         visible={showCaptureModal}
         onClose={() => setShowCaptureModal(false)}
-        onSelectOption={simulateAutoCapture}
+        onCapture={simulateAutoCapture}
+        title="Captura Automática"
+        subtitle="Envie documento ou foto para preenchimento automático"
+        options={{
+          camera: 'Do documento ou veículo',
+          voice: 'Fale as informações do veículo',
+          gallery: 'Foto ou arquivo do documento',
+        }}
       />
     </SafeAreaView>
   );
