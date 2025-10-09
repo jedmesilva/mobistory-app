@@ -73,11 +73,12 @@ export function MenuModal({ visible, onClose, onNavigate }: MenuModalProps) {
       transparent={true}
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
-              <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <View style={styles.overlay}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlayTouchable} />
+        </TouchableWithoutFeedback>
+        <View style={styles.modalContent}>
+          <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
                 {/* Header */}
                 <View style={styles.header}>
                   <Text style={styles.headerTitle}>Menu</Text>
@@ -140,18 +141,19 @@ export function MenuModal({ visible, onClose, onNavigate }: MenuModalProps) {
                 </ScrollView>
               </SafeAreaView>
             </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
-  );
-}
+          </View>
+        </Modal>
+      );
+    }
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
+  },
+  overlayTouchable: {
+    flex: 1,
   },
   modalContent: {
     backgroundColor: Colors.background.primary,
