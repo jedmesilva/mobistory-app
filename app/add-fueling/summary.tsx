@@ -92,17 +92,13 @@ export default function SummaryScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Resumo do Abastecimento</Text>
-          <Text style={styles.headerSubtitle}>Comparativo com abastecimento anterior</Text>
-        </View>
-        <Check size={24} color="#16a34a" />
-      </View>
-
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
+          {/* Title */}
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Resumo do Abastecimento</Text>
+            <Text style={styles.subtitle}>Comparativo com abastecimento anterior</Text>
+          </View>
           {/* Main Summary */}
           <View style={styles.card}>
             <View style={[styles.cardHeader, styles.fuelHeader]}>
@@ -322,7 +318,7 @@ export default function SummaryScreen() {
       {/* Footer */}
       <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.reviewButton}>
+          <TouchableOpacity onPress={() => router.push('/add-fueling/fuel-input')} style={styles.reviewButton}>
             <Text style={styles.reviewButtonText}>Revisar</Text>
           </TouchableOpacity>
 
@@ -337,26 +333,30 @@ export default function SummaryScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background.primary },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.background.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-  },
-  headerCenter: { flex: 1 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary.dark },
-  headerSubtitle: { fontSize: 14, color: Colors.text.tertiary },
   scrollView: { flex: 1 },
-  content: { padding: 16, paddingBottom: 100 },
+  content: { padding: 16, paddingTop: 24, paddingBottom: 100 },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.primary.dark,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: Colors.text.tertiary,
+    textAlign: 'center',
+  },
   card: {
     backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.border.DEFAULT,
-    marginBottom: 16,
+    marginBottom: 24,
     overflow: 'hidden',
   },
   cardHeader: {
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   statItem: { alignItems: 'center' },
   statValue: { fontSize: 18, fontWeight: '700', color: Colors.primary.dark },
   statLabel: { fontSize: 12, color: Colors.text.tertiary },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary.dark, marginBottom: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary.dark, marginBottom: 16, marginTop: 8 },
   stationComparison: { gap: 4, marginTop: 12 },
   stationRow: { flexDirection: 'row', justifyContent: 'space-between' },
   footerLabel: { fontSize: 12, color: Colors.text.tertiary },
@@ -398,6 +398,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
     marginBottom: 16,
+    marginTop: 8,
   },
   detailsToggleText: { fontSize: 14, fontWeight: '500', color: Colors.text.secondary },
   chevron: { transform: [{ rotate: '0deg' }] },
