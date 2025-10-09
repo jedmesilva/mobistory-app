@@ -309,7 +309,7 @@ export default function VehicleHistoryScreen() {
           <View style={styles.header}>
             <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-              <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <TouchableOpacity onPress={() => router.push('/')} style={styles.backButton}>
                 <ChevronRight size={20} color={Colors.text.secondary} style={{ transform: [{ rotate: '180deg' }] }} />
               </TouchableOpacity>
 
