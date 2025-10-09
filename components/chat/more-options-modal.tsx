@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Pressable } from 'react-native';
+import { Colors } from '@/constants';
 import { Fuel, Gauge, Plus, Camera, FileText } from 'lucide-react-native';
 import { OdometerIcon, FuelTankIcon } from '../icons';
 
@@ -52,7 +53,7 @@ export const MoreOptionsModal = ({ visible, onClose, onOptionSelect }: MoreOptio
               <Text style={styles.subtitle}>Selecione o tipo de evento</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Plus size={20} color="#6b7280" style={{ transform: [{ rotate: '45deg' }] }} />
+              <Plus size={20} color={Colors.text.tertiary} style={{ transform: [{ rotate: '45deg' }] }} />
             </TouchableOpacity>
           </View>
 
@@ -70,7 +71,7 @@ export const MoreOptionsModal = ({ visible, onClose, onOptionSelect }: MoreOptio
                   activeOpacity={0.7}
                 >
                   <View style={styles.iconContainer}>
-                    <IconComponent size={20} color="#4b5563" />
+                    <IconComponent size={20} color={Colors.text.secondary} />
                   </View>
                   <Text style={styles.optionLabel}>{option.label}</Text>
                   <Text style={styles.optionDescription}>{option.description}</Text>
@@ -87,7 +88,7 @@ export const MoreOptionsModal = ({ visible, onClose, onOptionSelect }: MoreOptio
                 onClose();
               }}
             >
-              <Camera size={16} color="#fff" />
+              <Camera size={16} color={Colors.background.primary} />
               <Text style={styles.cameraButtonText}>Câmera</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -97,7 +98,7 @@ export const MoreOptionsModal = ({ visible, onClose, onOptionSelect }: MoreOptio
                 onClose();
               }}
             >
-              <FileText size={16} color="#374151" />
+              <FileText size={16} color={Colors.primary.light} />
               <Text style={styles.importButtonText}>Importar</Text>
             </TouchableOpacity>
           </View>
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 24,
@@ -128,21 +129,21 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     paddingBottom: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   closeButton: {
     padding: 8,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -155,9 +156,9 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     width: '48%',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 48,
     height: 48,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -174,13 +175,13 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
     textAlign: 'center',
   },
   optionDescription: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textAlign: 'center',
     lineHeight: 16,
   },
@@ -194,12 +195,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingVertical: 12,
     borderRadius: 12,
   },
   cameraButtonText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -209,12 +210,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     paddingVertical: 12,
     borderRadius: 12,
   },
   importButtonText: {
-    color: '#374151',
+    color: Colors.primary.light,
     fontSize: 14,
     fontWeight: '500',
   },

@@ -11,6 +11,7 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import {
   ChevronRight,
   Fuel,
@@ -309,7 +310,7 @@ export default function VehicleHistoryScreen() {
             <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
               <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                <ChevronRight size={20} color="#4b5563" style={{ transform: [{ rotate: '180deg' }] }} />
+                <ChevronRight size={20} color={Colors.text.secondary} style={{ transform: [{ rotate: '180deg' }] }} />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -326,7 +327,7 @@ export default function VehicleHistoryScreen() {
             </View>
 
             <TouchableOpacity style={styles.chatButton} onPress={() => setChatVisible(true)}>
-              <MessageCircle size={24} color="#4b5563" />
+              <MessageCircle size={24} color={Colors.text.secondary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -355,7 +356,7 @@ export default function VehicleHistoryScreen() {
             <View key={dateIdx} style={styles.dateGroup}>
               <View style={styles.dateHeader}>
                 <View style={styles.dateBadge}>
-                  <Calendar size={14} color="#4b5563" />
+                  <Calendar size={14} color={Colors.text.secondary} />
                   <Text style={styles.dateText}>{dateGroup.date}</Text>
                 </View>
                 <View style={styles.dateDivider} />
@@ -384,22 +385,22 @@ export default function VehicleHistoryScreen() {
 
           <View style={styles.actionButtons}>
             <TouchableOpacity style={styles.actionButton}>
-              <OdometerIcon size={24} color="#fff" />
+              <OdometerIcon size={24} color={Colors.background.primary} />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => router.push(`/fuel-history/${selectedVehicle.id}`)}
             >
-              <Fuel size={24} color="#fff" />
+              <Fuel size={24} color={Colors.background.primary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <FuelTankIcon size={24} color="#fff" level={0.6} />
+              <FuelTankIcon size={24} color={Colors.background.primary} level={0.6} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Gauge size={24} color="#fff" />
+              <Gauge size={24} color={Colors.background.primary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Droplet size={24} color="#fff" />
+              <Droplet size={24} color={Colors.background.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -431,20 +432,20 @@ export default function VehicleHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   headerSafeArea: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     zIndex: 10,
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerContent: {
     flexDirection: 'row',
@@ -462,7 +463,7 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -473,15 +474,15 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   chatButton: {
     padding: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
   },
   scrollView: {
@@ -497,7 +498,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#dbeafe',
+    borderColor: Colors.info.light,
     marginBottom: 16,
   },
   processingContent: {
@@ -510,12 +511,12 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 2,
-    borderColor: '#3b82f6',
+    borderColor: Colors.info.DEFAULT,
     borderTopColor: 'transparent',
     borderRadius: 10,
   },
   processingText: {
-    color: '#2563eb',
+    color: Colors.info.dark,
     fontSize: 14,
   },
   timeline: {
@@ -534,7 +535,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
@@ -542,12 +543,12 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: Colors.primary.light,
   },
   dateDivider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.border.DEFAULT,
   },
   activitiesContainer: {
     gap: 16,
@@ -560,15 +561,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   footer: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: Colors.border.DEFAULT,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderLeftColor: '#e5e7eb',
-    borderRightColor: '#e5e7eb',
+    borderLeftColor: Colors.border.DEFAULT,
+    borderRightColor: Colors.border.DEFAULT,
     overflow: 'hidden',
   },
   actionButtons: {
@@ -581,7 +582,7 @@ const styles = StyleSheet.create({
   actionButton: {
     width: 56,
     height: 56,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',

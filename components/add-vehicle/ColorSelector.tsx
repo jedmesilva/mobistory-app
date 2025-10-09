@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 export interface ColorOption {
   id: string;
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   colorLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
   },
   colorGrid: {
     flexDirection: 'row',
@@ -55,24 +56,24 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     alignItems: 'center',
   },
   colorButtonActive: {
-    borderColor: '#1f2937',
-    backgroundColor: '#f9fafb',
+    borderColor: Colors.primary.DEFAULT,
+    backgroundColor: Colors.background.secondary,
   },
   colorCircle: {
     width: 24,
     height: 24,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 4,
   },
   colorText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
   },
 });

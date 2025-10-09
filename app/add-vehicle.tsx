@@ -5,6 +5,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { useRouter } from 'expo-router';
 import {
   Car,
@@ -337,7 +338,7 @@ export default function AddVehicleScreen() {
         return (
           <View style={styles.stepContainer}>
             <StepHeader
-              icon={<Search size={32} color="#fff" />}
+              icon={<Search size={32} color={Colors.background.primary} />}
               title="Qual a marca do veículo?"
               subtitle="Digite para buscar na lista"
             />
@@ -380,7 +381,7 @@ export default function AddVehicleScreen() {
         return (
           <View style={styles.stepContainer}>
             <StepHeader
-              icon={<Car size={32} color="#fff" />}
+              icon={<Car size={32} color={Colors.background.primary} />}
               title={`Modelo da ${vehicleData.brand}`}
               subtitle="Digite para buscar ou criar novo"
             />
@@ -423,7 +424,7 @@ export default function AddVehicleScreen() {
         return (
           <View style={styles.stepContainer}>
             <StepHeader
-              icon={<Edit3 size={32} color="#fff" />}
+              icon={<Edit3 size={32} color={Colors.background.primary} />}
               title="Versão ou especificação"
               subtitle="Digite para buscar ou criar nova"
             />
@@ -563,7 +564,7 @@ export default function AddVehicleScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   scrollView: {
     flex: 1,

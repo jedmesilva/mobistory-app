@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { Plus, Check, X } from 'lucide-react-native';
 
 interface SearchableInputProps {
@@ -46,7 +47,7 @@ export const SearchableInput = ({
     <View>
       {selectedValue && successMessage && (
         <View style={styles.successBanner}>
-          <Check size={20} color="#10b981" />
+          <Check size={20} color={Colors.success.DEFAULT} />
           <Text style={styles.successText}>{successMessage}</Text>
         </View>
       )}
@@ -64,7 +65,7 @@ export const SearchableInput = ({
         />
         {value.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <X size={20} color="#9ca3af" />
+            <X size={20} color={Colors.text.placeholder} />
           </TouchableOpacity>
         )}
       </View>
@@ -92,7 +93,7 @@ export const SearchableInput = ({
               style={styles.createNewItem}
               activeOpacity={0.7}
             >
-              <Plus size={16} color="#3b82f6" />
+              <Plus size={16} color={Colors.info.DEFAULT} />
               <Text style={styles.createNewText}>{createNewLabel}</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#d1fae5',
+    backgroundColor: Colors.success.light,
     borderWidth: 1,
     borderColor: '#a7f3d0',
     borderRadius: 16,
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '500',
-    color: '#065f46',
+    color: Colors.success.text,
   },
   inputContainer: {
     position: 'relative',
@@ -128,9 +129,9 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingRight: 48,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   clearButton: {
     position: 'absolute',
@@ -143,9 +144,9 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     maxHeight: 240,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -160,11 +161,11 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   suggestionText: {
     fontSize: 16,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   createNewItem: {
     flexDirection: 'row',
@@ -174,6 +175,6 @@ const styles = StyleSheet.create({
   },
   createNewText: {
     fontSize: 16,
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
   },
 });

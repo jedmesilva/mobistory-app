@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Clock, ChevronUp, ChevronDown } from 'lucide-react-native';
 
 interface SectionHeaderProps {
@@ -31,14 +32,14 @@ export const SectionHeader = ({
         onPress={() => toggleHistory(relationshipType)}
         style={styles.historyButton}
       >
-        <Clock size={16} color="#4b5563" />
+        <Clock size={16} color={Colors.text.secondary} />
         <Text style={styles.historyButtonText}>
           Histórico ({historicalCount})
         </Text>
         {showHistoryFor[relationshipType] ? (
-          <ChevronUp size={16} color="#4b5563" />
+          <ChevronUp size={16} color={Colors.text.secondary} />
         ) : (
-          <ChevronDown size={16} color="#4b5563" />
+          <ChevronDown size={16} color={Colors.text.secondary} />
         )}
       </TouchableOpacity>
     )}
@@ -55,17 +56,17 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   sectionSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   historyButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
@@ -74,6 +75,6 @@ const styles = StyleSheet.create({
   historyButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4b5563',
+    color: Colors.text.secondary,
   },
 });

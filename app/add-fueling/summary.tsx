@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { useRouter } from 'expo-router';
 import {
   Check,
@@ -80,9 +81,9 @@ export default function SummaryScreen() {
   };
 
   const getChangeColor = (value: number, invert = false) => {
-    if (value > 0) return invert ? '#dc2626' : '#16a34a';
-    if (value < 0) return invert ? '#16a34a' : '#dc2626';
-    return '#6b7280';
+    if (value > 0) return invert ? Colors.error.dark : '#16a34a';
+    if (value < 0) return invert ? '#16a34a' : Colors.error.dark;
+    return Colors.text.tertiary;
   };
 
   const handleComplete = () => {
@@ -105,7 +106,7 @@ export default function SummaryScreen() {
           {/* Main Summary */}
           <View style={styles.card}>
             <View style={[styles.cardHeader, styles.fuelHeader]}>
-              <Fuel size={16} color="#4b5563" />
+              <Fuel size={16} color={Colors.text.secondary} />
               <Text style={styles.cardHeaderText}>Abastecimento Registrado</Text>
             </View>
 
@@ -145,7 +146,7 @@ export default function SummaryScreen() {
           {/* Consumption Analysis */}
           <View style={styles.card}>
             <View style={[styles.cardHeader, styles.activityHeader]}>
-              <Activity size={16} color="#4b5563" />
+              <Activity size={16} color={Colors.text.secondary} />
               <Text style={styles.cardHeaderText}>Análise de Consumo</Text>
             </View>
 
@@ -157,7 +158,7 @@ export default function SummaryScreen() {
 
           {/* Price Comparison */}
           <ComparisonCard
-            icon={<TrendingUp size={20} color="#4b5563" />}
+            icon={<TrendingUp size={20} color={Colors.text.secondary} />}
             title="Preço do Combustível"
             subtitle="Gasolina Comum - comparação"
             mainValue={`${formatCurrency(currentFueling.fuels[0].pricePerLiter)}/L`}
@@ -174,14 +175,14 @@ export default function SummaryScreen() {
 
           {/* Station Comparison */}
           <ComparisonCard
-            icon={<MapPin size={20} color="#4b5563" />}
+            icon={<MapPin size={20} color={Colors.text.secondary} />}
             title="Posto de Combustível"
             subtitle="Local do abastecimento"
             mainValue={currentFueling.station.name}
             changeText={
               currentFueling.station.name !== previousFueling.station.name ? 'Posto diferente' : 'Mesmo posto'
             }
-            changeColor={currentFueling.station.name !== previousFueling.station.name ? '#3b82f6' : '#6b7280'}
+            changeColor={currentFueling.station.name !== previousFueling.station.name ? Colors.info.DEFAULT : Colors.text.tertiary}
           >
             <View style={styles.stationComparison}>
               <View style={styles.stationRow}>
@@ -202,7 +203,7 @@ export default function SummaryScreen() {
 
           {/* Value Comparison */}
           <ComparisonCard
-            icon={<Fuel size={20} color="#4b5563" />}
+            icon={<Fuel size={20} color={Colors.text.secondary} />}
             title="Valor do Abastecimento"
             subtitle="Comparação de gastos"
             mainValue={formatCurrency(currentFueling.totalValue)}
@@ -252,7 +253,7 @@ export default function SummaryScreen() {
           <TouchableOpacity onPress={() => setShowDetails(!showDetails)} style={styles.detailsToggle}>
             <Text style={styles.detailsToggleText}>{showDetails ? 'Ocultar detalhes' : 'Ver detalhes completos'}</Text>
             <View style={[styles.chevron, showDetails && styles.chevronRotated]}>
-              <TrendingUp size={16} color="#6b7280" />
+              <TrendingUp size={16} color={Colors.text.tertiary} />
             </View>
           </TouchableOpacity>
 
@@ -335,26 +336,26 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.background.primary },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerCenter: { flex: 1 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: '#111827' },
-  headerSubtitle: { fontSize: 14, color: '#6b7280' },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary.dark },
+  headerSubtitle: { fontSize: 14, color: Colors.text.tertiary },
   scrollView: { flex: 1 },
   content: { padding: 16, paddingBottom: 100 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -363,77 +364,77 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
-  fuelHeader: { backgroundColor: '#f9fafb' },
-  activityHeader: { backgroundColor: '#f9fafb' },
-  cardHeaderText: { fontSize: 14, fontWeight: '600', color: '#111827' },
+  fuelHeader: { backgroundColor: Colors.background.secondary },
+  activityHeader: { backgroundColor: Colors.background.secondary },
+  cardHeaderText: { fontSize: 14, fontWeight: '600', color: Colors.primary.dark },
   cardBody: { padding: 24 },
   mainSummary: { alignItems: 'center', marginBottom: 24 },
-  mainValue: { fontSize: 32, fontWeight: '700', color: '#111827', marginBottom: 8 },
-  mainLabel: { fontSize: 14, color: '#6b7280', marginBottom: 4 },
-  dateText: { fontSize: 12, color: '#9ca3af' },
+  mainValue: { fontSize: 32, fontWeight: '700', color: Colors.primary.dark, marginBottom: 8 },
+  mainLabel: { fontSize: 14, color: Colors.text.tertiary, marginBottom: 4 },
+  dateText: { fontSize: 12, color: Colors.text.placeholder },
   statsGrid: { flexDirection: 'row', justifyContent: 'space-around' },
   statItem: { alignItems: 'center' },
-  statValue: { fontSize: 18, fontWeight: '700', color: '#111827' },
-  statLabel: { fontSize: 12, color: '#6b7280' },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: '#111827', marginBottom: 16 },
+  statValue: { fontSize: 18, fontWeight: '700', color: Colors.primary.dark },
+  statLabel: { fontSize: 12, color: Colors.text.tertiary },
+  sectionTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary.dark, marginBottom: 16 },
   stationComparison: { gap: 4, marginTop: 12 },
   stationRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  footerLabel: { fontSize: 12, color: '#6b7280' },
-  footerValue: { fontSize: 12, color: '#6b7280' },
+  footerLabel: { fontSize: 12, color: Colors.text.tertiary },
+  footerValue: { fontSize: 12, color: Colors.text.tertiary },
   highlightBox: { marginTop: 12, padding: 12, backgroundColor: '#eff6ff', borderRadius: 8 },
-  highlightText: { fontSize: 12, color: '#1e40af' },
+  highlightText: { fontSize: 12, color: Colors.info.text },
   bold: { fontWeight: '600' },
   detailsToggle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
     marginBottom: 16,
   },
-  detailsToggleText: { fontSize: 14, fontWeight: '500', color: '#4b5563' },
+  detailsToggleText: { fontSize: 14, fontWeight: '500', color: Colors.text.secondary },
   chevron: { transform: [{ rotate: '0deg' }] },
   chevronRotated: { transform: [{ rotate: '180deg' }] },
   detailsSection: { gap: 16 },
-  detailsCardTitle: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 16 },
+  detailsCardTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary.dark, marginBottom: 16 },
   detailsGrid: { gap: 12 },
   detailRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  fuelDetail: { paddingTop: 8, borderTopWidth: 1, borderTopColor: '#f3f4f6' },
-  detailLabel: { fontSize: 14, color: '#6b7280' },
-  detailValue: { fontSize: 14, fontWeight: '500', color: '#111827' },
-  detailLabelGray: { fontSize: 14, color: '#9ca3af' },
-  detailValueGray: { fontSize: 14, color: '#6b7280' },
+  fuelDetail: { paddingTop: 8, borderTopWidth: 1, borderTopColor: Colors.background.tertiary },
+  detailLabel: { fontSize: 14, color: Colors.text.tertiary },
+  detailValue: { fontSize: 14, fontWeight: '500', color: Colors.primary.dark },
+  detailLabelGray: { fontSize: 14, color: Colors.text.placeholder },
+  detailValueGray: { fontSize: 14, color: Colors.text.tertiary },
   footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   footer: {
     flexDirection: 'row',
     gap: 12,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: Colors.border.DEFAULT,
   },
   reviewButton: {
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
   },
-  reviewButtonText: { fontSize: 16, fontWeight: '600', color: '#6b7280' },
-  completeButton: { flex: 1, paddingVertical: 16, backgroundColor: '#1f2937', borderRadius: 16, alignItems: 'center' },
-  completeButtonText: { fontSize: 16, fontWeight: '600', color: '#fff' },
+  reviewButtonText: { fontSize: 16, fontWeight: '600', color: Colors.text.tertiary },
+  completeButton: { flex: 1, paddingVertical: 16, backgroundColor: Colors.primary.DEFAULT, borderRadius: 16, alignItems: 'center' },
+  completeButtonText: { fontSize: 16, fontWeight: '600', color: Colors.background.primary },
 });

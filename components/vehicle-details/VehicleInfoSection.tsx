@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Car } from 'lucide-react-native';
 
 interface InfoItem {
@@ -17,7 +18,7 @@ export const VehicleInfoSection = ({ items }: VehicleInfoSectionProps) => {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Car size={20} color="#374151" />
+        <Car size={20} color={Colors.primary.light} />
         <Text style={styles.sectionTitle}>Informações do Veículo</Text>
       </View>
       <View style={styles.sectionContent}>
@@ -41,10 +42,10 @@ export const VehicleInfoSection = ({ items }: VehicleInfoSectionProps) => {
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
   },
   sectionHeader: {
@@ -53,12 +54,12 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   sectionContent: {
     padding: 16,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   gridItem: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
     width: '48%',
@@ -79,17 +80,17 @@ const styles = StyleSheet.create({
   },
   gridLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   gridValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   gridValueBold: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

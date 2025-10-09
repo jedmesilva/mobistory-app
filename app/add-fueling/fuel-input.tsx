@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, AlertCircle, Check, Edit3 } from 'lucide-react-native';
 import {
@@ -69,11 +70,11 @@ export default function FuelInputScreen() {
   };
 
   const fuelTypes = [
-    { id: 'gasolina_comum', name: 'Gasolina Comum', color: { bg: '#fee2e2', text: '#991b1b' } },
-    { id: 'gasolina_aditivada', name: 'Gasolina Aditivada', color: { bg: '#fee2e2', text: '#991b1b' } },
-    { id: 'etanol', name: 'Etanol', color: { bg: '#dcfce7', text: '#166534' } },
-    { id: 'diesel', name: 'Diesel', color: { bg: '#fef3c7', text: '#854d0e' } },
-    { id: 'gnv', name: 'GNV', color: { bg: '#dbeafe', text: '#1e40af' } },
+    { id: 'gasolina_comum', name: 'Gasolina Comum', color: { bg: Colors.error.light, text: Colors.error.text } },
+    { id: 'gasolina_aditivada', name: 'Gasolina Aditivada', color: { bg: Colors.error.light, text: Colors.error.text } },
+    { id: 'etanol', name: 'Etanol', color: { bg: Colors.success.light, text: Colors.success.text } },
+    { id: 'diesel', name: 'Diesel', color: { bg: Colors.warning.light, text: '#854d0e' } },
+    { id: 'gnv', name: 'GNV', color: { bg: Colors.info.light, text: Colors.info.text } },
   ];
 
   const formatPrice = (value: string) => value.replace(/[^\d,]/g, '');
@@ -344,7 +345,7 @@ export default function FuelInputScreen() {
 
   const getFuelTypeColor = (fuelType: string) => {
     const type = fuelTypes.find((t) => t.name === fuelType);
-    return type ? type.color : { bg: '#f3f4f6', text: '#1f2937' };
+    return type ? type.color : { bg: Colors.background.tertiary, text: Colors.primary.DEFAULT };
   };
 
   return (
@@ -352,7 +353,7 @@ export default function FuelInputScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-          <ArrowLeft size={20} color="#4b5563" />
+          <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Registrar Abastecimento</Text>
@@ -384,7 +385,7 @@ export default function FuelInputScreen() {
           {editingIndex !== null && (
             <View style={styles.card}>
               <View style={[styles.cardHeader, styles.editHeader]}>
-                <Edit3 size={16} color="#1e40af" />
+                <Edit3 size={16} color={Colors.info.text} />
                 <View style={styles.headerContent}>
                   <Text style={styles.editHeaderText}>Editando Combustível</Text>
                   <TouchableOpacity
@@ -424,7 +425,7 @@ export default function FuelInputScreen() {
           {fuelItems.length > 0 && editingIndex === null && (
             <View style={styles.card}>
               <View style={[styles.cardHeader, styles.greenHeader]}>
-                <Check size={16} color="#166534" />
+                <Check size={16} color={Colors.success.text} />
                 <Text style={styles.greenHeaderText}>Combustíveis Adicionados</Text>
               </View>
 
@@ -459,7 +460,7 @@ export default function FuelInputScreen() {
 
           {error && (
             <View style={styles.errorBox}>
-              <AlertCircle size={16} color="#dc2626" />
+              <AlertCircle size={16} color={Colors.error.dark} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
@@ -514,22 +515,22 @@ export default function FuelInputScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -540,11 +541,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   scrollView: {
     flex: 1,
@@ -554,10 +555,10 @@ const styles = StyleSheet.create({
     paddingBottom: 200,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -566,9 +567,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   headerContent: {
     flex: 1,
@@ -582,15 +583,15 @@ const styles = StyleSheet.create({
   cancelLink: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   sectionHeader: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   greenHeader: {
     backgroundColor: '#f0fdf4',
@@ -598,7 +599,7 @@ const styles = StyleSheet.create({
   greenHeaderText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#166534',
+    color: Colors.success.text,
   },
   editHeader: {
     backgroundColor: '#eff6ff',
@@ -606,11 +607,11 @@ const styles = StyleSheet.create({
   editHeaderText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1e40af',
+    color: Colors.info.text,
   },
   fuelsList: {
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: Colors.background.tertiary,
   },
   errorBox: {
     flexDirection: 'row',
@@ -619,12 +620,12 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: '#fef2f2',
     borderWidth: 1,
-    borderColor: '#fee2e2',
+    borderColor: Colors.error.light,
     borderRadius: 12,
   },
   errorText: {
     fontSize: 14,
-    color: '#dc2626',
+    color: Colors.error.dark,
     flex: 1,
   },
   processingBox: {
@@ -633,22 +634,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 12,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
   },
   spinner: {
     width: 20,
     height: 20,
     borderWidth: 2,
-    borderColor: '#3b82f6',
+    borderColor: Colors.info.DEFAULT,
     borderTopColor: 'transparent',
     borderRadius: 10,
   },
   processingText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   contextSection: {
     marginTop: 32,
@@ -656,7 +657,7 @@ const styles = StyleSheet.create({
   contextTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
@@ -667,29 +668,29 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   footer: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: Colors.border.DEFAULT,
   },
   continueButton: {
     margin: 16,
     paddingVertical: 16,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
   },
   continueButtonDisabled: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
   },
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   continueButtonTextDisabled: {
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Info } from 'lucide-react-native';
 
 interface ConsumptionAnalysisCardProps {
@@ -24,7 +25,7 @@ export const ConsumptionAnalysisCard = ({ consumption, status }: ConsumptionAnal
       </View>
 
       <View style={styles.infoBox}>
-        <Info size={20} color="#6b7280" />
+        <Info size={20} color={Colors.text.tertiary} />
         <View style={styles.infoContent}>
           <Text style={styles.infoTitle}>Avaliação do Consumo</Text>
           <Text style={styles.infoText}>{status.message}</Text>
@@ -47,31 +48,31 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   label: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   badge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
   },
   badgeText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#4b5563',
+    color: Colors.text.secondary,
   },
   infoBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
   },
   infoContent: {
@@ -80,12 +81,12 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   infoText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     lineHeight: 18,
   },
 });

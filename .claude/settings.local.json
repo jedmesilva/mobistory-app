@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(npx expo:*)",
+      "Read(//c/Users/Dell/Desktop/**)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdiciona tela de histórico do veículo com recursos completos\n\n- Implementa tela de histórico do veículo ([id].tsx) em React Native\n- Converte design do React web mantendo mesma estrutura e estilo\n- Adiciona navegação da lista de veículos para histórico detalhado\n- Implementa timeline de eventos do veículo (abastecimento, manutenção, etc)\n- Adiciona comportamento de scroll inteligente para esconder/mostrar header e footer\n- Integra expo-image-picker para captura de fotos e seleção de galeria\n- Implementa SafeArea corretamente em todas as seções\n- Adiciona modal de captura inteligente com opções de câmera, voz e galeria\n- Corrige encoding de caracteres acentuados\n- Adiciona ícones SVG customizados (odômetro e tanque de combustível)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nRefatora aplicativo com arquitetura modular de componentes\n\n- Cria estrutura de componentes reutilizáveis organizados por tipo\n- Separa ícones SVG customizados (OdometerIcon, FuelTankIcon) em components/icons/\n- Cria componentes UI base (SearchBar) em components/ui/\n- Desenvolve componentes específicos de veículo em components/vehicle/:\n  * VehicleCard: Card de veículo com suporte a estado histórico\n  * SectionHeader: Cabeçalho de seção com toggle de histórico\n  * ActivityCard: Card de atividade para timeline de eventos\n- Define tipos TypeScript compartilhados em types/vehicle.ts\n- Refatora app/index.tsx para usar componentes modulares\n- Refatora app/vehicle-history/[id].tsx para usar componentes modulares\n- Adiciona SafeArea bottom na tela de lista de veículos\n- Mantém exatamente o mesmo design e comportamento em todas as telas\n- Melhora manutenibilidade e reusabilidade do código\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist)",
+      "Bash(del nul)",
+      "Bash(git reset:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(python:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

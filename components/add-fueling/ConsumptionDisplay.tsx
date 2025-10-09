@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 interface ConsumptionDisplayProps {
   km: string;
@@ -36,18 +37,18 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
     marginBottom: 4,
   },
   value: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1e40af',
+    color: Colors.info.text,
     marginBottom: 8,
   },
   note: {
     fontSize: 12,
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
     marginTop: 4,
   },
 });

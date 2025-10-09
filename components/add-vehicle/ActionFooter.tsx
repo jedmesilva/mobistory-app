@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { CaptureButton } from '../ui/CaptureButton';
 
 interface ActionFooterProps {
@@ -71,16 +72,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   footer: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: Colors.border.DEFAULT,
     borderLeftWidth: 1,
-    borderLeftColor: '#e5e7eb',
+    borderLeftColor: Colors.border.DEFAULT,
     borderRightWidth: 1,
-    borderRightColor: '#e5e7eb',
+    borderRightColor: Colors.border.DEFAULT,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     overflow: 'hidden',
@@ -89,20 +90,20 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   primaryButton: {
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: 'center',
   },
   primaryButtonDisabled: {
-    backgroundColor: '#d1d5db',
+    backgroundColor: Colors.border.dark,
   },
   primaryButtonText: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   primaryButtonTextDisabled: {
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
 });

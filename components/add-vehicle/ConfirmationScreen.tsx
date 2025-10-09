@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Check } from 'lucide-react-native';
 import { StepHeader } from './StepHeader';
 import { ConfirmationField } from './ConfirmationField';
@@ -32,7 +33,7 @@ export const ConfirmationScreen = ({
   return (
     <View style={styles.confirmationContainer}>
       <StepHeader
-        icon={<Check size={32} color="#fff" />}
+        icon={<Check size={32} color={Colors.background.primary} />}
         title="Confirme os dados do veículo"
         subtitle="Revise e edite se necessário"
         isSuccess
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   confirmationCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     padding: 24,
     gap: 16,
@@ -136,11 +137,11 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
   },
   confirmationValue: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

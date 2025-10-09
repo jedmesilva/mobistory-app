@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Fuel, Zap, Leaf } from 'lucide-react-native';
 
 export interface FuelTypeOption {
@@ -16,15 +17,15 @@ interface FuelTypeSelectorProps {
 
 const getFuelIcon = (fuelId: string, iconType?: string) => {
   const iconColors: { [key: string]: string } = {
-    gasoline: '#ef4444', // Vermelho
-    ethanol: '#3b82f6',  // Azul
-    diesel: '#f59e0b',   // Amarelo/Dourado
-    flex: '#a855f7',     // Roxo
-    electric: '#06b6d4', // Ciano (azul elétrico)
-    hybrid: '#10b981',   // Verde
+    gasoline: Colors.error.DEFAULT, // Vermelho
+    ethanol: Colors.info.DEFAULT,  // Azul
+    diesel: Colors.warning.DEFAULT,   // Amarelo/Dourado
+    flex: Colors.fuel.flex,     // Roxo
+    electric: Colors.fuel.electric, // Ciano (azul elétrico)
+    hybrid: Colors.success.DEFAULT,   // Verde
   };
 
-  const color = iconColors[fuelId] || '#4b5563';
+  const color = iconColors[fuelId] || Colors.text.secondary;
 
   switch (iconType) {
     case 'electric':
@@ -72,15 +73,15 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
   },
   fuelTypeButtonActive: {
-    borderColor: '#1f2937',
-    backgroundColor: '#f9fafb',
+    borderColor: Colors.primary.DEFAULT,
+    backgroundColor: Colors.background.secondary,
   },
   fuelTypeText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { Colors } from '@/constants';
 import { ChevronDown, Plus } from 'lucide-react-native';
 
 interface FuelType {
@@ -65,7 +66,7 @@ export const AddFuelForm = ({
             <Text style={currentItem.fuelType ? styles.dropdownTextFilled : styles.dropdownTextEmpty}>
               {currentItem.fuelType || 'Selecione o combustível'}
             </Text>
-            <ChevronDown size={20} color="#9ca3af" />
+            <ChevronDown size={20} color={Colors.text.placeholder} />
           </TouchableOpacity>
 
           {showFuelDropdown && (
@@ -91,8 +92,7 @@ export const AddFuelForm = ({
               value={currentItem.liters}
               onChangeText={(text) => onInputChange('liters', text)}
               placeholder="45,0"
-              placeholderTextColor="#9ca3af"
-              keyboardType="numeric"
+              placeholderTextColor={Colors.text.placeholder}               keyboardType="numeric"
               style={styles.input}
             />
           </View>
@@ -103,8 +103,7 @@ export const AddFuelForm = ({
               value={currentItem.pricePerLiter}
               onChangeText={(text) => onInputChange('pricePerLiter', text)}
               placeholder="5,49"
-              placeholderTextColor="#9ca3af"
-              keyboardType="numeric"
+              placeholderTextColor={Colors.text.placeholder}               keyboardType="numeric"
               style={styles.input}
             />
           </View>
@@ -116,8 +115,7 @@ export const AddFuelForm = ({
             value={currentItem.totalPrice}
             onChangeText={(text) => onInputChange('totalPrice', text)}
             placeholder="255,30"
-            placeholderTextColor="#9ca3af"
-            keyboardType="numeric"
+            placeholderTextColor={Colors.text.placeholder}             keyboardType="numeric"
             style={styles.input}
           />
         </View>
@@ -134,7 +132,7 @@ export const AddFuelForm = ({
           disabled={!canAddItem}
           style={[styles.addButton, !canAddItem && styles.addButtonDisabled]}
         >
-          <Plus size={16} color={canAddItem ? '#fff' : '#9ca3af'} />
+          <Plus size={16} color={canAddItem ? Colors.background.primary : Colors.text.placeholder} />
           <Text style={[styles.addButtonText, !canAddItem && styles.addButtonTextDisabled]}>
             {editingIndex !== null ? 'Atualizar' : 'Adicionar'}
           </Text>
@@ -156,10 +154,10 @@ export const AddFuelForm = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -169,16 +167,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   cancelText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   body: {
     padding: 16,
@@ -192,7 +190,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
     marginBottom: 8,
   },
   dropdown: {
@@ -200,36 +198,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 12,
   },
   dropdownTextFilled: {
     fontSize: 14,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   dropdownTextEmpty: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
   dropdownMenu: {
     marginTop: 4,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     overflow: 'hidden',
   },
   dropdownItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   dropdownItemText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   inputsGrid: {
     flexDirection: 'row',
@@ -241,28 +239,28 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   calculatedBox: {
     padding: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     marginBottom: 16,
   },
   calculatedLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   calculatedValue: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   addButton: {
     flexDirection: 'row',
@@ -270,18 +268,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     paddingVertical: 12,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 12,
   },
   addButtonDisabled: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
   },
   addButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   addButtonTextDisabled: {
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
 });

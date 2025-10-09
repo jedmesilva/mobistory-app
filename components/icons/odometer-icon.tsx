@@ -1,12 +1,13 @@
 import React from 'react';
 import Svg, { Rect, Text as SvgText } from 'react-native-svg';
+import { Colors } from '@/constants';
 
 interface OdometerIconProps {
   size?: number;
   color?: string;
 }
 
-export const OdometerIcon = ({ size = 24, color = '#fff' }: OdometerIconProps) => {
+export const OdometerIcon = ({ size = 24, color = Colors.background.primary }: OdometerIconProps) => {
   const width = size * 1.6;
   const height = size;
 

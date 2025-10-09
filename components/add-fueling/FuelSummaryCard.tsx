@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 interface FuelSummaryCardProps {
   totalLiters: number;
@@ -24,12 +25,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   values: {
     alignItems: 'flex-end',
@@ -37,10 +38,10 @@ const styles = StyleSheet.create({
   liters: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   price: {
     fontSize: 14,
-    color: '#4b5563',
+    color: Colors.text.secondary,
   },
 });

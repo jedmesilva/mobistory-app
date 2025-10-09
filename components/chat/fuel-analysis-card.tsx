@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Fuel, TrendingDown } from 'lucide-react-native';
 
 interface FuelAnalysisCardProps {
@@ -13,7 +14,7 @@ export const FuelAnalysisCard = ({ volume, consumption, price }: FuelAnalysisCar
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Fuel size={16} color="#fff" />
+          <Fuel size={16} color={Colors.background.primary} />
         </View>
         <Text style={styles.title}>Análise de Abastecimento</Text>
       </View>
@@ -35,7 +36,7 @@ export const FuelAnalysisCard = ({ volume, consumption, price }: FuelAnalysisCar
           <View style={styles.priceHeader}>
             <Text style={styles.statLabel}>Preço médio/L</Text>
             <View style={styles.trendBadge}>
-              <TrendingDown size={12} color="#10b981" />
+              <TrendingDown size={12} color={Colors.success.DEFAULT} />
               <Text style={styles.trendText}>-5%</Text>
             </View>
           </View>
@@ -48,10 +49,10 @@ export const FuelAnalysisCard = ({ volume, consumption, price }: FuelAnalysisCar
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     padding: 16,
     marginTop: 12,
     marginBottom: 12,
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 32,
     height: 32,
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.info.DEFAULT,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -73,23 +74,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   volumeSection: {
     marginBottom: 16,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   volumeLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   volumeValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
   },
   content: {
     flexDirection: 'row',
@@ -100,18 +101,18 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   statValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   divider: {
     width: 1,
     height: 40,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.border.DEFAULT,
     marginHorizontal: 16,
   },
   priceHeader: {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
-    backgroundColor: '#d1fae5',
+    backgroundColor: Colors.success.light,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -132,6 +133,6 @@ const styles = StyleSheet.create({
   trendText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#10b981',
+    color: Colors.success.DEFAULT,
   },
 });

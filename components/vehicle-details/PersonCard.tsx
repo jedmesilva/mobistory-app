@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { ChevronRight } from 'lucide-react-native';
 
 export interface LinkedPerson {
@@ -21,8 +22,8 @@ interface PersonCardProps {
 }
 
 const relationshipConfig = {
-  owner: { label: 'Proprietário', badge: { bg: '#eff6ff', text: '#1d4ed8', border: '#dbeafe' } },
-  renter: { label: 'Locatário', badge: { bg: '#f0fdf4', text: '#15803d', border: '#dcfce7' } },
+  owner: { label: 'Proprietário', badge: { bg: '#eff6ff', text: '#1d4ed8', border: Colors.info.light } },
+  renter: { label: 'Locatário', badge: { bg: '#f0fdf4', text: '#15803d', border: Colors.success.light } },
   authorized_driver: { label: 'Condutor', badge: { bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' } },
 };
 
@@ -61,21 +62,21 @@ export const PersonCard = ({ person, onClick, isSelected, isHistorical = false }
             style={[
               styles.personBadge,
               {
-                backgroundColor: isHistorical ? '#f3f4f6' : config.badge.bg,
-                borderColor: isHistorical ? '#e5e7eb' : config.badge.border,
+                backgroundColor: isHistorical ? Colors.background.tertiary : config.badge.bg,
+                borderColor: isHistorical ? Colors.border.DEFAULT : config.badge.border,
               },
             ]}
           >
             <Text
               style={[
                 styles.personBadgeText,
-                { color: isHistorical ? '#6b7280' : config.badge.text },
+                { color: isHistorical ? Colors.text.tertiary : config.badge.text },
               ]}
             >
               {config.label}
             </Text>
           </View>
-          <ChevronRight size={20} color="#9ca3af" />
+          <ChevronRight size={20} color={Colors.text.placeholder} />
         </View>
       </View>
       <View style={styles.personCardFooter}>
@@ -98,14 +99,14 @@ export const PersonCard = ({ person, onClick, isSelected, isHistorical = false }
 
 const styles = StyleSheet.create({
   personCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     padding: 16,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
   },
   personCardSelected: {
-    borderColor: '#1f2937',
+    borderColor: Colors.primary.DEFAULT,
   },
   personCardHistorical: {
     opacity: 0.6,
@@ -126,29 +127,29 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
   },
   personAvatarHistorical: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: Colors.text.placeholder,
   },
   personAvatarText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 14,
     fontWeight: '600',
   },
   personName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   personNameHistorical: {
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   personEmail: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   personCardRight: {
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: Colors.background.tertiary,
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 16,
@@ -180,15 +181,15 @@ const styles = StyleSheet.create({
   },
   personCardFooterLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   personCardFooterValue: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   personCardFooterValueHistorical: {
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
 });

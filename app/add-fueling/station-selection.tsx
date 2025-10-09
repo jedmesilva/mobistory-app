@@ -9,6 +9,7 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { useRouter } from 'expo-router';
 import {
   ArrowLeft,
@@ -190,7 +191,7 @@ export default function StationSelectionScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-          <ArrowLeft size={20} color="#4b5563" />
+          <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Selecionar Posto</Text>
@@ -263,7 +264,7 @@ export default function StationSelectionScreen() {
                       Não encontrou o posto que procura?
                     </Text>
                     <TouchableOpacity onPress={handleAddStation} style={styles.addButton}>
-                      <Plus size={16} color="#fff" />
+                      <Plus size={16} color={Colors.background.primary} />
                       <Text style={styles.addButtonText}>Adicionar Posto Manualmente</Text>
                     </TouchableOpacity>
                   </View>
@@ -276,7 +277,7 @@ export default function StationSelectionScreen() {
           {showAddStation && (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <Plus size={16} color="#4b5563" />
+                <Plus size={16} color={Colors.text.secondary} />
                 <Text style={styles.cardHeaderText}>Adicionar Novo Posto</Text>
               </View>
 
@@ -289,8 +290,7 @@ export default function StationSelectionScreen() {
                       setNewStationForm((prev) => ({ ...prev, name: text }))
                     }
                     placeholder="Ex: Shell da Esquina, Posto do João, etc."
-                    placeholderTextColor="#9ca3af"
-                    style={styles.input}
+                    placeholderTextColor={Colors.text.placeholder}                     style={styles.input}
                   />
                   <Text style={styles.hint}>
                     Pode ser o nome oficial ou um apelido que você usa
@@ -305,8 +305,7 @@ export default function StationSelectionScreen() {
                       setNewStationForm((prev) => ({ ...prev, address: text }))
                     }
                     placeholder="Ex: Av. Paulista, 1000 ou próximo ao shopping"
-                    placeholderTextColor="#9ca3af"
-                    style={styles.input}
+                    placeholderTextColor={Colors.text.placeholder}                     style={styles.input}
                   />
                   <Text style={styles.hint}>
                     Endereço completo ou uma referência que te ajude a lembrar
@@ -352,7 +351,7 @@ export default function StationSelectionScreen() {
               {recentStations.length > 0 && (
                 <View style={styles.card}>
                   <View style={[styles.cardHeader, styles.sectionHeader]}>
-                    <Clock size={16} color="#4b5563" />
+                    <Clock size={16} color={Colors.text.secondary} />
                     <Text style={styles.sectionTitle}>Postos Recentes</Text>
                   </View>
 
@@ -371,7 +370,7 @@ export default function StationSelectionScreen() {
               {/* Nearby Stations */}
               <View style={styles.card}>
                 <View style={[styles.cardHeader, styles.sectionHeader]}>
-                  <MapPin size={16} color="#4b5563" />
+                  <MapPin size={16} color={Colors.text.secondary} />
                   <Text style={styles.sectionTitle}>Postos Próximos</Text>
                 </View>
 
@@ -425,22 +424,22 @@ export default function StationSelectionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -451,11 +450,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   scrollView: {
     flex: 1,
@@ -465,10 +464,10 @@ const styles = StyleSheet.create({
     paddingBottom: 160,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -477,22 +476,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   sectionHeader: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
   },
   cardHeaderText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   cardBody: {
     padding: 16,
@@ -501,10 +500,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   searchResultsCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -515,12 +514,12 @@ const styles = StyleSheet.create({
   noResultsTitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   noResultsSubtitle: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
     marginBottom: 16,
   },
   addButton: {
@@ -529,13 +528,13 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 8,
   },
   addButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   formGroup: {
     marginBottom: 16,
@@ -543,21 +542,21 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   hint: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 4,
   },
   formActions: {
@@ -568,44 +567,44 @@ const styles = StyleSheet.create({
   saveButton: {
     flex: 1,
     paddingVertical: 12,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 12,
     alignItems: 'center',
   },
   saveButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   cancelButton: {
     flex: 1,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
     alignItems: 'center',
   },
   cancelButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   stationsList: {
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: Colors.background.tertiary,
   },
   footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   footer: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: Colors.border.DEFAULT,
   },
   footerActions: {
     flexDirection: 'row',
@@ -615,7 +614,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -623,12 +622,12 @@ const styles = StyleSheet.create({
   skipButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   continueButton: {
     flex: 1,
     paddingVertical: 16,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -636,11 +635,11 @@ const styles = StyleSheet.create({
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   continueButtonFull: {
     paddingVertical: 16,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
   },

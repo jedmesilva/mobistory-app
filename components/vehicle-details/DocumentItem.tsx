@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { FileText, Eye, Download } from 'lucide-react-native';
 
 export interface Document {
@@ -23,7 +24,7 @@ export const DocumentItem = ({ document, onView, onDownload }: DocumentItemProps
     <View style={styles.documentItem}>
       <View style={styles.documentLeft}>
         <View style={styles.documentIcon}>
-          <FileText size={20} color="#374151" />
+          <FileText size={20} color={Colors.primary.light} />
         </View>
         <View style={styles.documentInfo}>
           <Text style={styles.documentName} numberOfLines={1}>
@@ -43,13 +44,13 @@ export const DocumentItem = ({ document, onView, onDownload }: DocumentItemProps
           style={styles.documentActionButton}
           onPress={() => onView?.(document)}
         >
-          <Eye size={16} color="#4b5563" />
+          <Eye size={16} color={Colors.text.secondary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.documentActionButton}
           onPress={() => onDownload?.(document)}
         >
-          <Download size={16} color="#4b5563" />
+          <Download size={16} color={Colors.text.secondary} />
         </TouchableOpacity>
       </View>
     </View>
@@ -58,7 +59,7 @@ export const DocumentItem = ({ document, onView, onDownload }: DocumentItemProps
 
 const styles = StyleSheet.create({
   documentItem: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
     flexDirection: 'row',
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   documentIcon: {
     width: 40,
     height: 40,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
   documentName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   documentMeta: {
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   },
   documentMetaText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   documentActions: {
     flexDirection: 'row',
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   documentActionButton: {
     width: 32,
     height: 32,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.border.DEFAULT,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',

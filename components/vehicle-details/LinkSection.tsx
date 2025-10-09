@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { History, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { PersonCard, LinkedPerson } from './PersonCard';
 
@@ -32,12 +33,12 @@ export const LinkSection = ({
         </Text>
         {formerPeople.length > 0 && (
           <TouchableOpacity style={styles.historyButton} onPress={onToggleHistory}>
-            <History size={16} color="#6b7280" />
+            <History size={16} color={Colors.text.tertiary} />
             <Text style={styles.historyButtonText}>Anteriores ({formerPeople.length})</Text>
             {showHistory ? (
-              <ChevronUp size={16} color="#6b7280" />
+              <ChevronUp size={16} color={Colors.text.tertiary} />
             ) : (
-              <ChevronDown size={16} color="#6b7280" />
+              <ChevronDown size={16} color={Colors.text.tertiary} />
             )}
           </TouchableOpacity>
         )}
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   linkSectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   historyButton: {
     flexDirection: 'row',
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   },
   historyButtonText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   linkList: {
     gap: 12,

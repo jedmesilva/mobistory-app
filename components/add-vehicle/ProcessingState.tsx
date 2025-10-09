@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Sparkles } from 'lucide-react-native';
 
 export const ProcessingState = () => {
   return (
     <View style={styles.processingContainer}>
       <View style={styles.processingIcon}>
-        <Sparkles size={32} color="#fff" />
+        <Sparkles size={32} color={Colors.background.primary} />
       </View>
       <Text style={styles.processingTitle}>Identificando seu veículo...</Text>
       <Text style={styles.processingSubtitle}>
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
   processingIcon: {
     width: 64,
     height: 64,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -35,12 +36,12 @@ const styles = StyleSheet.create({
   processingTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 8,
   },
   processingSubtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textAlign: 'center',
   },
 });

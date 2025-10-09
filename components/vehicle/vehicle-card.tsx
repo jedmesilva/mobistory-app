@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Car, ChevronRight } from 'lucide-react-native';
 
 interface VehicleCardProps {
@@ -27,7 +28,7 @@ export const VehicleCard = ({
     >
       <View style={styles.cardRow}>
         <View style={[styles.iconBox, isHistorical && styles.iconBoxHistorical]}>
-          <Car size={28} color="#fff" />
+          <Car size={28} color={Colors.background.primary} />
         </View>
 
         <View style={styles.cardInfo}>
@@ -64,7 +65,7 @@ export const VehicleCard = ({
 
         <ChevronRight
           size={20}
-          color={isHistorical ? "#9ca3af" : "#6b7280"}
+          color={isHistorical ? Colors.text.placeholder : Colors.text.tertiary}
         />
       </View>
     </Pressable>
@@ -73,10 +74,10 @@ export const VehicleCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 12,
     padding: 16,
   },
@@ -91,13 +92,13 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 56,
     height: 56,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconBoxHistorical: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: Colors.text.placeholder,
   },
   cardInfo: {
     flex: 1,
@@ -105,18 +106,18 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 8,
   },
   badge: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -124,25 +125,25 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   badgeHistorical: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
   },
   badgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#374151',
+    color: Colors.primary.light,
   },
   badgeTextHistorical: {
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   textHistorical: {
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: Colors.background.tertiary,
     gap: 16,
   },
   footerItem: {
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   footerLabel: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
     letterSpacing: 0.5,
   },
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
   footerValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   footerValueRight: {
     textAlign: 'right',

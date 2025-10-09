@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { ArrowLeft, Car, Check, X } from 'lucide-react-native';
 import { ProgressCircle } from './ProgressCircle';
 import { ColorOption } from './ColorSelector';
@@ -31,9 +32,9 @@ export const VehicleHeader = ({
     <View style={styles.header}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
         {isFirstStep ? (
-          <X size={24} color="#4b5563" />
+          <X size={24} color={Colors.text.secondary} />
         ) : (
-          <ArrowLeft size={24} color="#4b5563" />
+          <ArrowLeft size={24} color={Colors.text.secondary} />
         )}
       </TouchableOpacity>
     </View>

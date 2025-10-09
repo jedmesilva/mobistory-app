@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { MapPin, Clock, Star } from 'lucide-react-native';
 
 export interface Station {
@@ -34,14 +35,14 @@ export const StationCard = ({ station, onPress, showPrice = true }: StationCardP
           {station.isFavorite && <Star size={16} color="#eab308" fill="#eab308" />}
         </View>
         <View style={styles.addressRow}>
-          <MapPin size={12} color="#6b7280" />
+          <MapPin size={12} color={Colors.text.tertiary} />
           <Text style={styles.address}>{station.address}</Text>
         </View>
         <View style={styles.metaRow}>
           <Text style={styles.distance}>{station.distance}</Text>
           {station.lastVisit && (
             <View style={styles.lastVisit}>
-              <Clock size={12} color="#9ca3af" />
+              <Clock size={12} color={Colors.text.placeholder} />
               <Text style={styles.lastVisitText}>
                 Último: {new Date(station.lastVisit).toLocaleDateString('pt-BR')}
               </Text>
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   content: {
     flex: 1,
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   addressRow: {
     flexDirection: 'row',
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   },
   address: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     flex: 1,
   },
   metaRow: {
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   },
   distance: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
   lastVisit: {
     flexDirection: 'row',
@@ -104,11 +105,11 @@ const styles = StyleSheet.create({
   },
   lastVisitText: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
   price: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#4b5563',
+    color: Colors.text.secondary,
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { Camera, Mic, Image, ChevronRight } from 'lucide-react-native';
 
 interface CaptureOption {
@@ -47,13 +48,13 @@ export const SmartCaptureModal = ({
               style={[styles.option, disabled && styles.optionDisabled]}
             >
               <View style={styles.optionIcon}>
-                <Camera size={24} color="#fff" />
+                <Camera size={24} color={Colors.background.primary} />
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Tirar Foto</Text>
                 <Text style={styles.optionSubtitle}>{options.camera}</Text>
               </View>
-              <ChevronRight size={20} color="#9ca3af" />
+              <ChevronRight size={20} color={Colors.text.placeholder} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -62,13 +63,13 @@ export const SmartCaptureModal = ({
               style={[styles.option, disabled && styles.optionDisabled]}
             >
               <View style={styles.optionIcon}>
-                <Mic size={24} color="#fff" />
+                <Mic size={24} color={Colors.background.primary} />
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Comando de Voz</Text>
                 <Text style={styles.optionSubtitle}>{options.voice}</Text>
               </View>
-              <ChevronRight size={20} color="#9ca3af" />
+              <ChevronRight size={20} color={Colors.text.placeholder} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -77,13 +78,13 @@ export const SmartCaptureModal = ({
               style={[styles.option, disabled && styles.optionDisabled]}
             >
               <View style={styles.optionIcon}>
-                <Image size={24} color="#fff" />
+                <Image size={24} color={Colors.background.primary} />
               </View>
               <View style={styles.optionText}>
                 <Text style={styles.optionTitle}>Enviar da Galeria</Text>
                 <Text style={styles.optionSubtitle}>{options.gallery}</Text>
               </View>
-              <ChevronRight size={20} color="#9ca3af" />
+              <ChevronRight size={20} color={Colors.text.placeholder} />
             </TouchableOpacity>
           </View>
 
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   content: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
   handle: {
     width: 48,
     height: 4,
-    backgroundColor: '#d1d5db',
+    backgroundColor: Colors.border.dark,
     borderRadius: 2,
     alignSelf: 'center',
     marginBottom: 24,
@@ -130,12 +131,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textAlign: 'center',
   },
   body: {
@@ -147,9 +148,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
   },
   optionDisabled: {
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
   optionIcon: {
     width: 48,
     height: 48,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -169,12 +170,12 @@ const styles = StyleSheet.create({
   optionTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 2,
   },
   optionSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   cancelButton: {
     paddingVertical: 12,
@@ -183,6 +184,6 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
 });

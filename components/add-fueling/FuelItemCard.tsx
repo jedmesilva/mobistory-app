@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { X } from 'lucide-react-native';
 
 interface FuelItem {
@@ -54,7 +55,7 @@ export const FuelItemCard = ({
           <Text style={styles.editButton}>Editar</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => onRemove(index)} style={styles.removeButton}>
-          <X size={16} color="#dc2626" />
+          <X size={16} color={Colors.error.dark} />
         </TouchableOpacity>
       </View>
     </View>
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   content: {
     flex: 1,
@@ -91,18 +92,18 @@ const styles = StyleSheet.create({
   liters: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   percentageBadge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
-    backgroundColor: '#dbeafe',
+    backgroundColor: Colors.info.light,
     borderRadius: 12,
   },
   percentageText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
   },
   meta: {
     flexDirection: 'row',
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   actions: {
     flexDirection: 'row',
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
   editButton: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
   },
   removeButton: {
     width: 32,

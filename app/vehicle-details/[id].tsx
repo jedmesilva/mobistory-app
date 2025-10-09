@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Car,
@@ -207,7 +208,7 @@ export default function VehicleDetailsScreen() {
         ]}
       >
         <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
-          <ArrowLeft size={20} color="#4b5563" />
+          <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle} numberOfLines={1}>
@@ -221,7 +222,7 @@ export default function VehicleDetailsScreen() {
           style={styles.headerButton}
           onPress={() => setShowSensitiveData(!showSensitiveData)}
         >
-          {showSensitiveData ? <EyeOff size={20} color="#4b5563" /> : <Eye size={20} color="#4b5563" />}
+          {showSensitiveData ? <EyeOff size={20} color={Colors.text.secondary} /> : <Eye size={20} color={Colors.text.secondary} />}
         </TouchableOpacity>
       </Animated.View>
 
@@ -287,7 +288,7 @@ export default function VehicleDetailsScreen() {
             <View style={styles.documentsHeader}>
               <Text style={styles.documentsTitle}>Documentos Anexados</Text>
               <TouchableOpacity style={styles.uploadButton}>
-                <Upload size={16} color="#fff" />
+                <Upload size={16} color={Colors.background.primary} />
                 <Text style={styles.uploadButtonText}>Adicionar</Text>
               </TouchableOpacity>
             </View>
@@ -348,7 +349,7 @@ export default function VehicleDetailsScreen() {
             </Text>
           </View>
           <TouchableOpacity style={styles.newLinkButton}>
-            <UserPlus size={16} color="#fff" />
+            <UserPlus size={16} color={Colors.background.primary} />
             <Text style={styles.newLinkButtonText}>Novo vínculo</Text>
           </TouchableOpacity>
         </View>
@@ -402,22 +403,22 @@ export default function VehicleDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     paddingHorizontal: 16,
     paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerButton: {
     width: 44,
     height: 44,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -430,11 +431,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   scrollView: {
@@ -447,7 +448,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   infoRow: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
     flexDirection: 'row',
@@ -456,17 +457,17 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   infoValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   infoValueMono: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     fontFamily: 'monospace',
   },
   infoGrid: {
@@ -474,30 +475,30 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   gridItem: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
     flex: 1,
   },
   gridLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   gridValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   tireInfo: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
   },
   tireInfoTitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
     marginBottom: 8,
   },
   tireGrid: {
@@ -509,17 +510,17 @@ const styles = StyleSheet.create({
   },
   tireLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 2,
   },
   tireValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   divider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.border.DEFAULT,
     marginVertical: 16,
   },
   documentsSection: {
@@ -534,19 +535,19 @@ const styles = StyleSheet.create({
   documentsTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   uploadButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#2563eb',
+    backgroundColor: Colors.info.dark,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
   },
   uploadButtonText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -567,24 +568,24 @@ const styles = StyleSheet.create({
   linksTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   linksCount: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   newLinkButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
   },
   newLinkButtonText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 14,
     fontWeight: '500',
   },

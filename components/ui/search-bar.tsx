@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Search } from 'lucide-react-native';
 
 interface SearchBarProps {
@@ -11,14 +12,13 @@ interface SearchBarProps {
 export const SearchBar = ({ value, onChangeText, placeholder = 'Buscar...' }: SearchBarProps) => {
   return (
     <View style={styles.container}>
-      <Search size={20} color="#9ca3af" style={styles.icon} />
+      <Search size={20} color={Colors.text.placeholder} style={styles.icon} />
       <TextInput
         style={styles.input}
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor="#9ca3af"
-      />
+        placeholderTextColor={Colors.text.placeholder}       />
     </View>
   );
 };
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 8,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 16,
     paddingHorizontal: 16,
   },
@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 16,
     fontSize: 16,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

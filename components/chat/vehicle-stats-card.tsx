@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Car } from 'lucide-react-native';
 
 interface StatItem {
@@ -16,7 +17,7 @@ export const VehicleStatsCard = ({ stats }: VehicleStatsCardProps) => {
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Car size={16} color="#fff" />
+          <Car size={16} color={Colors.background.primary} />
         </View>
         <View>
           <Text style={styles.title}>Estatísticas</Text>
@@ -38,10 +39,10 @@ export const VehicleStatsCard = ({ stats }: VehicleStatsCardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     padding: 16,
     marginTop: 12,
     marginBottom: 12,
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 32,
     height: 32,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -63,11 +64,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   grid: {
@@ -78,19 +79,19 @@ const styles = StyleSheet.create({
   statBox: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     fontWeight: '500',
     marginBottom: 4,
   },
   statValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { Colors } from '@/constants';
 import { Gauge } from 'lucide-react-native';
 
 interface DashboardPhotoCardProps {
@@ -16,7 +17,7 @@ export const DashboardPhotoCard = ({ imageUri, kilometers, stats }: DashboardPho
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Gauge size={16} color="#fff" />
+          <Gauge size={16} color={Colors.background.primary} />
         </View>
         <View>
           <Text style={styles.title}>Dados Identificados</Text>
@@ -38,10 +39,10 @@ export const DashboardPhotoCard = ({ imageUri, kilometers, stats }: DashboardPho
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     padding: 16,
     marginTop: 12,
   },
@@ -62,11 +63,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   statsContainer: {
@@ -75,15 +76,15 @@ const styles = StyleSheet.create({
   statRow: {
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   statLabel: {
     fontSize: 13,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   statValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

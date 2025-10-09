@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 interface ComparisonCardProps {
   icon: ReactNode;
@@ -60,10 +61,10 @@ export const ComparisonCard = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     padding: 20,
     marginBottom: 12,
   },
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 40,
     height: 40,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -87,11 +88,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   values: {
     alignItems: 'flex-end',
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
   mainValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   changeRow: {
     flexDirection: 'row',
@@ -117,6 +118,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
 });

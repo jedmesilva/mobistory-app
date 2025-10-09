@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { Colors } from '@/constants';
 
 interface ProgressCircleProps {
   progress: number; // 0-100
@@ -66,6 +67,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Image } from 'lucide-react-native';
 
 interface MessageBubbleProps {
@@ -31,7 +32,7 @@ export const MessageBubble = ({ type, message, timestamp, children, hasImage, da
           )}
           {hasImage && (
             <View style={styles.imagePlaceholder}>
-              <Image size={16} color="#9ca3af" />
+              <Image size={16} color={Colors.text.placeholder} />
               <Text style={styles.imagePlaceholderText}>Imagem do painel enviada</Text>
             </View>
           )}
@@ -91,9 +92,9 @@ const styles = StyleSheet.create({
   },
   bubbleUser: {
     maxWidth: '85%',
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderWidth: 1,
-    borderColor: '#374151',
+    borderColor: Colors.primary.light,
     borderRadius: 16,
     padding: 20,
     shadowColor: '#000',
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 28,
     height: 28,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -135,42 +136,42 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   labelUser: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#d1d5db',
+    color: Colors.border.dark,
   },
   labelBot: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   timestampUser: {
     fontSize: 12,
-    color: '#d1d5db',
+    color: Colors.border.dark,
     flexShrink: 0,
   },
   timestampBot: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     flexShrink: 0,
   },
   messageUser: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#fff',
+    color: Colors.background.primary,
   },
   messageBot: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   dataContainer: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#374151',
+    backgroundColor: Colors.primary.light,
     borderRadius: 12,
   },
   dataGrid: {
@@ -186,12 +187,12 @@ const styles = StyleSheet.create({
   },
   dataLabel: {
     fontSize: 12,
-    color: '#d1d5db',
+    color: Colors.border.dark,
   },
   dataValue: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#fff',
+    color: Colors.background.primary,
   },
   imagePlaceholder: {
     flexDirection: 'row',
@@ -199,11 +200,11 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#374151',
+    backgroundColor: Colors.primary.light,
     borderRadius: 8,
   },
   imagePlaceholderText: {
     fontSize: 13,
-    color: '#d1d5db',
+    color: Colors.border.dark,
   },
 });

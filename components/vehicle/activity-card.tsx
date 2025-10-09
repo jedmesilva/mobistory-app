@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 interface ActivityDetail {
   label: string;
@@ -28,8 +29,8 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
 
   const getIconColor = () => {
     if (activity.status === 'warning') return '#ea580c';
-    if (activity.type === 'link') return '#374151';
-    return '#374151';
+    if (activity.type === 'link') return Colors.primary.light;
+    return Colors.primary.light;
   };
 
   return (
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   activityCardContent: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     padding: 16,
     flexDirection: 'row',
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -118,11 +119,11 @@ const styles = StyleSheet.create({
   activityTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginRight: 8,
   },
   activeBadge: {
-    backgroundColor: '#dcfce7',
+    backgroundColor: Colors.success.light,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
@@ -134,15 +135,15 @@ const styles = StyleSheet.create({
   },
   activityDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   activityTime: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
   activityDetails: {
     marginTop: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
   },
@@ -156,11 +157,11 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 13,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   detailValue: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

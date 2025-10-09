@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, TextInputProps } from 'react-native';
+import { Colors } from '@/constants';
 import { Search, X } from 'lucide-react-native';
 
 interface SearchInputProps extends TextInputProps {
@@ -19,19 +20,18 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
 
     return (
       <View style={styles.container}>
-        <Search size={20} color="#9ca3af" style={styles.searchIcon} />
+        <Search size={20} color={Colors.text.placeholder} style={styles.searchIcon} />
         <TextInput
           ref={ref}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#9ca3af"
-          style={styles.input}
+          placeholderTextColor={Colors.text.placeholder}           style={styles.input}
           {...props}
         />
         {showClearButton && value.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
-            <X size={16} color="#9ca3af" />
+            <X size={16} color={Colors.text.placeholder} />
           </TouchableOpacity>
         )}
       </View>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   clearButton: {
     padding: 4,

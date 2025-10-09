@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ArrowLeft,
@@ -178,13 +179,13 @@ export default function FuelHistoryScreen() {
 
   const getFuelTypeStyle = (type: string) => {
     const styles = {
-      'Gasolina Comum': { bg: '#fee2e2', text: '#991b1b' },
-      'Gasolina Aditivada': { bg: '#fee2e2', text: '#991b1b' },
-      'Etanol': { bg: '#dcfce7', text: '#166534' },
-      'Diesel': { bg: '#fef3c7', text: '#854d0e' },
-      'GNV': { bg: '#dbeafe', text: '#1e40af' },
+      'Gasolina Comum': { bg: Colors.error.light, text: Colors.error.text },
+      'Gasolina Aditivada': { bg: Colors.error.light, text: Colors.error.text },
+      'Etanol': { bg: Colors.success.light, text: Colors.success.text },
+      'Diesel': { bg: Colors.warning.light, text: '#854d0e' },
+      'GNV': { bg: Colors.info.light, text: Colors.info.text },
     };
-    return styles[type as keyof typeof styles] || { bg: '#f3f4f6', text: '#1f2937' };
+    return styles[type as keyof typeof styles] || { bg: Colors.background.tertiary, text: Colors.primary.DEFAULT };
   };
 
   return (
@@ -192,7 +193,7 @@ export default function FuelHistoryScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-          <ArrowLeft size={20} color="#4b5563" />
+          <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Abastecimentos</Text>
@@ -204,7 +205,7 @@ export default function FuelHistoryScreen() {
           onPress={() => setShowFilters(!showFilters)}
           style={styles.headerButton}
         >
-          <Filter size={20} color="#4b5563" />
+          <Filter size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
       </View>
 
@@ -254,7 +255,7 @@ export default function FuelHistoryScreen() {
                   {/* Indicador de distância */}
                   {fueling.kmTraveled && (
                     <View style={styles.distanceBanner}>
-                      <Activity size={12} color="#4b5563" />
+                      <Activity size={12} color={Colors.text.secondary} />
                       <Text style={styles.distanceText}>
                         {fueling.kmTraveled} km desde o último abastecimento
                         {index < fuelingHistory.length - 1 &&
@@ -277,7 +278,7 @@ export default function FuelHistoryScreen() {
           style={styles.fab}
           onPress={() => router.push('/add-fueling/station-selection')}
         >
-          <Fuel size={24} color="#fff" />
+          <Fuel size={24} color={Colors.background.primary} />
         </TouchableOpacity>
       </SafeAreaView>
     </SafeAreaView>
@@ -287,22 +288,22 @@ export default function FuelHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -313,11 +314,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   scrollView: {
     flex: 1,
@@ -338,11 +339,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   sectionSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   fuelingList: {
     gap: 12,
@@ -354,12 +355,12 @@ const styles = StyleSheet.create({
     marginTop: -4,
     marginBottom: 12,
     padding: 8,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
   },
   distanceText: {
     fontSize: 12,
-    color: '#4b5563',
+    color: Colors.text.secondary,
   },
   searchContainer: {
     marginBottom: 16,
@@ -373,7 +374,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     marginBottom: 24,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',

@@ -1,12 +1,13 @@
 import React from 'react';
 import Svg, { Path, Circle } from 'react-native-svg';
+import { Colors } from '@/constants';
 
 interface OilIconProps {
   size?: number;
   color?: string;
 }
 
-export const OilIcon = ({ size = 24, color = '#fff' }: OilIconProps) => (
+export const OilIcon = ({ size = 24, color = Colors.background.primary }: OilIconProps) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     {/* Oil can body */}
     <Path

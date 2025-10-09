@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { ChevronDown, ChevronUp, LucideIcon } from 'lucide-react-native';
 
 interface CollapsibleSectionProps {
@@ -27,14 +28,14 @@ export const CollapsibleSection = ({
         onPress={onToggle}
       >
         <View style={styles.sectionHeaderLeft}>
-          <Icon size={20} color="#374151" />
+          <Icon size={20} color={Colors.primary.light} />
           <Text style={styles.sectionTitle}>{title}</Text>
         </View>
         <View style={styles.chevronContainer}>
           {isExpanded ? (
-            <ChevronUp size={20} color="#9ca3af" />
+            <ChevronUp size={20} color={Colors.text.placeholder} />
           ) : (
-            <ChevronDown size={20} color="#9ca3af" />
+            <ChevronDown size={20} color={Colors.text.placeholder} />
           )}
         </View>
       </TouchableOpacity>
@@ -45,10 +46,10 @@ export const CollapsibleSection = ({
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
   },
   sectionHeaderCollapsible: {
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   sectionContent: {
     padding: 16,

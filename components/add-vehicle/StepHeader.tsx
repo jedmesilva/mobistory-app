@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 interface StepHeaderProps {
   icon?: React.ReactNode;
@@ -35,24 +36,24 @@ const styles = StyleSheet.create({
   stepIcon: {
     width: 64,
     height: 64,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
   stepIconSuccess: {
-    backgroundColor: '#10b981',
+    backgroundColor: Colors.success.DEFAULT,
   },
   stepTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
     textAlign: 'center',
   },
   stepSubtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textAlign: 'center',
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { Colors } from '@/constants';
 
 interface OdometerInputProps {
   km: string;
@@ -17,8 +18,7 @@ export const OdometerInput = ({ km, lastKm, lastDate, onChangeText }: OdometerIn
           value={km}
           onChangeText={onChangeText}
           placeholder="90000"
-          placeholderTextColor="#9ca3af"
-          keyboardType="numeric"
+          placeholderTextColor={Colors.text.placeholder}           keyboardType="numeric"
           style={styles.input}
           scrollEnabled={false}
           editable={true}
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
     textAlign: 'center',
     marginBottom: 12,
   },
@@ -57,13 +57,13 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 12,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   inputHint: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textAlign: 'center',
     marginTop: 8,
   },
@@ -71,21 +71,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: Colors.background.tertiary,
   },
   lastKmLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 8,
   },
   lastKmValue: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   lastKmDate: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
 });

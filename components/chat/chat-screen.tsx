@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Colors } from '@/constants';
 import {
   View,
   Text,
@@ -301,9 +302,9 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
               <View
                 key={index}
                 style={{
-                  backgroundColor: card.isAlert ? '#fef2f2' : '#f9fafb',
+                  backgroundColor: card.isAlert ? '#fef2f2' : Colors.background.secondary,
                   borderWidth: 1,
-                  borderColor: card.isAlert ? '#fecaca' : '#f3f4f6',
+                  borderColor: card.isAlert ? '#fecaca' : Colors.background.tertiary,
                   borderRadius: 12,
                   padding: 16,
                 }}
@@ -312,7 +313,7 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
                   style={{
                     fontSize: 14,
                     fontWeight: '500',
-                    color: card.isAlert ? '#991b1b' : '#374151',
+                    color: card.isAlert ? Colors.error.text : Colors.primary.light,
                   }}
                 >
                   {insight.text}
@@ -361,7 +362,7 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
               <Text style={styles.headerSubtitle}>{vehicleName}</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <ChevronDown size={24} color="#374151" />
+              <ChevronDown size={24} color={Colors.primary.light} />
             </TouchableOpacity>
           </View>
 
@@ -400,7 +401,7 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
             return sortedGroupEntries.map(([dateGroup, msgs]) => (
               <View key={dateGroup} style={styles.dateGroup}>
                 <View style={styles.dateHeader}>
-                  <Calendar size={14} color="#6b7280" />
+                  <Calendar size={14} color={Colors.text.tertiary} />
                   <Text style={styles.dateHeaderText}>{dateGroup}</Text>
                 </View>
 
@@ -427,8 +428,7 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
             <TextInput
               style={styles.input}
               placeholder="Adicionar evento, fazer pergunta..."
-              placeholderTextColor="#9ca3af"
-              value={inputText}
+              placeholderTextColor={Colors.text.placeholder}               value={inputText}
               onChangeText={setInputText}
               multiline
               maxLength={500}
@@ -438,14 +438,14 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
           <View style={styles.inputActions}>
             <View style={styles.leftActions}>
               <TouchableOpacity style={styles.actionButton}>
-                <Camera size={16} color="#6b7280" />
+                <Camera size={16} color={Colors.text.tertiary} />
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() => setMoreOptionsVisible(true)}
               >
-                <Plus size={16} color="#6b7280" />
+                <Plus size={16} color={Colors.text.tertiary} />
               </TouchableOpacity>
             </View>
 
@@ -454,7 +454,7 @@ export const ChatScreen = ({ visible, onClose, vehicleName = 'Honda Civic' }: Ch
               onPress={handleSend}
               disabled={!inputText.trim()}
             >
-              <ArrowUp size={16} color="#fff" />
+              <ArrowUp size={16} color={Colors.background.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -477,19 +477,19 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.border.DEFAULT,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 16,
@@ -497,24 +497,24 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   closeButton: {
     width: 40,
     height: 40,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   messagesContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   messagesContent: {
     padding: 16,
@@ -531,17 +531,17 @@ const styles = StyleSheet.create({
   dateHeaderText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   inputContainer: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
-    color: '#111827',
+    color: Colors.primary.dark,
     minHeight: 24,
     maxHeight: 128,
     padding: 0,
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
   actionButton: {
     width: 36,
     height: 36,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -579,12 +579,12 @@ const styles = StyleSheet.create({
   sendButton: {
     width: 36,
     height: 36,
-    backgroundColor: '#9ca3af',
+    backgroundColor: Colors.text.placeholder,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sendButtonActive: {
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
   },
 });

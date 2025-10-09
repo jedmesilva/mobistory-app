@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { Check, MapPin } from 'lucide-react-native';
 
 interface Station {
@@ -22,7 +23,7 @@ export const SelectedStationBanner = ({ station, onChangeStation }: SelectedStat
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Check size={16} color="#166534" />
+        <Check size={16} color={Colors.success.text} />
         <Text style={styles.headerText}>Posto Selecionado</Text>
       </View>
 
@@ -31,7 +32,7 @@ export const SelectedStationBanner = ({ station, onChangeStation }: SelectedStat
           <View style={styles.flex1}>
             <Text style={styles.name}>{station.name}</Text>
             <View style={styles.addressRow}>
-              <MapPin size={12} color="#6b7280" />
+              <MapPin size={12} color={Colors.text.tertiary} />
               <Text style={styles.address}>{station.address}</Text>
             </View>
 
@@ -75,10 +76,10 @@ export const SelectedStationBanner = ({ station, onChangeStation }: SelectedStat
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -89,12 +90,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f0fdf4',
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   headerText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#166534',
+    color: Colors.success.text,
   },
   body: {
     padding: 16,
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   addressRow: {
@@ -121,18 +122,18 @@ const styles = StyleSheet.create({
   },
   address: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     flex: 1,
   },
   pricesBox: {
     padding: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
   },
   pricesTitle: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#4b5563',
+    color: Colors.text.secondary,
     marginBottom: 8,
   },
   pricesGrid: {
@@ -142,16 +143,16 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     width: '48%',
   },
   priceValue: {
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   changeButton: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#3b82f6',
+    color: Colors.info.DEFAULT,
   },
 });

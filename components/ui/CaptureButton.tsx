@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { Zap, ChevronRight } from 'lucide-react-native';
 
 interface CaptureButtonProps {
@@ -16,13 +17,13 @@ export const CaptureButton = ({
   return (
     <TouchableOpacity onPress={onPress} style={styles.captureButton}>
       <View style={styles.captureIcon}>
-        <Zap size={20} color="#fff" />
+        <Zap size={20} color={Colors.background.primary} />
       </View>
       <View style={styles.captureTextContainer}>
         <Text style={styles.captureTitle}>{title}</Text>
         {subtitle && <Text style={styles.captureSubtitle}>{subtitle}</Text>}
       </View>
-      <ChevronRight size={20} color="#9ca3af" />
+      <ChevronRight size={20} color={Colors.text.placeholder} />
     </TouchableOpacity>
   );
 };
@@ -34,12 +35,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   captureIcon: {
     width: 40,
     height: 40,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -51,10 +52,10 @@ const styles = StyleSheet.create({
   captureTitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   captureSubtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
 });

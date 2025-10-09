@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { Edit3 } from 'lucide-react-native';
 
 interface ConfirmationFieldProps {
@@ -26,7 +27,7 @@ export const ConfirmationField = ({
         <Text style={styles.confirmationLabel}>{label}</Text>
         {renderValue ? renderValue() : <Text style={styles.confirmationValue}>{value}</Text>}
       </View>
-      {!isHalf && <Edit3 size={16} color="#9ca3af" />}
+      {!isHalf && <Edit3 size={16} color={Colors.text.placeholder} />}
     </TouchableOpacity>
   );
 };
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
   },
   confirmationFieldHalf: {
@@ -48,12 +49,12 @@ const styles = StyleSheet.create({
   },
   confirmationLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginBottom: 4,
   },
   confirmationValue: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
 });

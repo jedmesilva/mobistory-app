@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { AlertTriangle, Info } from 'lucide-react-native';
 
 interface InsightCardProps {
@@ -21,9 +22,9 @@ export const InsightsCard = ({ type, title, description }: InsightCardProps) => 
         isAlert ? styles.iconContainerAlert : styles.iconContainerInfo
       ]}>
         {isAlert ? (
-          <AlertTriangle size={16} color="#dc2626" />
+          <AlertTriangle size={16} color={Colors.error.dark} />
         ) : (
-          <Info size={16} color="#2563eb" />
+          <Info size={16} color={Colors.info.dark} />
         )}
       </View>
       <View style={styles.content}>
@@ -60,10 +61,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconContainerAlert: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: Colors.error.light,
   },
   iconContainerInfo: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: Colors.info.light,
   },
   content: {
     flex: 1,
@@ -71,12 +72,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   description: {
     fontSize: 13,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     lineHeight: 18,
   },
 });

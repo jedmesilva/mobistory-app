@@ -13,6 +13,7 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants';
 import { VehicleCard, SectionHeader } from '../components/vehicle';
 import { SearchInput } from '../components/ui';
 
@@ -145,13 +146,13 @@ export default function Index() {
         ]}
       >
         <TouchableOpacity style={styles.headerButton}>
-          <Menu size={24} color="#374151" />
+          <Menu size={24} color={Colors.primary.light} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
 
         <TouchableOpacity style={styles.headerButton}>
-          <Bell size={24} color="#374151" />
+          <Bell size={24} color={Colors.primary.light} />
           <View style={styles.notificationBadge}>
             <Text style={styles.notificationBadgeText}>3</Text>
           </View>
@@ -181,7 +182,7 @@ export default function Index() {
             /* Empty State */
             <View style={styles.emptyState}>
               <View style={styles.emptyStateIcon}>
-                <Search size={40} color="#9ca3af" />
+                <Search size={40} color={Colors.text.placeholder} />
               </View>
               <Text style={styles.emptyStateTitle}>Nenhum veículo encontrado</Text>
               <Text style={styles.emptyStateSubtitle}>
@@ -283,7 +284,7 @@ export default function Index() {
             onPress={() => router.push('/add-vehicle')}
           >
             <View style={styles.addButtonIcon}>
-              <Plus size={24} color="#fff" />
+              <Plus size={24} color={Colors.background.primary} />
             </View>
             <View style={styles.addButtonTextContainer}>
               <Text style={styles.addButtonTitle}>Adicionar Veículo</Text>
@@ -301,7 +302,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row',
@@ -309,13 +310,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: '#fff',
-    borderBottomColor: '#e5e7eb',
+    backgroundColor: Colors.background.primary,
+    borderBottomColor: Colors.border.DEFAULT,
   },
   headerButton: {
     width: 48,
     height: 48,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -324,13 +325,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   notificationBadge: {
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: '#ef4444',
+    backgroundColor: Colors.error.DEFAULT,
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   notificationBadgeText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -365,29 +366,29 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.border.DEFAULT,
   },
   dividerText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginHorizontal: 16,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: '#d1d5db',
+    borderColor: Colors.border.dark,
     borderRadius: 16,
     gap: 16,
   },
   addButtonIcon: {
     width: 48,
     height: 48,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -398,11 +399,11 @@ const styles = StyleSheet.create({
   addButtonTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   addButtonSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   emptyState: {
@@ -412,7 +413,7 @@ const styles = StyleSheet.create({
   emptyStateIcon: {
     width: 80,
     height: 80,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
@@ -421,13 +422,13 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 12,
     textAlign: 'center',
   },
   emptyStateSubtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     textAlign: 'center',
     paddingHorizontal: 32,
   },

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { TrendingUp, ChevronDown, ChevronUp } from 'lucide-react-native';
 
 interface MonthData {
@@ -25,7 +26,7 @@ export const ConsumptionTrendsCard = ({ data }: ConsumptionTrendsCardProps) => {
       >
         <View style={styles.headerLeft}>
           <View style={styles.iconContainer}>
-            <TrendingUp size={16} color="#fff" />
+            <TrendingUp size={16} color={Colors.background.primary} />
           </View>
           <View>
             <Text style={styles.title}>Tendências</Text>
@@ -34,9 +35,9 @@ export const ConsumptionTrendsCard = ({ data }: ConsumptionTrendsCardProps) => {
         </View>
         <View style={styles.expandButton}>
           {expanded ? (
-            <ChevronUp size={16} color="#6b7280" />
+            <ChevronUp size={16} color={Colors.text.tertiary} />
           ) : (
-            <ChevronDown size={16} color="#6b7280" />
+            <ChevronDown size={16} color={Colors.text.tertiary} />
           )}
         </View>
       </TouchableOpacity>
@@ -67,10 +68,10 @@ export const ConsumptionTrendsCard = ({ data }: ConsumptionTrendsCardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     padding: 16,
     marginTop: 12,
     marginBottom: 12,
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 32,
     height: 32,
-    backgroundColor: '#1f2937',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -96,16 +97,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     marginTop: 2,
   },
   expandButton: {
     padding: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 8,
   },
   content: {
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     marginBottom: 12,
   },
   detailsList: {
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.primary.light,
   },
   detailRight: {
     flexDirection: 'row',
@@ -138,19 +139,19 @@ const styles = StyleSheet.create({
   valueText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   efficiencyBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: '#d1fae5',
+    backgroundColor: Colors.success.light,
     borderWidth: 1,
     borderColor: '#a7f3d0',
   },
   efficiencyText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#059669',
+    color: Colors.success.dark,
   },
 });

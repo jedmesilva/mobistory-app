@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { StepHeader } from './StepHeader';
 
 interface YearInputProps {
@@ -37,9 +38,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   inputCenter: {
     textAlign: 'center',

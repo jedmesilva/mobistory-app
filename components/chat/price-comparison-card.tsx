@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 import { MapPin, TrendingUp, TrendingDown } from 'lucide-react-native';
 
 interface Station {
@@ -19,7 +20,7 @@ export const PriceComparisonCard = ({ stations }: PriceComparisonCardProps) => {
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <MapPin size={16} color="#fff" />
+          <MapPin size={16} color={Colors.background.primary} />
         </View>
         <Text style={styles.title}>Postos Próximos</Text>
       </View>
@@ -38,9 +39,9 @@ export const PriceComparisonCard = ({ stations }: PriceComparisonCardProps) => {
                 station.trend === 'up' ? styles.trendBadgeUp : styles.trendBadgeDown
               ]}>
                 {station.trend === 'up' ? (
-                  <TrendingUp size={10} color="#ef4444" />
+                  <TrendingUp size={10} color={Colors.error.DEFAULT} />
                 ) : (
-                  <TrendingDown size={10} color="#10b981" />
+                  <TrendingDown size={10} color={Colors.success.DEFAULT} />
                 )}
                 <Text style={[
                   styles.trendText,
@@ -59,10 +60,10 @@ export const PriceComparisonCard = ({ stations }: PriceComparisonCardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     padding: 16,
     marginTop: 12,
     marginBottom: 12,
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 32,
     height: 32,
-    backgroundColor: '#10b981',
+    backgroundColor: Colors.success.DEFAULT,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   content: {
     gap: 12,
@@ -100,12 +101,12 @@ const styles = StyleSheet.create({
   stationName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 2,
   },
   stationDistance: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
   },
   priceContainer: {
     alignItems: 'flex-end',
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   trendBadge: {
     flexDirection: 'row',
@@ -125,19 +126,19 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   trendBadgeUp: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: Colors.error.light,
   },
   trendBadgeDown: {
-    backgroundColor: '#d1fae5',
+    backgroundColor: Colors.success.light,
   },
   trendText: {
     fontSize: 10,
     fontWeight: '600',
   },
   trendTextUp: {
-    color: '#ef4444',
+    color: Colors.error.DEFAULT,
   },
   trendTextDown: {
-    color: '#10b981',
+    color: Colors.success.DEFAULT,
   },
 });

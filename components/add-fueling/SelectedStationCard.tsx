@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Colors } from '@/constants';
 import { Check, MapPin, Star, X } from 'lucide-react-native';
 import { Station } from './StationCard';
 
@@ -12,7 +13,7 @@ export const SelectedStationCard = ({ station, onRemove }: SelectedStationCardPr
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Check size={16} color="#166534" />
+        <Check size={16} color={Colors.success.text} />
         <Text style={styles.headerText}>Posto Selecionado</Text>
       </View>
 
@@ -23,7 +24,7 @@ export const SelectedStationCard = ({ station, onRemove }: SelectedStationCardPr
             {station.isFavorite && <Star size={16} color="#eab308" fill="#eab308" />}
           </View>
           <View style={styles.addressRow}>
-            <MapPin size={12} color="#6b7280" />
+            <MapPin size={12} color={Colors.text.tertiary} />
             <Text style={styles.address}>{station.address}</Text>
           </View>
           <View style={styles.metaRow}>
@@ -65,7 +66,7 @@ export const SelectedStationCard = ({ station, onRemove }: SelectedStationCardPr
         </View>
 
         <TouchableOpacity onPress={onRemove} style={styles.removeButton}>
-          <X size={16} color="#4b5563" />
+          <X size={16} color={Colors.text.secondary} />
         </TouchableOpacity>
       </View>
     </View>
@@ -74,10 +75,10 @@ export const SelectedStationCard = ({ station, onRemove }: SelectedStationCardPr
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     marginBottom: 16,
     overflow: 'hidden',
   },
@@ -88,12 +89,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f0fdf4',
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: Colors.background.tertiary,
   },
   headerText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#166534',
+    color: Colors.success.text,
   },
   body: {
     padding: 16,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   addressRow: {
     flexDirection: 'row',
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   },
   address: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     flex: 1,
   },
   metaRow: {
@@ -134,21 +135,21 @@ const styles = StyleSheet.create({
   },
   distance: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
   lastVisit: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: Colors.text.placeholder,
   },
   pricesBox: {
     padding: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
   },
   pricesTitle: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#4b5563',
+    color: Colors.text.secondary,
     marginBottom: 8,
   },
   pricesGrid: {
@@ -158,18 +159,18 @@ const styles = StyleSheet.create({
   },
   priceItem: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.text.tertiary,
     width: '48%',
   },
   priceValue: {
     fontWeight: '500',
-    color: '#111827',
+    color: Colors.primary.dark,
   },
   removeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
   },

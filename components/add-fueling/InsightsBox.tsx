@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '@/constants';
 
 interface InsightItemProps {
   children: ReactNode;
@@ -31,16 +32,16 @@ InsightsBox.Item = InsightItem;
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.background.secondary,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border.DEFAULT,
     borderRadius: 16,
     marginBottom: 16,
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.primary.dark,
     marginBottom: 16,
   },
   list: {
@@ -55,13 +56,13 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#9ca3af',
+    backgroundColor: Colors.text.placeholder,
     marginTop: 6,
   },
   insightText: {
     flex: 1,
     fontSize: 14,
-    color: '#4b5563',
+    color: Colors.text.secondary,
     lineHeight: 20,
   },
 });
