@@ -558,6 +558,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 32,
     marginBottom: 16,
   },
   linksHeaderLeft: {

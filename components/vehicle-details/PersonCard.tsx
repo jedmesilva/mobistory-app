@@ -46,18 +46,17 @@ export const PersonCard = ({ person, onClick, isSelected, isHistorical = false }
       ]}
     >
       <View style={styles.personCardHeader}>
-        <View style={styles.personCardLeft}>
-          <View style={[styles.personAvatar, isHistorical && styles.personAvatarHistorical]}>
-            <Text style={styles.personAvatarText}>{initials}</Text>
-          </View>
-          <View>
-            <Text style={[styles.personName, isHistorical && styles.personNameHistorical]}>
-              {person.name}
-            </Text>
-            <Text style={styles.personEmail}>{person.email}</Text>
-          </View>
+        <View style={[styles.personAvatar, isHistorical && styles.personAvatarHistorical]}>
+          <Text style={styles.personAvatarText}>{initials}</Text>
         </View>
-        <View style={styles.personCardRight}>
+
+        <View style={styles.personInfo}>
+          <Text style={[styles.personName, isHistorical && styles.personNameHistorical]}>
+            {person.name}
+          </Text>
+
+          <Text style={styles.personEmail}>{person.email}</Text>
+
           <View
             style={[
               styles.personBadge,
@@ -76,22 +75,24 @@ export const PersonCard = ({ person, onClick, isSelected, isHistorical = false }
               {config.label}
             </Text>
           </View>
-          <ChevronRight size={20} color={Colors.text.placeholder} />
+
+          <View style={styles.personCardFooter}>
+            <View style={styles.personCardFooterItem}>
+              <Text style={styles.personCardFooterLabel}>VINCULADO EM</Text>
+              <Text style={[styles.personCardFooterValue, isHistorical && styles.personCardFooterValueHistorical]}>
+                {person.linkedDate}
+              </Text>
+            </View>
+            <View style={styles.personCardFooterItem}>
+              <Text style={[styles.personCardFooterLabel, styles.personCardFooterLabelRight]}>ÚLTIMO ACESSO</Text>
+              <Text style={[styles.personCardFooterValue, styles.personCardFooterValueRight, isHistorical && styles.personCardFooterValueHistorical]}>
+                {person.lastAccess}
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
-      <View style={styles.personCardFooter}>
-        <View style={styles.personCardFooterItem}>
-          <Text style={styles.personCardFooterLabel}>Vinculado em</Text>
-          <Text style={[styles.personCardFooterValue, isHistorical && styles.personCardFooterValueHistorical]}>
-            {person.linkedDate}
-          </Text>
-        </View>
-        <View style={styles.personCardFooterItem}>
-          <Text style={styles.personCardFooterLabel}>Último acesso</Text>
-          <Text style={[styles.personCardFooterValue, isHistorical && styles.personCardFooterValueHistorical]}>
-            {person.lastAccess}
-          </Text>
-        </View>
+
+        <ChevronRight size={20} color={Colors.text.placeholder} />
       </View>
     </TouchableOpacity>
   );
@@ -113,15 +114,9 @@ const styles = StyleSheet.create({
   },
   personCardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  personCardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 12,
-    flex: 1,
+    marginBottom: 12,
   },
   personAvatar: {
     width: 48,
@@ -139,10 +134,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  personInfo: {
+    flex: 1,
+  },
   personName: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.primary.dark,
+    marginBottom: 4,
   },
   personNameHistorical: {
     color: Colors.text.tertiary,
@@ -150,44 +149,48 @@ const styles = StyleSheet.create({
   personEmail: {
     fontSize: 14,
     color: Colors.text.tertiary,
-    marginTop: 2,
-  },
-  personCardRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    marginBottom: 8,
   },
   personBadge: {
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 6,
+    borderRadius: 12,
     borderWidth: 1,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
   },
   personBadgeText: {
     fontSize: 12,
     fontWeight: '600',
   },
   personCardFooter: {
-    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: Colors.background.tertiary,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     gap: 16,
   },
   personCardFooterItem: {
     flex: 1,
   },
   personCardFooterLabel: {
-    fontSize: 12,
+    fontSize: 10,
+    fontWeight: '600',
     color: Colors.text.tertiary,
     marginBottom: 4,
+    letterSpacing: 0.5,
+  },
+  personCardFooterLabelRight: {
+    textAlign: 'right',
   },
   personCardFooterValue: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     color: Colors.primary.dark,
+  },
+  personCardFooterValueRight: {
+    textAlign: 'right',
   },
   personCardFooterValueHistorical: {
     color: Colors.text.tertiary,
