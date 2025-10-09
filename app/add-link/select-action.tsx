@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,6 @@ import {
 export default function SelectActionScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [selectedOption, setSelectedOption] = useState('');
 
   const vehicleData = {
     brand: 'Honda',
@@ -34,26 +33,23 @@ export default function SelectActionScreen() {
       title: 'Reivindicar Vínculo',
       description: 'Tenho documentos que comprovam minha relação com o veículo',
       icon: Shield,
-      details: 'Envie documentos (contrato de compra, locação, etc.) para comprovar seu vínculo. Não requer aprovação prévia.',
     },
     {
       id: 'request',
       title: 'Solicitar Vínculo',
       description: 'Preciso pedir autorização ao proprietário atual',
       icon: UserPlus,
-      details: 'Envie uma solicitação de acesso que será avaliada e aprovada pelo proprietário do veículo.',
     },
     {
       id: 'grant',
       title: 'Conceder Vínculo',
       description: 'Sou proprietário e quero dar acesso a outra pessoa',
       icon: Send,
-      details: 'Envie um convite para que outra pessoa aceite o vínculo que você está concedendo.',
     },
   ];
 
-  const handleContinue = () => {
-    if (selectedOption === 'grant') {
+  const handleOptionSelect = (optionId: string) => {
+    if (optionId === 'grant') {
       router.push({
         pathname: '/add-link/grant-invite',
         params: { vehicleId: params.vehicleId },
@@ -61,12 +57,10 @@ export default function SelectActionScreen() {
     } else {
       router.push({
         pathname: '/add-link/select-type',
-        params: { vehicleId: params.vehicleId, action: selectedOption },
+        params: { vehicleId: params.vehicleId, action: optionId },
       });
     }
   };
-
-  const selectedOptionData = linkOptions.find((opt) => opt.id === selectedOption);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -90,19 +84,15 @@ export default function SelectActionScreen() {
           <View style={styles.optionsList}>
             {linkOptions.map((option) => {
               const IconComponent = option.icon;
-              const isSelected = selectedOption === option.id;
 
               return (
                 <TouchableOpacity
                   key={option.id}
-                  onPress={() => setSelectedOption(option.id)}
-                  style={[styles.optionCard, isSelected && styles.optionCardSelected]}
+                  onPress={() => handleOptionSelect(option.id)}
+                  style={styles.optionCard}
                 >
-                  <View style={[styles.iconBox, isSelected && styles.iconBoxSelected]}>
-                    <IconComponent
-                      size={24}
-                      color={isSelected ? Colors.background.primary : Colors.text.secondary}
-                    />
+                  <View style={styles.iconBox}>
+                    <IconComponent size={24} color={Colors.text.secondary} />
                   </View>
 
                   <View style={styles.optionInfo}>
@@ -110,31 +100,13 @@ export default function SelectActionScreen() {
                     <Text style={styles.optionDescription}>{option.description}</Text>
                   </View>
 
-                  <ChevronRight
-                    size={20}
-                    color={isSelected ? Colors.primary.dark : Colors.text.placeholder}
-                  />
+                  <ChevronRight size={20} color={Colors.text.placeholder} />
                 </TouchableOpacity>
               );
             })}
           </View>
-
-          {selectedOptionData && (
-            <View style={styles.detailsBox}>
-              <Text style={styles.detailsTitle}>Próximo passo:</Text>
-              <Text style={styles.detailsText}>{selectedOptionData.details}</Text>
-            </View>
-          )}
         </View>
       </ScrollView>
-
-      {selectedOption && (
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
-            <Text style={styles.continueButtonText}>Continuar</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </SafeAreaView>
   );
 }
@@ -160,7 +132,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
-    paddingBottom: 120,
   },
   title: {
     fontSize: 24,
@@ -192,10 +163,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.border.DEFAULT,
     gap: 12,
   },
-  optionCardSelected: {
-    borderColor: Colors.primary.dark,
-    backgroundColor: Colors.background.secondary,
-  },
   iconBox: {
     width: 48,
     height: 48,
@@ -203,9 +170,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconBoxSelected: {
-    backgroundColor: Colors.primary.dark,
   },
   optionInfo: {
     flex: 1,
@@ -220,45 +184,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.secondary,
     lineHeight: 20,
-  },
-  detailsBox: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: Colors.background.secondary,
-    borderWidth: 1,
-    borderColor: Colors.border.DEFAULT,
-    borderRadius: 12,
-  },
-  detailsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.primary.dark,
-    marginBottom: 4,
-  },
-  detailsText: {
-    fontSize: 12,
-    color: Colors.text.secondary,
-    lineHeight: 18,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 24,
-    backgroundColor: Colors.background.primary,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border.DEFAULT,
-  },
-  continueButton: {
-    backgroundColor: Colors.primary.dark,
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  continueButtonText: {
-    color: Colors.background.primary,
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

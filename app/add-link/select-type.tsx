@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -22,7 +22,6 @@ import {
 export default function SelectTypeScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [selectedRelationship, setSelectedRelationship] = useState('');
 
   const vehicleData = {
     brand: 'Honda',
@@ -36,50 +35,43 @@ export default function SelectTypeScreen() {
       title: 'Proprietário',
       description: 'Sou o dono legal do veículo',
       icon: Key,
-      documents: 'Documento do veículo em seu nome',
     },
     {
       id: 'renter',
       title: 'Locatário',
       description: 'Veículo alugado, financiado ou arrendado',
       icon: FileText,
-      documents: 'Contrato de locação ou financiamento',
     },
     {
       id: 'authorized_driver',
       title: 'Condutor',
       description: 'Uso familiar, empresarial ou com autorização',
       icon: Users,
-      documents: 'Autorização do proprietário ou vínculo familiar/empresarial',
     },
     {
       id: 'technical',
       title: 'Responsável Técnico',
       description: 'Mecânico, oficina, gestor de frota',
       icon: Wrench,
-      documents: 'Contrato de serviço ou responsabilidade técnica',
     },
     {
       id: 'other',
       title: 'Outro',
       description: 'Especificar tipo de vínculo personalizado',
       icon: Edit3,
-      documents: 'Documentos que comprovem o vínculo',
     },
   ];
 
-  const handleContinue = () => {
+  const handleRelationshipSelect = (relationshipId: string) => {
     router.push({
       pathname: '/add-link/document-upload',
       params: {
         vehicleId: params.vehicleId,
         action: params.action,
-        relationshipType: selectedRelationship,
+        relationshipType: relationshipId,
       },
     });
   };
-
-  const selectedOption = relationships.find((r) => r.id === selectedRelationship);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -103,26 +95,15 @@ export default function SelectTypeScreen() {
           <View style={styles.relationshipsList}>
             {relationships.map((relationship) => {
               const IconComponent = relationship.icon;
-              const isSelected = selectedRelationship === relationship.id;
 
               return (
                 <TouchableOpacity
                   key={relationship.id}
-                  onPress={() => setSelectedRelationship(relationship.id)}
-                  style={[
-                    styles.relationshipCard,
-                    isSelected && styles.relationshipCardSelected,
-                  ]}
+                  onPress={() => handleRelationshipSelect(relationship.id)}
+                  style={styles.relationshipCard}
                 >
-                  <View
-                    style={[styles.iconBox, isSelected && styles.iconBoxSelected]}
-                  >
-                    <IconComponent
-                      size={24}
-                      color={
-                        isSelected ? Colors.background.primary : Colors.text.secondary
-                      }
-                    />
+                  <View style={styles.iconBox}>
+                    <IconComponent size={24} color={Colors.text.secondary} />
                   </View>
 
                   <View style={styles.relationshipInfo}>
@@ -132,31 +113,13 @@ export default function SelectTypeScreen() {
                     </Text>
                   </View>
 
-                  <ChevronRight
-                    size={20}
-                    color={isSelected ? Colors.primary.dark : Colors.text.placeholder}
-                  />
+                  <ChevronRight size={20} color={Colors.text.placeholder} />
                 </TouchableOpacity>
               );
             })}
           </View>
-
-          {selectedOption && (
-            <View style={styles.documentsBox}>
-              <Text style={styles.documentsTitle}>Documentos necessários:</Text>
-              <Text style={styles.documentsText}>{selectedOption.documents}</Text>
-            </View>
-          )}
         </View>
       </ScrollView>
-
-      {selectedRelationship && (
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
-            <Text style={styles.continueButtonText}>Continuar</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </SafeAreaView>
   );
 }
@@ -182,7 +145,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
-    paddingBottom: 120,
   },
   title: {
     fontSize: 24,
@@ -214,10 +176,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.border.DEFAULT,
     gap: 12,
   },
-  relationshipCardSelected: {
-    borderColor: Colors.primary.dark,
-    backgroundColor: Colors.background.secondary,
-  },
   iconBox: {
     width: 48,
     height: 48,
@@ -225,9 +183,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconBoxSelected: {
-    backgroundColor: Colors.primary.dark,
   },
   relationshipInfo: {
     flex: 1,
@@ -242,45 +197,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.secondary,
     lineHeight: 20,
-  },
-  documentsBox: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: Colors.background.secondary,
-    borderWidth: 1,
-    borderColor: Colors.border.DEFAULT,
-    borderRadius: 12,
-  },
-  documentsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.primary.dark,
-    marginBottom: 4,
-  },
-  documentsText: {
-    fontSize: 12,
-    color: Colors.text.secondary,
-    lineHeight: 18,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 24,
-    backgroundColor: Colors.background.primary,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border.DEFAULT,
-  },
-  continueButton: {
-    backgroundColor: Colors.primary.dark,
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  continueButtonText: {
-    color: Colors.background.primary,
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
