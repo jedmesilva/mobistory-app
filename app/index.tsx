@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import { VehicleCard, SectionHeader } from '../components/vehicle';
 import { SearchInput } from '../components/ui';
+import { MenuModal } from '../components/ui/MenuModal';
 
 export default function Index() {
   const router = useRouter();
@@ -86,6 +87,7 @@ export default function Index() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const filteredVehicles = vehicles.filter(vehicle =>
     vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -126,6 +128,12 @@ export default function Index() {
     });
   };
 
+  // Função para lidar com navegação do menu
+  const handleMenuNavigation = (screen: string) => {
+    // TODO: Implementar navegação para as telas do menu
+    console.log('Navigate to:', screen);
+  };
+
   const headerBorderWidth = scrollY.interpolate({
     inputRange: [0, 10],
     outputRange: [0, 1],
@@ -145,13 +153,19 @@ export default function Index() {
           },
         ]}
       >
-        <TouchableOpacity style={styles.headerButton}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => setMenuVisible(true)}
+        >
           <Menu size={24} color={Colors.primary.light} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
 
-        <TouchableOpacity style={styles.headerButton}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => router.push('/notifications')}
+        >
           <Bell size={24} color={Colors.primary.light} />
           <View style={styles.notificationBadge}>
             <Text style={styles.notificationBadgeText}>3</Text>
@@ -295,6 +309,12 @@ export default function Index() {
           <View style={{ height: 40 }} />
         </View>
       </Animated.ScrollView>
+
+      <MenuModal
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        onNavigate={handleMenuNavigation}
+      />
     </SafeAreaView>
   );
 }
