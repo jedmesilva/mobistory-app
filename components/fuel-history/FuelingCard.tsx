@@ -85,13 +85,31 @@ export const FuelingCard = ({
         </TouchableOpacity>
       </View>
 
+      {/* Totais */}
+      <View style={styles.totalsSection}>
+        <View style={styles.totalItem}>
+          <Text style={styles.totalValue}>{fueling.totalLiters} L</Text>
+          <Text style={styles.totalLabel}>Total de litros</Text>
+        </View>
+        <View style={styles.totalItemRight}>
+          <Text style={styles.totalValue}>{formatCurrency(fueling.totalValue)}</Text>
+          <Text style={styles.totalLabel}>Valor total</Text>
+        </View>
+      </View>
+
+      <View style={styles.divider} />
+
       {/* Combustíveis */}
       <View style={styles.fuelsSection}>
         {fueling.fuels.map((fuel, fuelIndex) => {
           const style = getFuelTypeStyle(fuel.type);
+          const percentage = ((fuel.liters / fueling.totalLiters) * 100).toFixed(1);
+          const isLast = fuelIndex === fueling.fuels.length - 1;
+
           return (
-            <View key={fuelIndex} style={styles.fuelRow}>
-              <View style={styles.fuelLeft}>
+            <View key={fuelIndex} style={[styles.fuelItem, isLast && styles.fuelItemLast]}>
+              {/* Linha 1: Nome do combustível e Percentual */}
+              <View style={styles.fuelRow}>
                 <View
                   style={[
                     styles.fuelTypeBadge,
@@ -102,50 +120,24 @@ export const FuelingCard = ({
                     {fuel.type}
                   </Text>
                 </View>
-                <Text style={styles.fuelLiters}>{fuel.liters}L</Text>
+                <View style={styles.percentageBadge}>
+                  <Text style={styles.percentageText}>{percentage}%</Text>
+                </View>
               </View>
-              <View style={styles.fuelRight}>
+
+              {/* Linha 2: Litragem + Preço/L e Valor Total */}
+              <View style={styles.fuelRow}>
+                <View style={styles.fuelLeft}>
+                  <Text style={styles.fuelLiters}>{fuel.liters} L</Text>
+                  <Text style={styles.fuelMetaText}>• {formatCurrency(fuel.pricePerLiter)}/L</Text>
+                </View>
                 <Text style={styles.fuelTotalPrice}>
                   {formatCurrency(fuel.totalPrice)}
-                </Text>
-                <Text style={styles.fuelPricePerLiter}>
-                  {formatCurrency(fuel.pricePerLiter)}/L
                 </Text>
               </View>
             </View>
           );
         })}
-      </View>
-
-      {/* Footer com Totais */}
-      <View style={styles.fuelingFooter}>
-        <View style={styles.totalsRow}>
-          <View style={styles.totalItem}>
-            <Text style={styles.totalValue}>
-              {formatCurrency(fueling.totalValue)}
-            </Text>
-            <Text style={styles.totalLabel}>Total</Text>
-          </View>
-
-          <View style={styles.totalItem}>
-            <Text style={styles.totalValue}>{fueling.totalLiters}L</Text>
-            <Text style={styles.totalLabel}>Volume</Text>
-          </View>
-
-          {fueling.efficiency && (
-            <View style={styles.totalItem}>
-              <Text style={styles.totalValue}>
-                {fueling.efficiency.toFixed(1)}
-              </Text>
-              <Text style={styles.totalLabel}>km/L</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.statusBadge}>
-          <CheckCircle size={16} color="#16a34a" />
-          <Text style={styles.statusText}>Completo</Text>
-        </View>
       </View>
     </View>
   );
@@ -215,11 +207,30 @@ const styles = StyleSheet.create({
   moreButton: {
     padding: 4,
   },
-  fuelsSection: {
+  totalsSection: {
+    flexDirection: 'row',
     padding: 16,
-    gap: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.background.tertiary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.background.tertiary,
+  },
+  fuelsSection: {
+    padding: 16,
+  },
+  fuelItem: {
+    gap: 8,
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.background.tertiary,
+  },
+  fuelItemLast: {
+    borderBottomWidth: 0,
+    paddingBottom: 0,
+    marginBottom: 0,
   },
   fuelRow: {
     flexDirection: 'row',
@@ -229,10 +240,10 @@ const styles = StyleSheet.create({
   fuelLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
   fuelTypeBadge: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
   },
@@ -240,57 +251,46 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
+  percentageBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: Colors.info.light,
+    borderRadius: 12,
+  },
+  percentageText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.info.DEFAULT,
+  },
   fuelLiters: {
     fontSize: 14,
-    fontWeight: '500',
-    color: Colors.primary.dark,
-  },
-  fuelRight: {
-    alignItems: 'flex-end',
-  },
-  fuelTotalPrice: {
-    fontSize: 16,
     fontWeight: '600',
     color: Colors.primary.dark,
   },
-  fuelPricePerLiter: {
+  fuelMetaText: {
     fontSize: 12,
     color: Colors.text.tertiary,
   },
-  fuelingFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-  },
-  totalsRow: {
-    flexDirection: 'row',
-    gap: 24,
-  },
-  totalItem: {
-    alignItems: 'center',
-  },
-  totalValue: {
-    fontSize: 14,
-    fontWeight: '600',
+  fuelTotalPrice: {
+    fontSize: 16,
+    fontWeight: '700',
     color: Colors.primary.dark,
   },
+  totalItem: {
+    flex: 1,
+  },
+  totalItemRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  totalValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.primary.dark,
+    marginBottom: 4,
+  },
   totalLabel: {
-    fontSize: 11,
-    color: Colors.text.placeholder,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#f0fdf4',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#16a34a',
+    fontSize: 13,
+    color: Colors.text.tertiary,
   },
 });

@@ -14,6 +14,7 @@ import {
   ProgressIndicator,
   OdometerInput,
   ConsumptionDisplay,
+  FuelItemCard,
 } from '@/components/add-fueling';
 import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
 import { CaptureButton } from '@/components/ui/CaptureButton';
@@ -234,36 +235,20 @@ export default function OdometerInputScreen() {
                   </View>
                 </View>
 
+                <View style={styles.divider} />
+
                 <View style={styles.fuelsList}>
-                  {fuelItems.map((item, index) => {
-                    const itemLiters = parseFloat(item.liters.replace(',', '.'));
-                    const percentage = ((itemLiters / totalLiters) * 100).toFixed(1);
-                    const colors = getFuelTypeColor(item.fuelType);
-                    const isLast = index === fuelItems.length - 1;
-
-                    return (
-                      <View key={item.id} style={[styles.fuelItem, isLast && styles.fuelItemLast]}>
-                        {/* Linha 1: Nome do combustível e Percentual */}
-                        <View style={styles.fuelItemRow}>
-                          <View style={[styles.fuelBadge, { backgroundColor: colors.bg }]}>
-                            <Text style={[styles.fuelBadgeText, { color: colors.text }]}>{item.fuelType}</Text>
-                          </View>
-                          <View style={styles.percentageBadge}>
-                            <Text style={styles.percentageText}>{percentage}%</Text>
-                          </View>
-                        </View>
-
-                        {/* Linha 2: Litragem + Preço/L e Valor Total */}
-                        <View style={styles.fuelItemRow}>
-                          <View style={styles.fuelItemLeft}>
-                            <Text style={styles.fuelLiters}>{item.liters} L</Text>
-                            <Text style={styles.fuelMetaText}>• R$ {item.pricePerLiter.replace('.', ',')}/L</Text>
-                          </View>
-                          <Text style={styles.fuelTotalPrice}>R$ {item.totalPrice.replace('.', ',')}</Text>
-                        </View>
-                      </View>
-                    );
-                  })}
+                  {fuelItems.map((item, index) => (
+                    <FuelItemCard
+                      key={item.id}
+                      item={item}
+                      index={index}
+                      totalLiters={totalLiters}
+                      getFuelTypeColor={getFuelTypeColor}
+                      isLast={index === fuelItems.length - 1}
+                      showActions={false}
+                    />
+                  ))}
                 </View>
               </View>
             </View>
@@ -476,62 +461,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.tertiary,
   },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.background.tertiary,
+    marginHorizontal: -16,
+    marginVertical: 16,
+  },
   fuelsList: {
-    gap: 16,
-  },
-  fuelItem: {
-    gap: 8,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.background.tertiary,
-  },
-  fuelItemLast: {
-    borderBottomWidth: 0,
-    paddingBottom: 0,
-  },
-  fuelItemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  fuelItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  fuelBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  fuelBadgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  fuelLiters: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.primary.dark,
-  },
-  fuelMetaText: {
-    fontSize: 12,
-    color: Colors.text.tertiary,
-  },
-  percentageBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    backgroundColor: Colors.info.light,
-    borderRadius: 12,
-  },
-  percentageText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Colors.info.DEFAULT,
-  },
-  fuelTotalPrice: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.primary.dark,
+    marginHorizontal: -16,
   },
   warningBox: {
     flexDirection: 'row',

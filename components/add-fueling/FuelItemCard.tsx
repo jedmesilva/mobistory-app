@@ -15,9 +15,11 @@ interface FuelItemCardProps {
   item: FuelItem;
   index: number;
   totalLiters: number;
-  onEdit: (index: number) => void;
-  onRemove: (index: number) => void;
+  onEdit?: (index: number) => void;
+  onRemove?: (index: number) => void;
   getFuelTypeColor: (fuelType: string) => { bg: string; text: string };
+  isLast?: boolean;
+  showActions?: boolean;
 }
 
 export const FuelItemCard = ({
@@ -27,13 +29,19 @@ export const FuelItemCard = ({
   onEdit,
   onRemove,
   getFuelTypeColor,
+  isLast = false,
+  showActions = true,
 }: FuelItemCardProps) => {
   const itemLiters = parseFloat(item.liters.replace(',', '.'));
   const percentage = ((itemLiters / totalLiters) * 100).toFixed(1);
   const colors = getFuelTypeColor(item.fuelType);
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      !showActions && styles.containerNoActions,
+      isLast && styles.containerLast
+    ]}>
       {/* Linha 1: Nome do combustível e Percentual */}
       <View style={styles.row}>
         <View style={[styles.badge, { backgroundColor: colors.bg }]}>
@@ -53,15 +61,17 @@ export const FuelItemCard = ({
         <Text style={styles.totalPrice}>R$ {item.totalPrice}</Text>
       </View>
 
-      {/* Linha 3: Ações */}
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={() => onEdit(index)} style={styles.editButton}>
-          <Text style={styles.editButtonText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => onRemove(index)} style={styles.removeButton}>
-          <X size={16} color={Colors.error.dark} />
-        </TouchableOpacity>
-      </View>
+      {/* Linha 3: Ações (opcional) */}
+      {showActions && onEdit && onRemove && (
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={() => onEdit(index)} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Editar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => onRemove(index)} style={styles.removeButton}>
+            <X size={16} color={Colors.error.dark} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -72,6 +82,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.background.tertiary,
+  },
+  containerNoActions: {
+    gap: 8,
+    paddingBottom: 16,
+  },
+  containerLast: {
+    borderBottomWidth: 0,
+    paddingBottom: 0,
   },
   row: {
     flexDirection: 'row',

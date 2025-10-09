@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   Filter,
   Fuel,
-  Activity,
 } from 'lucide-react-native';
 import {
   VehicleStatusCard,
@@ -243,29 +242,14 @@ export default function FuelHistoryScreen() {
             </View>
 
             <View style={styles.fuelingList}>
-              {fuelingHistory.map((fueling, index) => (
-                <View key={fueling.id}>
-                  <FuelingCard
-                    fueling={fueling}
-                    formatDate={formatDate}
-                    formatCurrency={formatCurrency}
-                    getFuelTypeStyle={getFuelTypeStyle}
-                  />
-
-                  {/* Indicador de distância */}
-                  {fueling.kmTraveled && (
-                    <View style={styles.distanceBanner}>
-                      <Activity size={12} color={Colors.text.secondary} />
-                      <Text style={styles.distanceText}>
-                        {fueling.kmTraveled} km desde o último abastecimento
-                        {index < fuelingHistory.length - 1 &&
-                          ` • ${((fueling.kmTraveled / fueling.totalLiters) || 0).toFixed(
-                            1
-                          )} km/L`}
-                      </Text>
-                    </View>
-                  )}
-                </View>
+              {fuelingHistory.map((fueling) => (
+                <FuelingCard
+                  key={fueling.id}
+                  fueling={fueling}
+                  formatDate={formatDate}
+                  formatCurrency={formatCurrency}
+                  getFuelTypeStyle={getFuelTypeStyle}
+                />
               ))}
             </View>
           </View>
@@ -347,20 +331,6 @@ const styles = StyleSheet.create({
   },
   fuelingList: {
     gap: 12,
-  },
-  distanceBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: -4,
-    marginBottom: 12,
-    padding: 8,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 8,
-  },
-  distanceText: {
-    fontSize: 12,
-    color: Colors.text.secondary,
   },
   searchContainer: {
     marginBottom: 16,
