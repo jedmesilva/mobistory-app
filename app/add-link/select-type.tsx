@@ -63,14 +63,26 @@ export default function SelectTypeScreen() {
   ];
 
   const handleRelationshipSelect = (relationshipId: string) => {
-    router.push({
-      pathname: '/add-link/document-upload',
-      params: {
-        vehicleId: params.vehicleId,
-        action: params.action,
-        relationshipType: relationshipId,
-      },
-    });
+    // Se a ação for "grant", vai para grant-invite (etapa 3.1)
+    // Se for "claim" ou "request", vai para document-upload (etapa 3)
+    if (params.action === 'grant') {
+      router.push({
+        pathname: '/add-link/grant-invite',
+        params: {
+          vehicleId: params.vehicleId,
+          relationshipType: relationshipId,
+        },
+      });
+    } else {
+      router.push({
+        pathname: '/add-link/document-upload',
+        params: {
+          vehicleId: params.vehicleId,
+          action: params.action,
+          relationshipType: relationshipId,
+        },
+      });
+    }
   };
 
   return (

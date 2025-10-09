@@ -49,17 +49,10 @@ export default function SelectActionScreen() {
   ];
 
   const handleOptionSelect = (optionId: string) => {
-    if (optionId === 'grant') {
-      router.push({
-        pathname: '/add-link/grant-invite',
-        params: { vehicleId: params.vehicleId },
-      });
-    } else {
-      router.push({
-        pathname: '/add-link/select-type',
-        params: { vehicleId: params.vehicleId, action: optionId },
-      });
-    }
+    router.push({
+      pathname: '/add-link/select-type',
+      params: { vehicleId: params.vehicleId, action: optionId },
+    });
   };
 
   return (
