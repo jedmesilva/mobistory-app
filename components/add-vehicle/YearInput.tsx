@@ -31,6 +31,7 @@ export const YearInput = ({ value, onChangeText, onSubmitEditing }: YearInputPro
 const styles = StyleSheet.create({
   stepContainer: {
     gap: 24,
+    padding: 24,
   },
   input: {
     fontSize: 18,

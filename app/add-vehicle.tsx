@@ -505,15 +505,6 @@ export default function AddVehicleScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <VehicleHeader
-        onBack={handleBack}
-        hasAutoData={hasAutoData}
-        vehicleData={vehicleData}
-        colors={colors}
-        progress={getStepProgress()}
-      />
-
       {/* Content */}
       <ScrollView
         style={styles.scrollView}
@@ -531,7 +522,18 @@ export default function AddVehicleScreen() {
               onEdit={handleEdit}
             />
           ) : (
-            renderStep()
+            <>
+              {/* Header */}
+              <VehicleHeader
+                onBack={handleBack}
+                hasAutoData={hasAutoData}
+                vehicleData={vehicleData}
+                colors={colors}
+                progress={getStepProgress()}
+                isFirstStep={currentStep === 0}
+              />
+              {renderStep()}
+            </>
           )}
       </ScrollView>
 
@@ -567,10 +569,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 24,
     paddingBottom: 200,
   },
   stepContainer: {
     gap: 24,
+    padding: 24,
   },
 });

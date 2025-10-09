@@ -113,6 +113,7 @@ export const ConfirmationScreen = ({
 const styles = StyleSheet.create({
   confirmationContainer: {
     gap: 24,
+    padding: 24,
   },
   confirmationCard: {
     backgroundColor: '#fff',
