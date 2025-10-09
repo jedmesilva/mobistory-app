@@ -31,38 +31,36 @@ InsightsBox.Item = InsightItem;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 16,
     backgroundColor: Colors.background.secondary,
-    borderWidth: 1,
-    borderColor: Colors.border.DEFAULT,
-    borderRadius: 16,
+    borderRadius: 12,
     marginBottom: 16,
   },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: Colors.primary.dark,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   list: {
-    gap: 12,
+    gap: 10,
   },
   insightItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: 10,
   },
   bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     backgroundColor: Colors.text.placeholder,
     marginTop: 6,
   },
   insightText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.text.secondary,
-    lineHeight: 20,
+    lineHeight: 19,
   },
 });

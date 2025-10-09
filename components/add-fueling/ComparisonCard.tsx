@@ -30,27 +30,23 @@ export const ComparisonCard = ({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.iconBox}>{icon}</View>
-        <View style={styles.info}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        </View>
+        <Text style={styles.title}>{title}</Text>
+        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
 
-      <View style={styles.values}>
-        <Text style={styles.mainValue}>{mainValue}</Text>
-        {changeIcon && changeText && (
-          <View style={[styles.changeRow, { color: changeColor }]}>
-            {changeIcon}
-            <Text style={[styles.changeText, { color: changeColor }]}>{changeText}</Text>
-          </View>
-        )}
-      </View>
+      <Text style={styles.mainValue}>{mainValue}</Text>
+
+      {changeIcon && changeText && (
+        <View style={[styles.changeRow, { backgroundColor: changeColor ? `${changeColor}15` : 'transparent' }]}>
+          {changeIcon}
+          <Text style={[styles.changeText, { color: changeColor }]}>{changeText}</Text>
+        </View>
+      )}
 
       {(footerText || footerSecondaryText) && (
         <View style={styles.footer}>
           {footerText && <Text style={styles.footerText}>{footerText}</Text>}
-          {footerSecondaryText && <Text style={styles.footerText}>{footerSecondaryText}</Text>}
+          {footerSecondaryText && <Text style={styles.footerSecondary}>{footerSecondaryText}</Text>}
         </View>
       )}
 
@@ -61,62 +57,55 @@ export const ComparisonCard = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.background.primary,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.border.DEFAULT,
-    padding: 20,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
+    padding: 16,
     marginBottom: 12,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
     marginBottom: 12,
   },
-  iconBox: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.background.tertiary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  info: {
-    flex: 1,
-  },
   title: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     color: Colors.primary.dark,
+    marginBottom: 2,
   },
   subtitle: {
     fontSize: 12,
     color: Colors.text.tertiary,
   },
-  values: {
-    alignItems: 'flex-end',
-    marginBottom: 12,
-  },
   mainValue: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: '700',
     color: Colors.primary.dark,
+    marginBottom: 8,
   },
   changeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
   },
   changeText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   footer: {
     gap: 4,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border.DEFAULT,
   },
   footerText: {
+    fontSize: 13,
+    color: Colors.text.secondary,
+  },
+  footerSecondary: {
     fontSize: 12,
     color: Colors.text.tertiary,
   },

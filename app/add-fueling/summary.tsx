@@ -100,53 +100,43 @@ export default function SummaryScreen() {
             <Text style={styles.subtitle}>Comparativo com abastecimento anterior</Text>
           </View>
           {/* Main Summary */}
-          <View style={styles.card}>
-            <View style={[styles.cardHeader, styles.fuelHeader]}>
-              <Fuel size={16} color={Colors.text.secondary} />
-              <Text style={styles.cardHeaderText}>Abastecimento Registrado</Text>
+          <View style={styles.mainSummaryCard}>
+            <View style={styles.mainSummary}>
+              <Text style={styles.mainValue}>{formatCurrency(currentFueling.totalValue)}</Text>
+              <Text style={styles.mainLabel}>
+                {currentFueling.totalLiters.toFixed(1)} litros • {currentFueling.station.name}
+              </Text>
+              <Text style={styles.dateText}>
+                {new Date(currentFueling.date).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  weekday: 'long',
+                })}
+              </Text>
             </View>
 
-            <View style={styles.cardBody}>
-              <View style={styles.mainSummary}>
-                <Text style={styles.mainValue}>{formatCurrency(currentFueling.totalValue)}</Text>
-                <Text style={styles.mainLabel}>
-                  {currentFueling.totalLiters.toFixed(1)} litros • {currentFueling.station.name}
-                </Text>
-                <Text style={styles.dateText}>
-                  {new Date(currentFueling.date).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    weekday: 'long',
-                  })}
-                </Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>{distanceTraveled.toLocaleString('pt-BR')}</Text>
+                <Text style={styles.statLabel}>km rodados</Text>
               </View>
-
-              <View style={styles.statsGrid}>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{distanceTraveled.toLocaleString('pt-BR')}</Text>
-                  <Text style={styles.statLabel}>km rodados</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{daysBetween}</Text>
-                  <Text style={styles.statLabel}>dias</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={styles.statValue}>{avgDailyKm}</Text>
-                  <Text style={styles.statLabel}>km/dia</Text>
-                </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>{daysBetween}</Text>
+                <Text style={styles.statLabel}>dias</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>{avgDailyKm}</Text>
+                <Text style={styles.statLabel}>km/dia</Text>
               </View>
             </View>
           </View>
 
           {/* Consumption Analysis */}
-          <View style={styles.card}>
-            <View style={[styles.cardHeader, styles.activityHeader]}>
-              <Activity size={16} color={Colors.text.secondary} />
-              <Text style={styles.cardHeaderText}>Análise de Consumo</Text>
-            </View>
-
-            <ConsumptionAnalysisCard consumption={consumption} status={consumptionStatus} />
+          <View style={styles.consumptionCard}>
+            <Text style={styles.consumptionTitle}>Consumo: {consumption} km/L</Text>
+            <Text style={styles.consumptionStatus}>{consumptionStatus.label}</Text>
+            <Text style={styles.consumptionMessage}>{consumptionStatus.message}</Text>
           </View>
 
           {/* Comparisons */}
@@ -337,7 +327,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingTop: 24, paddingBottom: 100 },
   titleContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
   title: {
     fontSize: 24,
@@ -351,6 +341,54 @@ const styles = StyleSheet.create({
     color: Colors.text.tertiary,
     textAlign: 'center',
   },
+  mainSummaryCard: {
+    backgroundColor: Colors.background.primary,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.border.DEFAULT,
+    padding: 24,
+    marginBottom: 32,
+  },
+  mainSummary: { alignItems: 'center', marginBottom: 24 },
+  mainValue: { fontSize: 36, fontWeight: '700', color: Colors.primary.dark, marginBottom: 8 },
+  mainLabel: { fontSize: 14, color: Colors.text.secondary, marginBottom: 4 },
+  dateText: { fontSize: 12, color: Colors.text.tertiary },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border.DEFAULT,
+  },
+  statItem: { alignItems: 'center' },
+  statValue: { fontSize: 20, fontWeight: '700', color: Colors.primary.dark, marginBottom: 4 },
+  statLabel: { fontSize: 12, color: Colors.text.tertiary },
+  consumptionCard: {
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 32,
+    alignItems: 'center',
+  },
+  consumptionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.primary.dark,
+    marginBottom: 4,
+  },
+  consumptionStatus: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.success.text,
+    marginBottom: 8,
+  },
+  consumptionMessage: {
+    fontSize: 13,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 19,
+  },
+  sectionTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary.dark, marginBottom: 12 },
   card: {
     backgroundColor: Colors.background.primary,
     borderRadius: 16,
@@ -372,15 +410,6 @@ const styles = StyleSheet.create({
   activityHeader: { backgroundColor: Colors.background.secondary },
   cardHeaderText: { fontSize: 14, fontWeight: '600', color: Colors.primary.dark },
   cardBody: { padding: 24 },
-  mainSummary: { alignItems: 'center', marginBottom: 24 },
-  mainValue: { fontSize: 32, fontWeight: '700', color: Colors.primary.dark, marginBottom: 8 },
-  mainLabel: { fontSize: 14, color: Colors.text.tertiary, marginBottom: 4 },
-  dateText: { fontSize: 12, color: Colors.text.placeholder },
-  statsGrid: { flexDirection: 'row', justifyContent: 'space-around' },
-  statItem: { alignItems: 'center' },
-  statValue: { fontSize: 18, fontWeight: '700', color: Colors.primary.dark },
-  statLabel: { fontSize: 12, color: Colors.text.tertiary },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: Colors.primary.dark, marginBottom: 16, marginTop: 8 },
   stationComparison: { gap: 4, marginTop: 12 },
   stationRow: { flexDirection: 'row', justifyContent: 'space-between' },
   footerLabel: { fontSize: 12, color: Colors.text.tertiary },
@@ -392,13 +421,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: Colors.background.primary,
-    borderWidth: 1,
-    borderColor: Colors.border.DEFAULT,
-    borderRadius: 16,
+    padding: 14,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
     marginBottom: 16,
-    marginTop: 8,
+    marginTop: 16,
   },
   detailsToggleText: { fontSize: 14, fontWeight: '500', color: Colors.text.secondary },
   chevron: { transform: [{ rotate: '0deg' }] },
