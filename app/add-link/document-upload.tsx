@@ -445,6 +445,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: Colors.primary.dark,
+    marginBottom: 8,
   },
   requiredBadge: {
     backgroundColor: '#fee2e2',
