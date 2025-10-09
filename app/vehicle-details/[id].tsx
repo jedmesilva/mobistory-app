@@ -348,7 +348,13 @@ export default function VehicleDetailsScreen() {
               {owners.length + renters.length + authorizedDrivers.length}
             </Text>
           </View>
-          <TouchableOpacity style={styles.newLinkButton}>
+          <TouchableOpacity
+            style={styles.newLinkButton}
+            onPress={() => router.push({
+              pathname: '/add-link/select-action',
+              params: { vehicleId: id }
+            })}
+          >
             <UserPlus size={16} color={Colors.background.primary} />
             <Text style={styles.newLinkButtonText}>Novo vínculo</Text>
           </TouchableOpacity>
