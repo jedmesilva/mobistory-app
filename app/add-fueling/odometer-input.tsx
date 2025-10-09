@@ -75,13 +75,8 @@ export default function OdometerInputScreen() {
 
     const kmNumber = parseInt(km.replace(/[^\d]/g, ''));
 
-    if (kmNumber <= currentVehicle.lastKm) {
-      setError(`KM deve ser maior que ${currentVehicle.lastKm.toLocaleString('pt-BR')}`);
-      return false;
-    }
-
-    if (kmNumber > currentVehicle.lastKm + 10000) {
-      setError('KM parece muito alto. Verifique se está correto.');
+    if (kmNumber < currentVehicle.lastKm) {
+      setError(`KM deve ser maior ou igual a ${currentVehicle.lastKm.toLocaleString('pt-BR')}`);
       return false;
     }
 
@@ -96,16 +91,22 @@ export default function OdometerInputScreen() {
   };
 
   const handleSubmit = () => {
-    if (validateKmInput()) {
-      setActionType('submit');
-      setIsProcessing(true);
-
-      setTimeout(() => {
-        setIsProcessing(false);
-        setActionType('');
-        router.push('/add-fueling/summary');
-      }, 800);
+    if (!km) {
+      return;
     }
+
+    if (!validateKmInput()) {
+      return;
+    }
+
+    setActionType('submit');
+    setIsProcessing(true);
+
+    setTimeout(() => {
+      setIsProcessing(false);
+      setActionType('');
+      router.push('/add-fueling/summary');
+    }, 800);
   };
 
   const skipKm = () => {
@@ -311,11 +312,18 @@ export default function OdometerInputScreen() {
 
             <TouchableOpacity
               onPress={handleSubmit}
-              disabled={isProcessing}
-              style={[styles.submitButton, isProcessing && styles.buttonDisabled]}
+              disabled={isProcessing || !km || !!error}
+              style={[
+                styles.submitButton,
+                (isProcessing || !km || !!error) && styles.buttonDisabled
+              ]}
             >
               <Text style={styles.submitButtonText}>
-                {isProcessing && actionType === 'submit' ? 'Finalizando...' : km ? `Finalizar com KM ${km}` : 'Finalizar com KM'}
+                {isProcessing && actionType === 'submit'
+                  ? 'Finalizando...'
+                  : km
+                    ? `Finalizar com ${km} km`
+                    : 'Finalizar'}
               </Text>
             </TouchableOpacity>
           </View>
