@@ -51,6 +51,7 @@ interface Fueling {
 export default function FuelHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const vehicleId = params.id as string;
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -191,7 +192,7 @@ export default function FuelHistoryScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+        <TouchableOpacity onPress={() => router.push(`/vehicle-history/${vehicleId}`)} style={styles.headerButton}>
           <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
