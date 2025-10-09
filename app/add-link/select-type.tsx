@@ -1,23 +1,12 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import {
-  ArrowLeft,
-  Key,
-  FileText,
-  Users,
-  Wrench,
-  Edit3,
-  ChevronRight,
-} from 'lucide-react-native';
+import { Key, FileText, Users, Wrench, Edit3 } from 'lucide-react-native';
+import { ScreenHeader } from '@/components/add-link/ScreenHeader';
+import { ScreenTitle } from '@/components/add-link/ScreenTitle';
+import { SelectionCard } from '@/components/add-link/SelectionCard';
 
 export default function SelectTypeScreen() {
   const router = useRouter();
@@ -87,48 +76,26 @@ export default function SelectTypeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={20} color={Colors.text.secondary} />
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader onPress={() => router.back()} variant="back" />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <Text style={styles.title}>Tipo de vínculo</Text>
-          <Text style={styles.subtitle}>
-            Escolha o tipo de vínculo com{' '}
-            <Text style={styles.vehicleName}>
-              {vehicleData.brand} {vehicleData.model}
-            </Text>
-          </Text>
+          <ScreenTitle
+            title="Tipo de vínculo"
+            subtitle="Escolha o tipo de vínculo com"
+            vehicleName={`${vehicleData.brand} ${vehicleData.model}`}
+          />
 
           <View style={styles.relationshipsList}>
-            {relationships.map((relationship) => {
-              const IconComponent = relationship.icon;
-
-              return (
-                <TouchableOpacity
-                  key={relationship.id}
-                  onPress={() => handleRelationshipSelect(relationship.id)}
-                  style={styles.relationshipCard}
-                >
-                  <View style={styles.iconBox}>
-                    <IconComponent size={24} color={Colors.text.secondary} />
-                  </View>
-
-                  <View style={styles.relationshipInfo}>
-                    <Text style={styles.relationshipTitle}>{relationship.title}</Text>
-                    <Text style={styles.relationshipDescription}>
-                      {relationship.description}
-                    </Text>
-                  </View>
-
-                  <ChevronRight size={20} color={Colors.text.placeholder} />
-                </TouchableOpacity>
-              );
-            })}
+            {relationships.map((relationship) => (
+              <SelectionCard
+                key={relationship.id}
+                icon={relationship.icon}
+                title={relationship.title}
+                description={relationship.description}
+                onPress={() => handleRelationshipSelect(relationship.id)}
+              />
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -141,73 +108,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  header: {
-    padding: 16,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: Colors.background.tertiary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scrollView: {
     flex: 1,
   },
   content: {
     padding: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  vehicleName: {
-    fontWeight: '600',
-    color: Colors.primary.dark,
-  },
   relationshipsList: {
     gap: 16,
-  },
-  relationshipCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: Colors.background.primary,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: Colors.border.DEFAULT,
-    gap: 12,
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: Colors.background.tertiary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  relationshipInfo: {
-    flex: 1,
-  },
-  relationshipTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-    marginBottom: 4,
-  },
-  relationshipDescription: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    lineHeight: 20,
   },
 });

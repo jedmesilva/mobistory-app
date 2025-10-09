@@ -1,21 +1,12 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import {
-  X,
-  Shield,
-  UserPlus,
-  Send,
-  ChevronRight,
-} from 'lucide-react-native';
+import { Shield, UserPlus, Send } from 'lucide-react-native';
+import { ScreenHeader } from '@/components/add-link/ScreenHeader';
+import { ScreenTitle } from '@/components/add-link/ScreenTitle';
+import { SelectionCard } from '@/components/add-link/SelectionCard';
 
 export default function SelectActionScreen() {
   const router = useRouter();
@@ -57,46 +48,26 @@ export default function SelectActionScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-          <X size={20} color={Colors.text.secondary} />
-        </TouchableOpacity>
-      </View>
+      <ScreenHeader onPress={() => router.back()} variant="close" />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <Text style={styles.title}>Inicie um novo vínculo</Text>
-          <Text style={styles.subtitle}>
-            Escolha como iniciar um novo vínculo com{' '}
-            <Text style={styles.vehicleName}>
-              {vehicleData.brand} {vehicleData.model}
-            </Text>
-          </Text>
+          <ScreenTitle
+            title="Inicie um novo vínculo"
+            subtitle="Escolha como iniciar um novo vínculo com"
+            vehicleName={`${vehicleData.brand} ${vehicleData.model}`}
+          />
 
           <View style={styles.optionsList}>
-            {linkOptions.map((option) => {
-              const IconComponent = option.icon;
-
-              return (
-                <TouchableOpacity
-                  key={option.id}
-                  onPress={() => handleOptionSelect(option.id)}
-                  style={styles.optionCard}
-                >
-                  <View style={styles.iconBox}>
-                    <IconComponent size={24} color={Colors.text.secondary} />
-                  </View>
-
-                  <View style={styles.optionInfo}>
-                    <Text style={styles.optionTitle}>{option.title}</Text>
-                    <Text style={styles.optionDescription}>{option.description}</Text>
-                  </View>
-
-                  <ChevronRight size={20} color={Colors.text.placeholder} />
-                </TouchableOpacity>
-              );
-            })}
+            {linkOptions.map((option) => (
+              <SelectionCard
+                key={option.id}
+                icon={option.icon}
+                title={option.title}
+                description={option.description}
+                onPress={() => handleOptionSelect(option.id)}
+              />
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -109,73 +80,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  header: {
-    padding: 16,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: Colors.background.tertiary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scrollView: {
     flex: 1,
   },
   content: {
     padding: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  vehicleName: {
-    fontWeight: '600',
-    color: Colors.primary.dark,
-  },
   optionsList: {
     gap: 16,
-  },
-  optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: Colors.background.primary,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: Colors.border.DEFAULT,
-    gap: 12,
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: Colors.background.tertiary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  optionInfo: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-    marginBottom: 4,
-  },
-  optionDescription: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    lineHeight: 20,
   },
 });
