@@ -14,14 +14,14 @@ const InsightItem = ({ children }: InsightItemProps) => (
 );
 
 interface InsightsBoxProps {
-  title: string;
+  title?: string;
   children: ReactNode;
 }
 
 export const InsightsBox = ({ title, children }: InsightsBoxProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      {title && <Text style={styles.title}>{title}</Text>}
       <View style={styles.list}>{children}</View>
     </View>
   );

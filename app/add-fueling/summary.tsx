@@ -11,6 +11,8 @@ import {
   MapPin,
   Fuel,
   Activity,
+  Sparkles,
+  ChevronDown,
 } from 'lucide-react-native';
 import {
   ComparisonCard,
@@ -134,9 +136,30 @@ export default function SummaryScreen() {
 
           {/* Consumption Analysis */}
           <View style={styles.consumptionCard}>
-            <Text style={styles.consumptionTitle}>Consumo: {consumption} km/L</Text>
-            <Text style={styles.consumptionStatus}>{consumptionStatus.label}</Text>
-            <Text style={styles.consumptionMessage}>{consumptionStatus.message}</Text>
+            <View style={styles.consumptionHeader}>
+              <Text style={styles.consumptionTitle}>Consumo: {consumption} km/L</Text>
+              <View style={[
+                styles.consumptionBadge,
+                consumptionStatus.status === 'excellent' && styles.badgeExcellent,
+                consumptionStatus.status === 'good' && styles.badgeGood,
+                consumptionStatus.status === 'average' && styles.badgeAverage,
+                consumptionStatus.status === 'low' && styles.badgeLow,
+              ]}>
+                <Text style={[
+                  styles.consumptionBadgeText,
+                  consumptionStatus.status === 'excellent' && styles.badgeTextExcellent,
+                  consumptionStatus.status === 'good' && styles.badgeTextGood,
+                  consumptionStatus.status === 'average' && styles.badgeTextAverage,
+                  consumptionStatus.status === 'low' && styles.badgeTextLow,
+                ]}>
+                  {consumptionStatus.label}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.consumptionInsight}>
+              <Sparkles size={16} color={Colors.text.tertiary} />
+              <Text style={styles.consumptionMessage}>{consumptionStatus.message}</Text>
+            </View>
           </View>
 
           {/* Comparisons */}
@@ -169,19 +192,12 @@ export default function SummaryScreen() {
               currentFueling.station.name !== previousFueling.station.name ? 'Posto diferente' : 'Mesmo posto'
             }
             changeColor={currentFueling.station.name !== previousFueling.station.name ? Colors.info.DEFAULT : Colors.text.tertiary}
+            footerText={currentFueling.station.address}
+            footerSecondaryText={`Anterior: ${previousFueling.station.name} • ${previousFueling.station.address}`}
           >
-            <View style={styles.stationComparison}>
-              <View style={styles.stationRow}>
-                <Text style={styles.footerLabel}>Atual:</Text>
-                <Text style={styles.footerValue}>{currentFueling.station.name}</Text>
-              </View>
-              <View style={styles.stationRow}>
-                <Text style={styles.footerLabel}>Anterior:</Text>
-                <Text style={styles.footerValue}>{previousFueling.station.name}</Text>
-              </View>
-            </View>
             {currentFueling.station.name !== previousFueling.station.name && (
               <View style={styles.highlightBox}>
+                <Sparkles size={16} color={Colors.text.tertiary} />
                 <Text style={styles.highlightText}>Você mudou de posto. Isso pode explicar a diferença no preço do combustível.</Text>
               </View>
             )}
@@ -205,21 +221,36 @@ export default function SummaryScreen() {
           />
 
           {/* Insights */}
-          <InsightsBox title="Insights do Período">
-            <InsightsBox.Item>
+          <Text style={styles.sectionTitle}>Insights do Período</Text>
+
+          <View style={styles.insightCard}>
+            <Sparkles size={16} color={Colors.text.tertiary} />
+            <Text style={styles.insightText}>
               Você rodou <Text style={styles.bold}>{distanceTraveled} km</Text> em <Text style={styles.bold}>{daysBetween} dias</Text>{' '}
               (média de <Text style={styles.bold}>{avgDailyKm} km/dia</Text>)
-            </InsightsBox.Item>
-            <InsightsBox.Item>
+            </Text>
+          </View>
+
+          <View style={styles.insightCard}>
+            <Sparkles size={16} color={Colors.text.tertiary} />
+            <Text style={styles.insightText}>
               Seu consumo de <Text style={styles.bold}>{consumption} km/L</Text> está{' '}
               {consumptionStatus.label.toLowerCase()} para o Honda Civic
-            </InsightsBox.Item>
-            {currentFueling.station.name !== previousFueling.station.name && (
-              <InsightsBox.Item>
+            </Text>
+          </View>
+
+          {currentFueling.station.name !== previousFueling.station.name && (
+            <View style={styles.insightCard}>
+              <Sparkles size={16} color={Colors.text.tertiary} />
+              <Text style={styles.insightText}>
                 Mudança de posto pode ter influenciado na diferença de preço (<Text style={styles.bold}>{priceChange}%</Text>)
-              </InsightsBox.Item>
-            )}
-            <InsightsBox.Item>
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.insightCard}>
+            <Sparkles size={16} color={Colors.text.tertiary} />
+            <Text style={styles.insightText}>
               {valueComparison > 0 ? (
                 <>
                   Gastou <Text style={styles.bold}>{formatCurrency(valueComparison)}</Text> a mais
@@ -232,14 +263,14 @@ export default function SummaryScreen() {
                 <>Gastou o mesmo valor</>
               )}{' '}
               comparado ao abastecimento anterior
-            </InsightsBox.Item>
-          </InsightsBox>
+            </Text>
+          </View>
 
           {/* Toggle Details */}
           <TouchableOpacity onPress={() => setShowDetails(!showDetails)} style={styles.detailsToggle}>
             <Text style={styles.detailsToggleText}>{showDetails ? 'Ocultar detalhes' : 'Ver detalhes completos'}</Text>
             <View style={[styles.chevron, showDetails && styles.chevronRotated]}>
-              <TrendingUp size={16} color={Colors.text.tertiary} />
+              <ChevronDown size={20} color={Colors.text.tertiary} />
             </View>
           </TouchableOpacity>
 
@@ -368,27 +399,66 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 32,
+  },
+  consumptionHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  consumptionInsight: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginTop: 8,
   },
   consumptionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.primary.dark,
-    marginBottom: 4,
-  },
-  consumptionStatus: {
-    fontSize: 14,
+    flex: 1,
+    fontSize: 15,
     fontWeight: '600',
+    color: Colors.primary.dark,
+  },
+  consumptionBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  badgeExcellent: {
+    backgroundColor: `${Colors.success.DEFAULT}15`,
+  },
+  badgeGood: {
+    backgroundColor: `${Colors.success.DEFAULT}15`,
+  },
+  badgeAverage: {
+    backgroundColor: `${Colors.warning.DEFAULT}15`,
+  },
+  badgeLow: {
+    backgroundColor: `${Colors.error.DEFAULT}15`,
+  },
+  consumptionBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  badgeTextExcellent: {
     color: Colors.success.text,
-    marginBottom: 8,
+  },
+  badgeTextGood: {
+    color: Colors.success.text,
+  },
+  badgeTextAverage: {
+    color: Colors.warning.text,
+  },
+  badgeTextLow: {
+    color: Colors.error.text,
   },
   consumptionMessage: {
+    flex: 1,
     fontSize: 13,
     color: Colors.text.secondary,
-    textAlign: 'center',
     lineHeight: 19,
+    flexShrink: 1,
   },
-  sectionTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary.dark, marginBottom: 12 },
+  sectionTitle: { fontSize: 16, fontWeight: '600', color: Colors.primary.dark, marginBottom: 12, marginTop: 16 },
   card: {
     backgroundColor: Colors.background.primary,
     borderRadius: 16,
@@ -410,12 +480,36 @@ const styles = StyleSheet.create({
   activityHeader: { backgroundColor: Colors.background.secondary },
   cardHeaderText: { fontSize: 14, fontWeight: '600', color: Colors.primary.dark },
   cardBody: { padding: 24 },
-  stationComparison: { gap: 4, marginTop: 12 },
-  stationRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  footerLabel: { fontSize: 12, color: Colors.text.tertiary },
-  footerValue: { fontSize: 12, color: Colors.text.tertiary },
-  highlightBox: { marginTop: 12, padding: 12, backgroundColor: '#eff6ff', borderRadius: 8 },
-  highlightText: { fontSize: 12, color: Colors.info.text },
+  insightCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    padding: 14,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  insightText: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.text.secondary,
+    lineHeight: 19,
+  },
+  highlightBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: Colors.background.primary,
+    borderRadius: 8,
+  },
+  highlightText: {
+    flex: 1,
+    fontSize: 12,
+    color: Colors.text.secondary,
+    lineHeight: 18,
+  },
   bold: { fontWeight: '600' },
   detailsToggle: {
     flexDirection: 'row',

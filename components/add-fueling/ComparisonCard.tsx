@@ -43,10 +43,11 @@ export const ComparisonCard = ({
         </View>
       )}
 
-      {(footerText || footerSecondaryText) && (
-        <View style={styles.footer}>
-          {footerText && <Text style={styles.footerText}>{footerText}</Text>}
-          {footerSecondaryText && <Text style={styles.footerSecondary}>{footerSecondaryText}</Text>}
+      {footerText && <Text style={styles.footerText}>{footerText}</Text>}
+
+      {footerSecondaryText && (
+        <View style={styles.footerSecondary}>
+          <Text style={styles.footerSecondaryText}>{footerSecondaryText}</Text>
         </View>
       )}
 
@@ -95,17 +96,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  footer: {
-    gap: 4,
+  footerText: {
+    fontSize: 13,
+    color: Colors.text.secondary,
+    marginBottom: 12,
+  },
+  footerSecondary: {
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: Colors.border.DEFAULT,
   },
-  footerText: {
-    fontSize: 13,
-    color: Colors.text.secondary,
-  },
-  footerSecondary: {
+  footerSecondaryText: {
     fontSize: 12,
     color: Colors.text.tertiary,
   },
