@@ -30,7 +30,6 @@ import { CaptureButton } from '../../components/ui/CaptureButton';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
 import { ChatScreen } from '../../components/chat';
 
-// Tipos
 interface ActivityDetail {
   label: string;
   value: string;
@@ -247,11 +246,9 @@ export default function VehicleHistoryScreen() {
     },
   ], []);
 
-  // Scroll para o final ao carregar
   useEffect(() => {
     const timer = setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: false });
-      // Após o scroll inicial, marca que pode processar scrolls normalmente
       setTimeout(() => {
         isInitialLoad.current = false;
       }, 300);
@@ -259,9 +256,7 @@ export default function VehicleHistoryScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Controle de scroll para esconder/mostrar header e footer
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    // Ignora scroll durante o carregamento inicial
     if (isInitialLoad.current) {
       return;
     }
@@ -269,33 +264,26 @@ export default function VehicleHistoryScreen() {
     const currentScrollY = event.nativeEvent.contentOffset.y;
     const scrollDiff = currentScrollY - lastScrollY.current;
 
-    // Acumula a distância percorrida na direção atual
     if (scrollDiff > 0) {
-      // Rolando PARA BAIXO (scroll positivo = indo para o FUNDO = mensagens recentes)
-      // Deve MOSTRAR os elementos
       scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
     } else {
-      // Rolando PARA CIMA (scroll negativo = voltando para o TOPO = mensagens antigas)
-      // Deve ESCONDER os elementos
       scrollDistanceY.current = Math.min(0, scrollDistanceY.current + scrollDiff);
     }
 
-    // MOSTRA se rolou 20px PARA BAIXO (em direção ao fundo)
     if (scrollDistanceY.current >= 20) {
       if (!isHeaderVisible || !isFooterVisible) {
         setIsHeaderVisible(true);
         setIsFooterVisible(true);
       }
-      scrollDistanceY.current = 20; // Mantém no limite
+      scrollDistanceY.current = 20;
     }
 
-    // ESCONDE se rolou 120px PARA CIMA (em direção ao topo)
     if (scrollDistanceY.current <= -120) {
       if (isHeaderVisible || isFooterVisible) {
         setIsHeaderVisible(false);
         setIsFooterVisible(false);
       }
-      scrollDistanceY.current = -120; // Mantém no limite
+      scrollDistanceY.current = -120;
     }
 
     lastScrollY.current = currentScrollY;
@@ -311,12 +299,10 @@ export default function VehicleHistoryScreen() {
     }, 2000);
   };
 
-
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <StatusBar style="dark" />
 
-      {/* Header */}
       {isHeaderVisible && (
         <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
           <View style={styles.header}>
@@ -347,7 +333,6 @@ export default function VehicleHistoryScreen() {
         </SafeAreaView>
       )}
 
-      {/* Conteúdo */}
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
@@ -388,7 +373,6 @@ export default function VehicleHistoryScreen() {
         <View style={{ height: 20 }} />
       </ScrollView>
 
-      {/* Rodapé Fixo */}
       {isFooterVisible && (
         <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
           <View style={styles.footer}>
@@ -422,7 +406,6 @@ export default function VehicleHistoryScreen() {
         </SafeAreaView>
       )}
 
-      {/* Modal */}
       <SmartCaptureModal
         visible={showCaptureModal}
         onClose={() => setShowCaptureModal(false)}
@@ -436,7 +419,6 @@ export default function VehicleHistoryScreen() {
         }}
       />
 
-      {/* Chat Screen */}
       <ChatScreen
         visible={chatVisible}
         onClose={() => setChatVisible(false)}

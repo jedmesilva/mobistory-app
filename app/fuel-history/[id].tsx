@@ -18,8 +18,8 @@ import {
   VehicleStatusCard,
   MonthlyStatsCard,
   FuelingCard,
-  SearchBar,
 } from '../../components/fuel-history';
+import { SearchInput } from '../../components/ui';
 
 interface FuelItem {
   type: string;
@@ -225,16 +225,20 @@ export default function FuelHistoryScreen() {
             formatCurrency={formatCurrency}
           />
 
-          {/* Busca */}
-          {showFilters && (
-            <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-          )}
-
           {/* Lista de Abastecimentos */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Histórico</Text>
               <Text style={styles.sectionSubtitle}>{fuelingHistory.length} registros</Text>
+            </View>
+
+            {/* Busca */}
+            <View style={styles.searchContainer}>
+              <SearchInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Buscar por posto, data ou valor..."
+              />
             </View>
 
             <View style={styles.fuelingList}>
@@ -356,6 +360,9 @@ const styles = StyleSheet.create({
   distanceText: {
     fontSize: 12,
     color: '#4b5563',
+  },
+  searchContainer: {
+    marginBottom: 16,
   },
   fabContainer: {
     position: 'absolute',
