@@ -235,14 +235,16 @@ export default function OdometerInputScreen() {
                 </View>
 
                 <View style={styles.fuelsList}>
-                  {fuelItems.map((item) => {
+                  {fuelItems.map((item, index) => {
                     const itemLiters = parseFloat(item.liters.replace(',', '.'));
                     const percentage = ((itemLiters / totalLiters) * 100).toFixed(1);
                     const colors = getFuelTypeColor(item.fuelType);
+                    const isLast = index === fuelItems.length - 1;
 
                     return (
-                      <View key={item.id} style={styles.fuelItem}>
-                        <View style={styles.fuelItemHeader}>
+                      <View key={item.id} style={[styles.fuelItem, isLast && styles.fuelItemLast]}>
+                        {/* Linha 1: Nome do combustível e Percentual */}
+                        <View style={styles.fuelItemRow}>
                           <View style={[styles.fuelBadge, { backgroundColor: colors.bg }]}>
                             <Text style={[styles.fuelBadgeText, { color: colors.text }]}>{item.fuelType}</Text>
                           </View>
@@ -250,10 +252,14 @@ export default function OdometerInputScreen() {
                             <Text style={styles.percentageText}>{percentage}%</Text>
                           </View>
                         </View>
-                        <View style={styles.fuelItemMeta}>
-                          <Text style={styles.fuelLiters}>{item.liters} L</Text>
-                          <Text style={styles.fuelMetaText}>R$ {item.pricePerLiter.replace('.', ',')}/L</Text>
-                          <Text style={styles.fuelMetaText}>R$ {item.totalPrice.replace('.', ',')}</Text>
+
+                        {/* Linha 2: Litragem + Preço/L e Valor Total */}
+                        <View style={styles.fuelItemRow}>
+                          <View style={styles.fuelItemLeft}>
+                            <Text style={styles.fuelLiters}>{item.liters} L</Text>
+                            <Text style={styles.fuelMetaText}>• R$ {item.pricePerLiter.replace('.', ',')}/L</Text>
+                          </View>
+                          <Text style={styles.fuelTotalPrice}>R$ {item.totalPrice.replace('.', ',')}</Text>
                         </View>
                       </View>
                     );
@@ -265,7 +271,7 @@ export default function OdometerInputScreen() {
 
           {/* Warning */}
           <View style={styles.warningBox}>
-            <AlertCircle size={20} color={Colors.warning.DEFAULT} />
+            <AlertCircle size={18} color={Colors.text.tertiary} />
             <View style={styles.warningContent}>
               <Text style={styles.warningTitle}>Quilometragem opcional</Text>
               <Text style={styles.warningText}>
@@ -471,12 +477,24 @@ const styles = StyleSheet.create({
     color: Colors.text.tertiary,
   },
   fuelsList: {
-    gap: 12,
+    gap: 16,
   },
   fuelItem: {
-    gap: 4,
+    gap: 8,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.background.tertiary,
   },
-  fuelItemHeader: {
+  fuelItemLast: {
+    borderBottomWidth: 0,
+    paddingBottom: 0,
+  },
+  fuelItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  fuelItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -490,23 +508,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  percentageBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    backgroundColor: Colors.info.light,
-    borderRadius: 12,
-  },
-  percentageText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: Colors.info.DEFAULT,
-  },
-  fuelItemMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingLeft: 4,
-  },
   fuelLiters: {
     fontSize: 14,
     fontWeight: '600',
@@ -516,15 +517,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.text.tertiary,
   },
+  percentageBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: Colors.info.light,
+    borderRadius: 12,
+  },
+  percentageText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.info.DEFAULT,
+  },
+  fuelTotalPrice: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.primary.dark,
+  },
   warningBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
     padding: 16,
-    backgroundColor: '#fffbeb',
-    borderWidth: 1,
-    borderColor: Colors.warning.light,
-    borderRadius: 16,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
     marginBottom: 16,
   },
   warningContent: {
@@ -532,14 +547,14 @@ const styles = StyleSheet.create({
   },
   warningTitle: {
     fontSize: 14,
-    fontWeight: '500',
-    color: Colors.warning.text,
+    fontWeight: '600',
+    color: Colors.primary.dark,
     marginBottom: 4,
   },
   warningText: {
-    fontSize: 12,
-    color: '#78350f',
-    lineHeight: 18,
+    fontSize: 13,
+    color: Colors.text.secondary,
+    lineHeight: 19,
   },
   errorBox: {
     flexDirection: 'row',

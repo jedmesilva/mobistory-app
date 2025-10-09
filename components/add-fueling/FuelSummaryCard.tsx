@@ -10,10 +10,13 @@ interface FuelSummaryCardProps {
 export const FuelSummaryCard = ({ totalLiters, totalValue }: FuelSummaryCardProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Total Geral</Text>
-      <View style={styles.values}>
-        <Text style={styles.liters}>{totalLiters.toFixed(1)} L</Text>
-        <Text style={styles.price}>R$ {totalValue.toFixed(2).replace('.', ',')}</Text>
+      <View style={styles.summaryItem}>
+        <Text style={styles.summaryValue}>{totalLiters.toFixed(1)} L</Text>
+        <Text style={styles.summaryLabel}>Total de litros</Text>
+      </View>
+      <View style={styles.summaryItemRight}>
+        <Text style={styles.summaryValue}>R$ {totalValue.toFixed(2).replace('.', ',')}</Text>
+        <Text style={styles.summaryLabel}>Valor total</Text>
       </View>
     </View>
   );
@@ -22,26 +25,23 @@ export const FuelSummaryCard = ({ totalLiters, totalValue }: FuelSummaryCardProp
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: Colors.background.secondary,
+    marginBottom: 16,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.primary.dark,
+  summaryItem: {
+    flex: 1,
   },
-  values: {
+  summaryItemRight: {
+    flex: 1,
     alignItems: 'flex-end',
   },
-  liters: {
-    fontSize: 18,
+  summaryValue: {
+    fontSize: 24,
     fontWeight: '700',
     color: Colors.primary.dark,
+    marginBottom: 4,
   },
-  price: {
+  summaryLabel: {
     fontSize: 14,
-    color: Colors.text.secondary,
+    color: Colors.text.tertiary,
   },
 });

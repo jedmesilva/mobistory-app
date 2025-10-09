@@ -429,6 +429,10 @@ export default function FuelInputScreen() {
                 <Text style={styles.greenHeaderText}>Combustíveis Adicionados</Text>
               </View>
 
+              <View style={styles.cardBody}>
+                <FuelSummaryCard totalLiters={totalLiters} totalValue={totalValue} />
+              </View>
+
               <View style={styles.fuelsList}>
                 {fuelItems.map((item, index) => (
                   <FuelItemCard
@@ -441,8 +445,6 @@ export default function FuelInputScreen() {
                     getFuelTypeColor={getFuelTypeColor}
                   />
                 ))}
-
-                <FuelSummaryCard totalLiters={totalLiters} totalValue={totalValue} />
               </View>
             </View>
           )}
