@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
@@ -27,6 +26,7 @@ import {
   Document,
   LinkedPerson,
 } from '../../components/vehicle-details';
+import { VehicleHeader } from '@/components/ui';
 
 interface Vehicle {
   marca: string;
@@ -52,7 +52,6 @@ interface Vehicle {
 export default function VehicleDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   const [vehicle] = useState<Vehicle>({
     marca: 'Toyota',
@@ -180,12 +179,6 @@ export default function VehicleDetailsScreen() {
     return '•'.repeat(data.length - visibleChars) + data.slice(-visibleChars);
   };
 
-  const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 10],
-    outputRange: [0, 1],
-    extrapolate: 'clamp',
-  });
-
   const vehicleInfoItems = [
     { label: 'Placa', value: showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2), isBold: true },
     { label: 'Ano', value: vehicle.ano.toString() },
@@ -198,42 +191,30 @@ export default function VehicleDetailsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            shadowOpacity: headerOpacity,
-            borderBottomWidth: headerOpacity,
-          },
-        ]}
-      >
-        <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
-          <ArrowLeft size={20} color={Colors.text.secondary} />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
-            {vehicle.marca} {vehicle.modelo}
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            {showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)} • {vehicle.ano} • {vehicle.cor}
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => setShowSensitiveData(!showSensitiveData)}
-        >
-          {showSensitiveData ? <EyeOff size={20} color={Colors.text.secondary} /> : <Eye size={20} color={Colors.text.secondary} />}
-        </TouchableOpacity>
-      </Animated.View>
+      <VehicleHeader
+        vehicleName={`${vehicle.marca} ${vehicle.modelo}`}
+        vehicleDetails={`${showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)} • ${vehicle.ano} • ${vehicle.cor}`}
+        showChevron={false}
+        showVehicleIcon={false}
+        leftButton={
+          <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+            <ArrowLeft size={24} color={Colors.text.secondary} />
+          </TouchableOpacity>
+        }
+        rightButton={
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => setShowSensitiveData(!showSensitiveData)}
+          >
+            {showSensitiveData ? <EyeOff size={24} color={Colors.text.secondary} /> : <Eye size={24} color={Colors.text.secondary} />}
+          </TouchableOpacity>
+        }
+      />
 
-      <Animated.ScrollView
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-          useNativeDriver: false,
-        })}
-        scrollEventThrottle={16}
       >
         {/* Informações do Veículo */}
         <VehicleInfoSection items={vehicleInfoItems} />
@@ -401,7 +382,7 @@ export default function VehicleDetailsScreen() {
             onSelectPerson={setSelectedPerson}
           />
         )}
-      </Animated.ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -411,38 +392,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  header: {
-    backgroundColor: Colors.background.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-  },
   headerButton: {
-    width: 44,
-    height: 44,
-    backgroundColor: Colors.background.tertiary,
+    width: 40,
+    height: 40,
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  headerCenter: {
-    flex: 1,
-    marginHorizontal: 16,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: Colors.text.tertiary,
-    marginTop: 2,
   },
   scrollView: {
     flex: 1,
