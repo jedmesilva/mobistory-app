@@ -219,7 +219,17 @@ export default function VehicleProfileScreen() {
 
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => console.log('Vínculos')}
+            onPress={() => router.push({
+              pathname: '/vehicle-links/[id]',
+              params: {
+                id: vehicle.id,
+                name: vehicle.name,
+                model: 'XLI',
+                plate: vehicle.plate,
+                year: vehicle.year,
+                color: vehicle.color
+              }
+            })}
           >
             <View style={styles.actionButtonIcon}>
               <Users size={20} color={Colors.text.secondary} />
