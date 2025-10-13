@@ -98,28 +98,30 @@ export default function VehicleProfileScreen() {
       <StatusBar style="dark" />
 
       {/* Header */}
-      <VehicleHeader
-        vehicleName={vehicle.name}
-        vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
-        onVehiclePress={() => router.push('/vehicles-link-list')}
-        rightButton={
-          <TouchableOpacity
-            style={styles.headerMessageButton}
-            onPress={() => router.push({
-              pathname: '/conversations/[id]',
-              params: {
-                id: vehicle.id,
-                name: vehicle.name,
-                plate: vehicle.plate,
-                year: vehicle.year,
-                color: vehicle.color
-              }
-            })}
-          >
-            <MessageCircle size={24} color={Colors.text.secondary} />
-          </TouchableOpacity>
-        }
-      />
+      <SafeAreaView edges={['top']}>
+        <VehicleHeader
+          vehicleName={vehicle.name}
+          vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
+          onVehiclePress={() => router.push('/vehicles-link-list')}
+          rightButton={
+            <TouchableOpacity
+              style={styles.headerMessageButton}
+              onPress={() => router.push({
+                pathname: '/conversations/[id]',
+                params: {
+                  id: vehicle.id,
+                  name: vehicle.name,
+                  plate: vehicle.plate,
+                  year: vehicle.year,
+                  color: vehicle.color
+                }
+              })}
+            >
+              <MessageCircle size={24} color={Colors.text.secondary} />
+            </TouchableOpacity>
+          }
+        />
+      </SafeAreaView>
 
       {/* Conteúdo */}
       <ScrollView

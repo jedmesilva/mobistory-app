@@ -295,20 +295,22 @@ export default function ChatScreen() {
         keyboardVerticalOffset={0}
       >
         {/* Header */}
-        <VehicleHeader
-          vehicleName={vehicleName}
-          vehicleDetails={`${vehiclePlate} • ${vehicleYear} • ${vehicleColor}`}
-          showChevron={false}
-          showVehicleIcon={false}
-          leftButton={
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => router.back()}
-            >
-              <ArrowLeft size={24} color={Colors.text.primary} />
-            </TouchableOpacity>
-          }
-        />
+        <SafeAreaView edges={['top']}>
+          <VehicleHeader
+            vehicleName={vehicleName}
+            vehicleDetails={`${vehiclePlate} • ${vehicleYear} • ${vehicleColor}`}
+            showChevron={false}
+            showVehicleIcon={false}
+            leftButton={
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => router.back()}
+              >
+                <ArrowLeft size={24} color={Colors.text.primary} />
+              </TouchableOpacity>
+            }
+          />
+        </SafeAreaView>
 
         {/* Messages */}
         <ScrollView
