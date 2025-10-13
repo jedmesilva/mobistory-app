@@ -23,9 +23,10 @@ import {
   Calendar,
   ArrowLeft,
   Wrench,
-  Droplet,
 } from 'lucide-react-native';
-import { OdometerIcon, FuelTankIcon, OilIcon } from '../../components/icons';
+import { OdometerIcon, FuelTankIcon } from '../../components/icons';
+import OilIcon from '../../components/icons/oil.svg';
+import TireIcon from '../../components/icons/tire.svg';
 import { ActivityCard } from '../../components/vehicle';
 import { CaptureButton } from '../../components/ui/CaptureButton';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
@@ -397,10 +398,10 @@ export default function VehicleHistoryScreen() {
               <FuelTankIcon size={24} color={Colors.background.primary} level={0.6} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Gauge size={24} color={Colors.background.primary} />
+              <TireIcon width={24} height={24} fill={Colors.background.primary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Droplet size={24} color={Colors.background.primary} />
+              <OilIcon width={24} height={24} fill={Colors.background.primary} />
             </TouchableOpacity>
           </View>
         </View>
