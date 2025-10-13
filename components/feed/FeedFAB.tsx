@@ -10,17 +10,20 @@ import { Colors } from '@/constants';
 interface FeedFABProps {
   scale: Animated.AnimatedInterpolation<string | number>;
   onPress?: () => void;
+  bottom?: number;
 }
 
 export const FeedFAB: React.FC<FeedFABProps> = ({
   scale,
   onPress,
+  bottom = 88,
 }) => {
   return (
     <Animated.View
       style={[
         styles.fabContainer,
         {
+          bottom,
           transform: [{ scale }],
           opacity: scale,
         },
