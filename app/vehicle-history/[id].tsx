@@ -9,11 +9,11 @@ import {
   StyleSheet,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import {
-  ChevronRight,
   Fuel,
   AlertTriangle,
   MessageCircle,
@@ -24,13 +24,11 @@ import {
   ArrowLeft,
   Wrench,
 } from 'lucide-react-native';
-import { OdometerIcon, FuelTankIcon } from '../../components/icons';
-import OilIcon from '../../components/icons/oil.svg';
-import TireIcon from '../../components/icons/tire.svg';
+import { OdometerIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
-import { CaptureButton } from '../../components/ui/CaptureButton';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
 import { VehicleHeader } from '@/components/ui';
+import { FeedFAB } from '../../components/feed';
 
 interface ActivityDetail {
   label: string;
@@ -82,11 +80,11 @@ export default function VehicleHistoryScreen() {
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-  const [isFooterVisible, setIsFooterVisible] = useState(true);
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollDistanceY = useRef(0);
   const isInitialLoad = useRef(true);
+  const fabScale = useRef(new Animated.Value(1)).current;
 
   const timelineData = useMemo<DateGroup[]>(() => [
     {
@@ -271,6 +269,7 @@ export default function VehicleHistoryScreen() {
 
     const currentScrollY = event.nativeEvent.contentOffset.y;
     const scrollDiff = currentScrollY - lastScrollY.current;
+    const isScrollingDown = scrollDiff > 0;
 
     if (scrollDiff > 0) {
       scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
@@ -279,19 +278,31 @@ export default function VehicleHistoryScreen() {
     }
 
     if (scrollDistanceY.current >= 20) {
-      if (!isHeaderVisible || !isFooterVisible) {
+      if (!isHeaderVisible) {
         setIsHeaderVisible(true);
-        setIsFooterVisible(true);
       }
       scrollDistanceY.current = 20;
+
+      // Mostrar FAB
+      Animated.spring(fabScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 6,
+      }).start();
     }
 
     if (scrollDistanceY.current <= -120) {
-      if (isHeaderVisible || isFooterVisible) {
+      if (isHeaderVisible) {
         setIsHeaderVisible(false);
-        setIsFooterVisible(false);
       }
       scrollDistanceY.current = -120;
+
+      // Esconder FAB
+      Animated.spring(fabScale, {
+        toValue: 0,
+        useNativeDriver: true,
+        friction: 6,
+      }).start();
     }
 
     lastScrollY.current = currentScrollY;
@@ -388,38 +399,11 @@ export default function VehicleHistoryScreen() {
         <View style={{ height: 20 }} />
       </ScrollView>
 
-      {isFooterVisible && (
-        <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-          <View style={styles.footer}>
-          <CaptureButton
-            onPress={() => setShowCaptureModal(true)}
-            title="Captura Rápida"
-            subtitle="Identificação inteligente de dados"
-          />
-
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.actionButton}>
-              <OdometerIcon size={24} color={Colors.background.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => router.push(`/fuel-history/${selectedVehicle.id}`)}
-            >
-              <Fuel size={24} color={Colors.background.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <FuelTankIcon size={24} color={Colors.background.primary} level={0.6} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <TireIcon width={24} height={24} fill={Colors.background.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <OilIcon width={24} height={24} fill={Colors.background.primary} />
-            </TouchableOpacity>
-          </View>
-        </View>
-        </SafeAreaView>
-      )}
+      {/* Botão Flutuante */}
+      <FeedFAB
+        scale={fabScale}
+        onPress={() => setShowCaptureModal(true)}
+      />
 
       <SmartCaptureModal
         visible={showCaptureModal}
@@ -472,7 +456,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 120,
-    paddingBottom: 200,
+    paddingBottom: 40,
   },
   processingBanner: {
     backgroundColor: '#eff6ff',
@@ -533,39 +517,5 @@ const styles = StyleSheet.create({
   },
   activitiesContainer: {
     gap: 16,
-  },
-  footerSafeArea: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'transparent',
-  },
-  footer: {
-    backgroundColor: Colors.background.primary,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border.DEFAULT,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderLeftColor: Colors.border.DEFAULT,
-    borderRightColor: Colors.border.DEFAULT,
-    overflow: 'hidden',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-    padding: 16,
-  },
-  actionButton: {
-    width: 56,
-    height: 56,
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
