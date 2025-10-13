@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  LayoutChangeEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Home, Car } from 'lucide-react-native';
@@ -11,21 +12,34 @@ import { Colors } from '@/constants';
 
 interface FeedNavBottomProps {
   translateY: Animated.AnimatedInterpolation<string | number>;
+  opacity: Animated.AnimatedInterpolation<string | number>;
   activeTab: 'home' | 'profile';
   onTabChange: (tab: 'home' | 'profile') => void;
+  onLayout?: (height: number) => void;
 }
 
 export const FeedNavBottom: React.FC<FeedNavBottomProps> = ({
   translateY,
+  opacity,
   activeTab,
   onTabChange,
+  onLayout,
 }) => {
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    onLayout?.(height);
+  };
+
   return (
     <Animated.View
       style={[
         styles.navBottom,
-        { transform: [{ translateY }] },
+        {
+          transform: [{ translateY }],
+          opacity,
+        },
       ]}
+      onLayout={handleLayout}
     >
       <SafeAreaView edges={['bottom']}>
         <View style={styles.navContent}>

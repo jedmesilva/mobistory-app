@@ -79,12 +79,14 @@ export default function VehicleHistoryScreen() {
 
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(0);
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollDistanceY = useRef(0);
   const isInitialLoad = useRef(true);
   const fabScale = useRef(new Animated.Value(1)).current;
   const headerTranslateY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = useRef(new Animated.Value(1)).current;
 
   const timelineData = useMemo<DateGroup[]>(() => [
     {
@@ -269,48 +271,63 @@ export default function VehicleHistoryScreen() {
 
     const currentScrollY = event.nativeEvent.contentOffset.y;
     const scrollDiff = currentScrollY - lastScrollY.current;
-    const isScrollingDown = scrollDiff > 0;
 
-    if (scrollDiff > 0) {
-      scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
-    } else {
+    // Acumular distância scrollada
+    // INVERTIDO: Na timeline, scrollDiff negativo = subindo (lendo histórico antigo)
+    if (scrollDiff < 0) {
+      // Scrolling up (lendo histórico antigo)
       scrollDistanceY.current = Math.min(0, scrollDistanceY.current + scrollDiff);
+    } else {
+      // Scrolling down (voltando para eventos recentes)
+      scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
     }
 
-    if (scrollDistanceY.current >= 20) {
-      scrollDistanceY.current = 20;
+    // Se scrollou PARA CIMA mais de 80px (lendo histórico antigo), esconder
+    if (scrollDistanceY.current < -80) {
+      scrollDistanceY.current = -80;
 
-      // Mostrar header
-      Animated.spring(headerTranslateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
+      const translateValue = headerHeight > 0 ? -headerHeight : -120;
 
-      // Mostrar FAB
-      Animated.spring(fabScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        friction: 6,
-      }).start();
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: translateValue,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
     }
 
-    if (scrollDistanceY.current <= -120) {
-      scrollDistanceY.current = -120;
+    // Se scrollou PARA BAIXO mais de 40px (voltando para eventos recentes), mostrar
+    if (scrollDistanceY.current > 40) {
+      scrollDistanceY.current = 40;
 
-      // Esconder header
-      Animated.spring(headerTranslateY, {
-        toValue: -88,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
-
-      // Esconder FAB
-      Animated.spring(fabScale, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 6,
-      }).start();
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 1,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
     }
 
     lastScrollY.current = currentScrollY;
@@ -335,8 +352,13 @@ export default function VehicleHistoryScreen() {
           styles.headerSafeArea,
           {
             transform: [{ translateY: headerTranslateY }],
+            opacity: headerOpacity,
           },
         ]}
+        onLayout={(event) => {
+          const { height } = event.nativeEvent.layout;
+          setHeaderHeight(height);
+        }}
       >
         <SafeAreaView edges={['top']}>
           <VehicleHeader

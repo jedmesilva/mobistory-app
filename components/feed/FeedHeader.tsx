@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  LayoutChangeEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Car, MessageCircle } from 'lucide-react-native';
@@ -12,23 +13,36 @@ import { Colors } from '@/constants';
 
 interface FeedHeaderProps {
   translateY: Animated.AnimatedInterpolation<string | number>;
+  opacity: Animated.AnimatedInterpolation<string | number>;
   onSearchPress?: () => void;
   onVehiclePress?: () => void;
   onMessagePress?: () => void;
+  onLayout?: (height: number) => void;
 }
 
 export const FeedHeader: React.FC<FeedHeaderProps> = ({
   translateY,
+  opacity,
   onSearchPress,
   onVehiclePress,
   onMessagePress,
+  onLayout,
 }) => {
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    onLayout?.(height);
+  };
+
   return (
     <Animated.View
       style={[
         styles.header,
-        { transform: [{ translateY }] },
+        {
+          transform: [{ translateY }],
+          opacity,
+        },
       ]}
+      onLayout={handleLayout}
     >
       <SafeAreaView edges={['top']}>
         <View style={styles.headerContent}>
@@ -36,7 +50,7 @@ export const FeedHeader: React.FC<FeedHeaderProps> = ({
             style={styles.headerButton}
             onPress={onVehiclePress}
           >
-            <Car size={20} color={Colors.text.secondary} />
+            <Car size={24} color={Colors.text.secondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -51,7 +65,7 @@ export const FeedHeader: React.FC<FeedHeaderProps> = ({
             style={styles.headerButton}
             onPress={onMessagePress}
           >
-            <MessageCircle size={20} color={Colors.text.secondary} />
+            <MessageCircle size={24} color={Colors.text.secondary} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -78,9 +92,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   headerButton: {
-    padding: 10,
+    width: 40,
+    height: 40,
     backgroundColor: Colors.background.secondary,
     borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchButton: {
     flex: 1,

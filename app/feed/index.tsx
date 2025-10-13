@@ -35,10 +35,14 @@ export default function FeedScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('home');
 
-  const scrollY = useRef(new Animated.Value(0)).current;
   const lastScrollY = useRef(0);
+  const scrollDistanceY = useRef(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [navBottomHeight, setNavBottomHeight] = useState(0);
   const headerTranslateY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = useRef(new Animated.Value(1)).current;
   const navBottomTranslateY = useRef(new Animated.Value(0)).current;
+  const navBottomOpacity = useRef(new Animated.Value(1)).current;
   const fabScale = useRef(new Animated.Value(1)).current;
 
   const posts: Post[] = [
@@ -124,70 +128,82 @@ export default function FeedScreen() {
     const currentScrollY = event.nativeEvent.contentOffset.y;
     const scrollDiff = currentScrollY - lastScrollY.current;
 
-    const contentHeight = event.nativeEvent.contentSize.height;
-    const layoutHeight = event.nativeEvent.layoutMeasurement.height;
-    const distanceFromBottom = contentHeight - (currentScrollY + layoutHeight);
-    const distanceFromTop = currentScrollY;
-
-    const isNearTop = distanceFromTop < 100;
-    const isNearBottom = distanceFromBottom < 100;
-    const isScrollingDown = scrollDiff > 0;
-
-    // Animar header
-    if (isNearTop || isNearBottom) {
-      Animated.spring(headerTranslateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
-    } else if (isScrollingDown) {
-      Animated.spring(headerTranslateY, {
-        toValue: -88,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
+    // Acumular distância scrollada
+    if (scrollDiff > 0) {
+      // Scrolling down
+      scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
     } else {
-      Animated.spring(headerTranslateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
+      // Scrolling up
+      scrollDistanceY.current = Math.min(0, scrollDistanceY.current + scrollDiff);
     }
 
-    // Animar nav bottom
-    if (isNearTop || isNearBottom) {
-      Animated.spring(navBottomTranslateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
-    } else if (isScrollingDown) {
-      Animated.spring(navBottomTranslateY, {
-        toValue: 72,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
-    } else {
-      Animated.spring(navBottomTranslateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 8,
-      }).start();
+    // Se scrollou para baixo mais de 80px, esconder
+    if (scrollDistanceY.current > 80) {
+      scrollDistanceY.current = 80;
+
+      const headerTranslate = headerHeight > 0 ? -headerHeight : -120;
+      const navTranslate = navBottomHeight > 0 ? navBottomHeight : 100;
+
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: headerTranslate,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(navBottomTranslateY, {
+          toValue: navTranslate,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(navBottomOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
     }
 
-    // Animar FAB
-    if (isNearTop || isNearBottom) {
-      Animated.spring(fabScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        friction: 6,
-      }).start();
-    } else {
-      Animated.spring(fabScale, {
-        toValue: isScrollingDown ? 0 : 1,
-        useNativeDriver: true,
-        friction: 6,
-      }).start();
+    // Se scrollou para cima mais de 40px, mostrar
+    if (scrollDistanceY.current < -40) {
+      scrollDistanceY.current = -40;
+
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(navBottomTranslateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(navBottomOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 1,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
     }
 
     lastScrollY.current = currentScrollY;
@@ -207,9 +223,11 @@ export default function FeedScreen() {
       {/* Header */}
       <FeedHeader
         translateY={headerTranslateY}
+        opacity={headerOpacity}
         onSearchPress={() => console.log('Abrir busca')}
-        onVehiclePress={() => console.log('Abrir veículos')}
-        onMessagePress={() => console.log('Abrir mensagens')}
+        onVehiclePress={() => router.push('/vehicles-link-list')}
+        onMessagePress={() => router.push('/conversations')}
+        onLayout={setHeaderHeight}
       />
 
       {/* Conteúdo */}
@@ -243,8 +261,10 @@ export default function FeedScreen() {
       {/* Nav Bottom */}
       <FeedNavBottom
         translateY={navBottomTranslateY}
+        opacity={navBottomOpacity}
         activeTab={activeTab}
         onTabChange={handleTabChange}
+        onLayout={setNavBottomHeight}
       />
     </SafeAreaView>
   );
