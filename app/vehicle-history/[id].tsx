@@ -79,12 +79,12 @@ export default function VehicleHistoryScreen() {
 
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollDistanceY = useRef(0);
   const isInitialLoad = useRef(true);
   const fabScale = useRef(new Animated.Value(1)).current;
+  const headerTranslateY = useRef(new Animated.Value(0)).current;
 
   const timelineData = useMemo<DateGroup[]>(() => [
     {
@@ -278,10 +278,14 @@ export default function VehicleHistoryScreen() {
     }
 
     if (scrollDistanceY.current >= 20) {
-      if (!isHeaderVisible) {
-        setIsHeaderVisible(true);
-      }
       scrollDistanceY.current = 20;
+
+      // Mostrar header
+      Animated.spring(headerTranslateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        friction: 8,
+      }).start();
 
       // Mostrar FAB
       Animated.spring(fabScale, {
@@ -292,10 +296,14 @@ export default function VehicleHistoryScreen() {
     }
 
     if (scrollDistanceY.current <= -120) {
-      if (isHeaderVisible) {
-        setIsHeaderVisible(false);
-      }
       scrollDistanceY.current = -120;
+
+      // Esconder header
+      Animated.spring(headerTranslateY, {
+        toValue: -88,
+        useNativeDriver: true,
+        friction: 8,
+      }).start();
 
       // Esconder FAB
       Animated.spring(fabScale, {
@@ -322,8 +330,15 @@ export default function VehicleHistoryScreen() {
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <StatusBar style="dark" />
 
-      {isHeaderVisible && (
-        <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
+      <Animated.View
+        style={[
+          styles.headerSafeArea,
+          {
+            transform: [{ translateY: headerTranslateY }],
+          },
+        ]}
+      >
+        <SafeAreaView edges={['top']}>
           <VehicleHeader
             vehicleName={selectedVehicle.name}
             vehicleDetails={`${selectedVehicle.plate} • ${selectedVehicle.year} • ${selectedVehicle.color}`}
@@ -357,7 +372,7 @@ export default function VehicleHistoryScreen() {
             }
           />
         </SafeAreaView>
-      )}
+      </Animated.View>
 
       <ScrollView
         ref={scrollViewRef}
