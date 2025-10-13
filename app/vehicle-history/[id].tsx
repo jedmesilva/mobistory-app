@@ -30,7 +30,7 @@ import TireIcon from '../../components/icons/tire.svg';
 import { ActivityCard } from '../../components/vehicle';
 import { CaptureButton } from '../../components/ui/CaptureButton';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
-import { ChatScreen } from '../../components/chat';
+import { VehicleHeader } from '@/components/ui';
 
 interface ActivityDetail {
   label: string;
@@ -59,13 +59,20 @@ export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
+  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Honda Civic');
+  const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
+  const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
+  const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');
+  const vehicleYear = Array.isArray(params.year) ? params.year[0] : (params.year || '2018');
+  const vehicleId = Array.isArray(params.id) ? params.id[0] : (params.id || '1');
+
   const [selectedVehicle] = useState({
-    id: params.id || 1,
-    name: params.name || 'Honda Civic',
-    model: params.model || 'XLI',
-    plate: params.plate || 'ABC-1234',
-    color: params.color || 'Prata',
-    year: params.year || 2018,
+    id: vehicleId,
+    name: vehicleName,
+    model: vehicleModel,
+    plate: vehiclePlate,
+    color: vehicleColor,
+    year: vehicleYear,
     odometer: 45230,
     fuelType: 'Gasolina',
     status: 'active',
@@ -76,7 +83,6 @@ export default function VehicleHistoryScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(true);
-  const [chatVisible, setChatVisible] = useState(false);
   const lastScrollY = useRef(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollDistanceY = useRef(0);
@@ -307,31 +313,38 @@ export default function VehicleHistoryScreen() {
 
       {isHeaderVisible && (
         <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
-          <View style={styles.header}>
-            <View style={styles.headerContent}>
-            <View style={styles.headerLeft}>
-              <TouchableOpacity onPress={() => router.push('/')} style={styles.backButton}>
-                <ChevronRight size={20} color={Colors.text.secondary} style={{ transform: [{ rotate: '180deg' }] }} />
-              </TouchableOpacity>
-
+          <VehicleHeader
+            vehicleName={selectedVehicle.name}
+            vehicleDetails={`${selectedVehicle.plate} • ${selectedVehicle.year} • ${selectedVehicle.color}`}
+            onVehiclePress={() => router.push(`/vehicle-details/${selectedVehicle.id}`)}
+            showChevron={false}
+            showVehicleIcon={false}
+            leftButton={
               <TouchableOpacity
-                style={styles.headerTitleContainer}
-                onPress={() => router.push(`/vehicle-details/${selectedVehicle.id}`)}
+                onPress={() => router.back()}
+                style={styles.backButton}
               >
-                <Text style={styles.headerTitle}>
-                  {selectedVehicle.name} {selectedVehicle.model}
-                </Text>
-                <Text style={styles.headerSubtitle}>
-                  {selectedVehicle.plate} • {selectedVehicle.year} • {selectedVehicle.color}
-                </Text>
+                <ArrowLeft size={24} color={Colors.text.secondary} />
               </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={styles.chatButton} onPress={() => setChatVisible(true)}>
-              <MessageCircle size={24} color={Colors.text.secondary} />
-            </TouchableOpacity>
-          </View>
-        </View>
+            }
+            rightButton={
+              <TouchableOpacity
+                style={styles.chatButton}
+                onPress={() => router.push({
+                  pathname: '/conversations/[id]',
+                  params: {
+                    id: selectedVehicle.id,
+                    name: selectedVehicle.name,
+                    plate: selectedVehicle.plate,
+                    year: selectedVehicle.year,
+                    color: selectedVehicle.color
+                  }
+                })}
+              >
+                <MessageCircle size={24} color={Colors.text.secondary} />
+              </TouchableOpacity>
+            }
+          />
         </SafeAreaView>
       )}
 
@@ -420,12 +433,6 @@ export default function VehicleHistoryScreen() {
           gallery: 'Selecione uma foto com os dados',
         }}
       />
-
-      <ChatScreen
-        visible={chatVisible}
-        onClose={() => setChatVisible(false)}
-        vehicleName={`${selectedVehicle.name} ${selectedVehicle.model}`}
-      />
     </SafeAreaView>
   );
 }
@@ -443,48 +450,21 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.primary,
     zIndex: 10,
   },
-  header: {
-    backgroundColor: Colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 12,
-  },
   backButton: {
     width: 40,
     height: 40,
-    backgroundColor: Colors.background.tertiary,
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitleContainer: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: Colors.text.tertiary,
-  },
   chatButton: {
-    padding: 12,
+    width: 40,
+    height: 40,
     backgroundColor: Colors.background.secondary,
     borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollView: {
     flex: 1,
