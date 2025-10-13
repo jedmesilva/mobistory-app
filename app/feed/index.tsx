@@ -4,7 +4,6 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -12,14 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import {
-  Search,
-  Car,
-  Home,
-  MessageCircle,
-} from 'lucide-react-native';
 import { Colors } from '@/constants';
-import { PostCard } from '../../components/feed';
+import { PostCard, FeedHeader, FeedNavBottom, FeedFAB } from '../../components/feed';
 
 interface Post {
   id: number;
@@ -200,37 +193,24 @@ export default function FeedScreen() {
     lastScrollY.current = currentScrollY;
   };
 
+  const handleTabChange = (tab: 'home' | 'profile') => {
+    setActiveTab(tab);
+    if (tab === 'profile') {
+      router.push('/vehicle-profile');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <StatusBar style="dark" />
 
       {/* Header */}
-      <Animated.View
-        style={[
-          styles.header,
-          { transform: [{ translateY: headerTranslateY }] },
-        ]}
-      >
-        <SafeAreaView edges={['top']}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity style={styles.headerButton}>
-              <Car size={20} color={Colors.text.secondary} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={() => console.log('Abrir busca')}
-            >
-              <Search size={20} color={Colors.text.tertiary} />
-              <Text style={styles.searchPlaceholder}>Buscar...</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.headerButton}>
-              <MessageCircle size={20} color={Colors.text.secondary} />
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </Animated.View>
+      <FeedHeader
+        translateY={headerTranslateY}
+        onSearchPress={() => console.log('Abrir busca')}
+        onVehiclePress={() => console.log('Abrir veículos')}
+        onMessagePress={() => console.log('Abrir mensagens')}
+      />
 
       {/* Conteúdo */}
       <ScrollView
@@ -255,65 +235,17 @@ export default function FeedScreen() {
       </ScrollView>
 
       {/* Botão Flutuante */}
-      <Animated.View
-        style={[
-          styles.fabContainer,
-          {
-            transform: [{ scale: fabScale }],
-            opacity: fabScale,
-          },
-        ]}
-      >
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={() => console.log('Novo evento')}
-        >
-          <Car size={24} color={Colors.background.primary} />
-        </TouchableOpacity>
-      </Animated.View>
+      <FeedFAB
+        scale={fabScale}
+        onPress={() => console.log('Novo evento')}
+      />
 
       {/* Nav Bottom */}
-      <Animated.View
-        style={[
-          styles.navBottom,
-          { transform: [{ translateY: navBottomTranslateY }] },
-        ]}
-      >
-        <SafeAreaView edges={['bottom']}>
-          <View style={styles.navContent}>
-            <TouchableOpacity
-              onPress={() => setActiveTab('home')}
-              style={styles.navButton}
-            >
-              <Home
-                size={24}
-                color={
-                  activeTab === 'home'
-                    ? Colors.text.primary
-                    : Colors.text.tertiary
-                }
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                setActiveTab('profile');
-                router.push('/');
-              }}
-              style={styles.navButton}
-            >
-              <Car
-                size={24}
-                color={
-                  activeTab === 'profile'
-                    ? Colors.text.primary
-                    : Colors.text.tertiary
-                }
-              />
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </Animated.View>
+      <FeedNavBottom
+        translateY={navBottomTranslateY}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+      />
     </SafeAreaView>
   );
 }
@@ -322,42 +254,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background.primary,
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-    zIndex: 10,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-  },
-  headerButton: {
-    padding: 10,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
-  },
-  searchButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
-  },
-  searchPlaceholder: {
-    fontSize: 14,
-    color: Colors.text.tertiary,
   },
   scrollView: {
     flex: 1,
@@ -381,45 +277,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.tertiary,
     lineHeight: 20,
-  },
-  fabContainer: {
-    position: 'absolute',
-    bottom: 88,
-    right: 16,
-    zIndex: 20,
-  },
-  fab: {
-    width: 56,
-    height: 56,
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  navBottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: Colors.background.primary,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border.DEFAULT,
-    zIndex: 10,
-  },
-  navContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  navButton: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
