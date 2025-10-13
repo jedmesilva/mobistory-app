@@ -21,53 +21,24 @@ import {
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { FeedNavBottom } from '@/components/feed';
-import { MomentCard, VehicleSelector, Vehicle } from '@/components/vehicle-profile';
+import { MomentCard } from '@/components/vehicle-profile';
 import { OdometerIcon } from '@/components/icons';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('profile');
   const [following, setFollowing] = useState(false);
-  const [showVehicleSelector, setShowVehicleSelector] = useState(false);
 
-  const [vehicles] = useState<Vehicle[]>([
-    {
-      id: 1,
-      name: 'Honda Civic XLI',
-      plate: 'ABC-1234',
-      color: 'Prata',
-      year: 2019,
-      odometer: 45230,
-      fuelType: 'Gasolina',
-      status: 'active',
-      lastEvent: '19 Set 2025',
-    },
-    {
-      id: 2,
-      name: 'Toyota Corolla GLI',
-      plate: 'DEF-5678',
-      color: 'Branco',
-      year: 2020,
-      odometer: 28450,
-      fuelType: 'Flex',
-      status: 'active',
-      lastEvent: '15 Set 2025',
-    },
-    {
-      id: 3,
-      name: 'Volkswagen Gol',
-      plate: 'GHI-9012',
-      color: 'Azul',
-      year: 2015,
-      odometer: 89750,
-      fuelType: 'Flex',
-      status: 'sold',
-      lastEvent: '10 Ago 2025',
-    },
-  ]);
-
-  const [selectedVehicle, setSelectedVehicle] = useState(vehicles[0]);
-  const vehicle = selectedVehicle;
+  // Mock data - em produção virá da API ou do estado global
+  const vehicle = {
+    id: 1,
+    name: 'Honda Civic XLI',
+    plate: 'ABC-1234',
+    color: 'Prata',
+    year: 2019,
+    odometer: 45230,
+    fuelType: 'Gasolina',
+  };
 
   const moments = [
     {
@@ -122,11 +93,6 @@ export default function VehicleProfileScreen() {
     }
   };
 
-  const handleVehicleSelect = (vehicle: Vehicle) => {
-    setSelectedVehicle(vehicle);
-    setShowVehicleSelector(false);
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <StatusBar style="dark" />
@@ -135,7 +101,7 @@ export default function VehicleProfileScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerVehicle}
-          onPress={() => setShowVehicleSelector(true)}
+          onPress={() => router.push('/vehicles-link-list')}
         >
           <View style={styles.headerVehicleIcon}>
             <Car size={20} color={Colors.text.secondary} />
@@ -143,14 +109,7 @@ export default function VehicleProfileScreen() {
           <View style={styles.headerVehicleInfo}>
             <View style={styles.headerVehicleName}>
               <Text style={styles.headerVehicleNameText}>{vehicle.name}</Text>
-              <ChevronDown
-                size={16}
-                color={Colors.text.secondary}
-                style={[
-                  styles.chevron,
-                  showVehicleSelector && styles.chevronRotated,
-                ]}
-              />
+              <ChevronDown size={16} color={Colors.text.secondary} />
             </View>
             <Text style={styles.headerVehicleDetails}>
               {vehicle.plate} • {vehicle.year}
@@ -165,19 +124,6 @@ export default function VehicleProfileScreen() {
           <MessageCircle size={24} color={Colors.text.secondary} />
         </TouchableOpacity>
       </View>
-
-      {/* Vehicle Selector */}
-      <VehicleSelector
-        visible={showVehicleSelector}
-        vehicles={vehicles}
-        selectedVehicle={selectedVehicle}
-        onSelect={handleVehicleSelect}
-        onClose={() => setShowVehicleSelector(false)}
-        onAddVehicle={() => {
-          setShowVehicleSelector(false);
-          router.push('/add-vehicle');
-        }}
-      />
 
       {/* Conteúdo */}
       <ScrollView
@@ -340,12 +286,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: Colors.text.primary,
-  },
-  chevron: {
-    transition: 'transform 0.2s',
-  },
-  chevronRotated: {
-    transform: [{ rotate: '180deg' }],
   },
   headerVehicleDetails: {
     fontSize: 14,
