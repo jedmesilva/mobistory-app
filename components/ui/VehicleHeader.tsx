@@ -27,7 +27,11 @@ export const VehicleHeader: React.FC<VehicleHeaderProps> = ({
 
   return (
     <View style={styles.header}>
-      {leftButton}
+      {leftButton && (
+        <View style={styles.leftButtonContainer}>
+          {leftButton}
+        </View>
+      )}
 
       <TouchableOpacity
         style={styles.headerVehicle}
@@ -65,6 +69,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border.DEFAULT,
     backgroundColor: Colors.background.primary,
+  },
+  leftButtonContainer: {
+    marginRight: 12,
   },
   headerVehicle: {
     flexDirection: 'row',
