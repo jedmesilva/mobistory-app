@@ -1,7 +1,7 @@
 import { Colors } from '@/constants';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Bell, Menu, Plus, Search } from 'lucide-react-native';
+import { ArrowLeft, Plus, Search } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import {
     Animated,
@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from '../components/ui';
-import { MenuModal } from '../components/ui/MenuModal';
 import { SectionHeader, VehicleCard } from '../components/vehicle';
 
 export default function Index() {
@@ -84,7 +83,6 @@ export default function Index() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
-  const [menuVisible, setMenuVisible] = useState(false);
 
   const filteredVehicles = vehicles.filter(vehicle =>
     vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,12 +113,6 @@ export default function Index() {
     router.push('/vehicle-profile');
   };
 
-  // Função para lidar com navegação do menu
-  const handleMenuNavigation = (screen: string) => {
-    // TODO: Implementar navegação para as telas do menu
-    console.log('Navigate to:', screen);
-  };
-
   const headerBorderWidth = scrollY.interpolate({
     inputRange: [0, 10],
     outputRange: [0, 1],
@@ -141,23 +133,13 @@ export default function Index() {
         ]}
       >
         <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => setMenuVisible(true)}
+          style={styles.backButton}
+          onPress={() => router.back()}
         >
-          <Menu size={24} color={Colors.primary.light} />
+          <ArrowLeft size={24} color={Colors.text.primary} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
-
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => router.push('/notifications')}
-        >
-          <Bell size={24} color={Colors.primary.light} />
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationBadgeText}>3</Text>
-          </View>
-        </TouchableOpacity>
       </Animated.View>
 
       <Animated.ScrollView
@@ -297,11 +279,6 @@ export default function Index() {
         </View>
       </Animated.ScrollView>
 
-      <MenuModal
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        onNavigate={handleMenuNavigation}
-      />
     </SafeAreaView>
   );
 }
@@ -314,41 +291,23 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 16,
     paddingHorizontal: 16,
     paddingVertical: 16,
     backgroundColor: Colors.background.primary,
     borderBottomColor: Colors.border.DEFAULT,
   },
-  headerButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: Colors.background.tertiary,
-    borderRadius: 16,
+  backButton: {
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: Colors.error.DEFAULT,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationBadgeText: {
-    color: Colors.background.primary,
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    color: Colors.text.primary,
+    flex: 1,
   },
   scrollContainer: {
     flex: 1,
