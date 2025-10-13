@@ -10,19 +10,19 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
-  Car,
   MessageCircle,
   FileText,
   Activity,
   Calendar,
   Users,
-  ChevronDown,
   Fuel,
+  Car,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { FeedNavBottom } from '@/components/feed';
 import { MomentCard } from '@/components/vehicle-profile';
 import { OdometerIcon } from '@/components/icons';
+import { VehicleHeader } from '@/components/ui';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
@@ -98,32 +98,28 @@ export default function VehicleProfileScreen() {
       <StatusBar style="dark" />
 
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.headerVehicle}
-          onPress={() => router.push('/vehicles-link-list')}
-        >
-          <View style={styles.headerVehicleIcon}>
-            <Car size={20} color={Colors.text.secondary} />
-          </View>
-          <View style={styles.headerVehicleInfo}>
-            <View style={styles.headerVehicleName}>
-              <Text style={styles.headerVehicleNameText}>{vehicle.name}</Text>
-              <ChevronDown size={16} color={Colors.text.secondary} />
-            </View>
-            <Text style={styles.headerVehicleDetails}>
-              {vehicle.plate} • {vehicle.year}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.headerMessageButton}
-          onPress={() => console.log('Abrir chat')}
-        >
-          <MessageCircle size={24} color={Colors.text.secondary} />
-        </TouchableOpacity>
-      </View>
+      <VehicleHeader
+        vehicleName={vehicle.name}
+        vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
+        onVehiclePress={() => router.push('/vehicles-link-list')}
+        rightButton={
+          <TouchableOpacity
+            style={styles.headerMessageButton}
+            onPress={() => router.push({
+              pathname: '/conversations/[id]',
+              params: {
+                id: vehicle.id,
+                name: vehicle.name,
+                plate: vehicle.plate,
+                year: vehicle.year,
+                color: vehicle.color
+              }
+            })}
+          >
+            <MessageCircle size={24} color={Colors.text.secondary} />
+          </TouchableOpacity>
+        }
+      />
 
       {/* Conteúdo */}
       <ScrollView
@@ -189,7 +185,16 @@ export default function VehicleProfileScreen() {
         <View style={styles.actionsGrid}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => console.log('Atividades')}
+            onPress={() => router.push({
+              pathname: '/vehicle-history/[id]',
+              params: {
+                id: vehicle.id,
+                name: vehicle.name,
+                plate: vehicle.plate,
+                year: vehicle.year,
+                color: vehicle.color
+              }
+            })}
           >
             <View style={styles.actionButtonIcon}>
               <Activity size={20} color={Colors.text.secondary} />
@@ -199,7 +204,12 @@ export default function VehicleProfileScreen() {
 
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => console.log('Dados do veículo')}
+            onPress={() => router.push({
+              pathname: '/vehicle-details/[id]',
+              params: {
+                id: vehicle.id
+              }
+            })}
           >
             <View style={styles.actionButtonIcon}>
               <FileText size={20} color={Colors.text.secondary} />
@@ -251,51 +261,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-  },
-  headerVehicle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-  },
-  headerVehicleIcon: {
+  headerMessageButton: {
     width: 40,
     height: 40,
     backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  headerVehicleInfo: {
-    flex: 1,
-  },
-  headerVehicleName: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerVehicleNameText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.text.primary,
-  },
-  headerVehicleDetails: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    marginTop: 2,
-  },
-  headerMessageButton: {
-    padding: 12,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
   },
   scrollView: {
     flex: 1,
