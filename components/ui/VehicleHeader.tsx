@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Car, ChevronDown } from 'lucide-react-native';
+import { Car, ChevronsUpDown } from 'lucide-react-native';
 import { Colors } from '@/constants';
 
 interface VehicleHeaderProps {
@@ -47,7 +47,7 @@ export const VehicleHeader: React.FC<VehicleHeaderProps> = ({
           <View style={styles.headerVehicleName}>
             <Text style={styles.headerVehicleNameText}>{vehicleName}</Text>
             {showChevron && onVehiclePress && (
-              <ChevronDown size={20} color={Colors.text.secondary} />
+              <ChevronsUpDown size={20} color={Colors.text.secondary} />
             )}
           </View>
           <Text style={styles.headerVehicleDetails}>{vehicleDetails}</Text>
