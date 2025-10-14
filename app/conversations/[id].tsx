@@ -301,6 +301,7 @@ export default function ChatScreen() {
           <VehicleHeader
             vehicleName={`${vehicleBrand} ${vehicleName} ${vehicleModel}`}
             vehicleDetails={`${vehiclePlate} • ${vehicleYear} • ${vehicleColor}`}
+            onVehiclePress={() => router.push(`/vehicle-profile`)}
             showChevron={false}
             showVehicleIcon={false}
             leftButton={
@@ -308,7 +309,7 @@ export default function ChatScreen() {
                 style={styles.backButton}
                 onPress={() => router.back()}
               >
-                <ArrowLeft size={24} color={Colors.text.primary} />
+                <ArrowLeft size={24} color={Colors.text.secondary} />
               </TouchableOpacity>
             }
           />
