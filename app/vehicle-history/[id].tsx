@@ -57,7 +57,7 @@ export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Honda Civic');
+  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
   const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
   const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
   const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');

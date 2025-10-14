@@ -59,7 +59,7 @@ export default function FuelHistoryScreen() {
 
   // Dados do veículo atual
   const currentVehicle = {
-    name: 'Honda Civic',
+    name: 'Civic',
     year: '2020',
     plate: 'ABC-1234',
     odometer: 89450,

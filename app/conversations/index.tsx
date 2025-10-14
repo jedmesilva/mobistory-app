@@ -29,7 +29,7 @@ export default function ConversationsScreen() {
   const vehicles: Vehicle[] = [
     {
       id: 1,
-      name: 'Honda Civic',
+      name: 'Civic',
       model: 'XLI',
       plate: 'ABC-1234',
       year: 2018,
@@ -37,7 +37,7 @@ export default function ConversationsScreen() {
     },
     {
       id: 2,
-      name: 'Toyota Corolla',
+      name: 'Corolla',
       model: 'GLI',
       plate: 'DEF-5678',
       year: 2020,
@@ -45,7 +45,7 @@ export default function ConversationsScreen() {
     },
     {
       id: 3,
-      name: 'Volkswagen Gol',
+      name: 'Gol',
       model: 'G4',
       plate: 'GHI-9012',
       year: 2015,
@@ -53,7 +53,7 @@ export default function ConversationsScreen() {
     },
     {
       id: 4,
-      name: 'Ford Ka',
+      name: 'Ka',
       model: 'SE Plus',
       plate: 'JKL-3456',
       year: 2019,

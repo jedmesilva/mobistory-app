@@ -21,7 +21,7 @@ export default function Index() {
   const [vehicles] = useState([
     {
       id: 1,
-      name: 'Honda Civic',
+      name: 'Civic',
       model: 'XLI',
       plate: 'ABC-1234',
       color: 'Prata',
@@ -33,7 +33,7 @@ export default function Index() {
     },
     {
       id: 2,
-      name: 'Toyota Corolla',
+      name: 'Corolla',
       model: 'GLI',
       plate: 'DEF-5678',
       color: 'Branco',
@@ -45,7 +45,7 @@ export default function Index() {
     },
     {
       id: 3,
-      name: 'Volkswagen Gol',
+      name: 'Gol',
       model: 'G4',
       plate: 'GHI-9012',
       color: 'Azul',
@@ -57,7 +57,7 @@ export default function Index() {
     },
     {
       id: 4,
-      name: 'Ford Ka',
+      name: 'Ka',
       model: 'SE Plus',
       plate: 'JKL-3456',
       color: 'Vermelho',
@@ -69,7 +69,7 @@ export default function Index() {
     },
     {
       id: 5,
-      name: 'Fiat Uno',
+      name: 'Uno',
       model: 'Mille',
       plate: 'PQR-1122',
       color: 'Branco',
@@ -300,6 +300,8 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },

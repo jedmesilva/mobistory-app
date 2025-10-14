@@ -31,7 +31,9 @@ export default function VehicleProfileScreen() {
   // Mock data - em produção virá da API ou do estado global
   const vehicle = {
     id: 1,
-    name: 'Honda Civic XLI',
+    name: 'Civic',
+    brand: 'Honda',
+    model: 'XLI',
     plate: 'ABC-1234',
     color: 'Prata',
     year: 2019,

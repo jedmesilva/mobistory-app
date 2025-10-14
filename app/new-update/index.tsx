@@ -42,13 +42,13 @@ interface ActivityType {
 
 export default function NewUpdateScreen() {
   const router = useRouter();
-  const [selectedVehicle, setSelectedVehicle] = useState('Honda Civic XLI');
+  const [selectedVehicle, setSelectedVehicle] = useState('Civic');
   const [showVehicleSelector, setShowVehicleSelector] = useState(false);
 
   const vehicles: Vehicle[] = [
-    { name: 'Honda Civic XLI', plate: 'ABC-1234', year: '2020', color: 'Prata' },
-    { name: 'Toyota Corolla', plate: 'XYZ-5678', year: '2019', color: 'Preto' },
-    { name: 'Ford Ka', plate: 'DEF-9012', year: '2021', color: 'Branco' },
+    { name: 'Civic', plate: 'ABC-1234', year: '2020', color: 'Prata' },
+    { name: 'Corolla', plate: 'XYZ-5678', year: '2019', color: 'Preto' },
+    { name: 'Ka', plate: 'DEF-9012', year: '2021', color: 'Branco' },
   ];
 
   const activityTypes: ActivityType[] = [

@@ -51,7 +51,7 @@ export default function FuelInputScreen() {
   const [showCaptureModal, setShowCaptureModal] = useState(false);
 
   const currentVehicle = {
-    name: 'Honda Civic',
+    name: 'Civic',
     year: '2020',
     plate: 'ABC-1234',
   };

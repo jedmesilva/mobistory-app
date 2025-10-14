@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Pressable } from 'react-native';
 import { Colors } from '@/constants';
-import { Fuel, Gauge, Plus, Camera, FileText } from 'lucide-react-native';
+import { Fuel, Gauge, ChevronDown, Camera, FileText } from 'lucide-react-native';
 import { OdometerIcon, FuelTankIcon } from '../icons';
 
 interface MoreOptionsModalProps {
@@ -53,7 +53,7 @@ export const MoreOptionsModal = ({ visible, onClose, onOptionSelect }: MoreOptio
               <Text style={styles.subtitle}>Selecione o tipo de evento</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Plus size={20} color={Colors.text.tertiary} style={{ transform: [{ rotate: '45deg' }] }} />
+              <ChevronDown size={24} color={Colors.text.secondary} />
             </TouchableOpacity>
           </View>
 

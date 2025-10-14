@@ -20,7 +20,13 @@
       "Bash(git pull:*)",
       "Bash(git stash:*)",
       "Bash(python:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Read(//c/Users/Dell/Downloads/**)",
+      "Bash(npm install:*)",
+      "Bash(yarn add:*)",
+      "Bash(tasklist:*)",
+      "Bash(npx tsc:*)",
+      "Bash(del componentsvehicle-profileMomentCard.tsx)"
     ],
     "deny": [],
     "ask": []

@@ -39,7 +39,7 @@ export default function StationSelectionScreen() {
   const searchInputRef = useRef<TextInput>(null);
 
   const currentVehicle = {
-    name: 'Honda Civic',
+    name: 'Civic',
     year: '2020',
     plate: 'ABC-1234',
   };

@@ -29,7 +29,7 @@ export default function OdometerInputScreen() {
   const [actionType, setActionType] = useState('');
 
   const currentVehicle = {
-    name: 'Honda Civic',
+    name: 'Civic',
     year: '2020',
     plate: 'ABC-1234',
     color: 'Preto',
