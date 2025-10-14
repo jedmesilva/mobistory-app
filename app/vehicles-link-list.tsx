@@ -21,6 +21,7 @@ export default function Index() {
   const [vehicles] = useState([
     {
       id: 1,
+      brand: 'Honda',
       name: 'Civic',
       model: 'XLI',
       plate: 'ABC-1234',
@@ -33,6 +34,7 @@ export default function Index() {
     },
     {
       id: 2,
+      brand: 'Toyota',
       name: 'Corolla',
       model: 'GLI',
       plate: 'DEF-5678',
@@ -45,6 +47,7 @@ export default function Index() {
     },
     {
       id: 3,
+      brand: 'Volkswagen',
       name: 'Gol',
       model: 'G4',
       plate: 'GHI-9012',
@@ -57,6 +60,7 @@ export default function Index() {
     },
     {
       id: 4,
+      brand: 'Ford',
       name: 'Ka',
       model: 'SE Plus',
       plate: 'JKL-3456',
@@ -69,6 +73,7 @@ export default function Index() {
     },
     {
       id: 5,
+      brand: 'Fiat',
       name: 'Uno',
       model: 'Mille',
       plate: 'PQR-1122',
@@ -108,9 +113,21 @@ export default function Index() {
     }));
   };
 
-  // Função para navegar para o perfil do veículo
+  // Função para navegar para o perfil do veículo ou nova atualização
   const navigateToVehicleProfile = (vehicle: any) => {
-    router.push('/vehicle-profile');
+    // Verifica se veio da tela de nova atualização
+    router.push({
+      pathname: '/new-update',
+      params: {
+        vehicleId: vehicle.id,
+        brand: vehicle.brand,
+        name: vehicle.name,
+        model: vehicle.model,
+        plate: vehicle.plate,
+        color: vehicle.color,
+        year: vehicle.year,
+      }
+    });
   };
 
   const headerBorderWidth = scrollY.interpolate({

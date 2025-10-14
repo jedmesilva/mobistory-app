@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
   Car,
   ArrowLeft,
@@ -36,14 +36,25 @@ interface Vehicle {
 
 export default function NewUpdateScreen() {
   const router = useRouter();
-  const [selectedVehicleId, setSelectedVehicleId] = useState('1');
-  const [showVehicleSelector, setShowVehicleSelector] = useState(false);
+  const params = useLocalSearchParams();
 
-  const vehicles: Vehicle[] = [
-    { brand: 'Honda', name: 'Civic', model: 'XLI', plate: 'ABC-1234', year: '2020', color: 'Prata' },
-    { brand: 'Toyota', name: 'Corolla', model: 'XEI', plate: 'XYZ-5678', year: '2019', color: 'Preto' },
-    { brand: 'Ford', name: 'Ka', model: 'SE', plate: 'DEF-9012', year: '2021', color: 'Branco' },
-  ];
+  // Recebe o veículo selecionado da tela de lista, ou usa o primeiro como padrão
+  const selectedVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : (params.vehicleId || '1');
+  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
+  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
+  const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
+  const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
+  const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');
+  const vehicleYear = Array.isArray(params.year) ? params.year[0] : (params.year || '2020');
+
+  const selectedVehicleData: Vehicle = {
+    brand: vehicleBrand,
+    name: vehicleName,
+    model: vehicleModel,
+    plate: vehiclePlate,
+    year: vehicleYear,
+    color: vehicleColor,
+  };
 
   const activityTypes: ActivityType[] = [
     {
@@ -96,8 +107,6 @@ export default function NewUpdateScreen() {
     },
   ];
 
-  const selectedVehicleData = vehicles[parseInt(selectedVehicleId) - 1];
-
   const handleActivityPress = (activityId: string) => {
     console.log('Selected activity:', activityId);
     // Aqui você pode navegar para a tela específica de cada tipo de atividade
@@ -115,9 +124,9 @@ export default function NewUpdateScreen() {
       {/* Header */}
       <SafeAreaView edges={['top']}>
         <VehicleHeader
-          vehicleName={selectedVehicleData ? `${selectedVehicleData.brand} ${selectedVehicleData.name} ${selectedVehicleData.model}` : 'Selecione um veículo'}
-          vehicleDetails={selectedVehicleData ? `${selectedVehicleData.plate} • ${selectedVehicleData.year} • ${selectedVehicleData.color}` : ''}
-          onVehiclePress={() => setShowVehicleSelector(!showVehicleSelector)}
+          vehicleName={`${selectedVehicleData.brand} ${selectedVehicleData.name} ${selectedVehicleData.model}`}
+          vehicleDetails={`${selectedVehicleData.plate} • ${selectedVehicleData.year} • ${selectedVehicleData.color}`}
+          onVehiclePress={() => router.push('/vehicles-link-list')}
           showChevron={true}
           showVehicleIcon={true}
           leftButton={
@@ -130,44 +139,6 @@ export default function NewUpdateScreen() {
           }
         />
       </SafeAreaView>
-
-      {/* Vehicle Selector Overlay */}
-      {showVehicleSelector && (
-        <View style={styles.vehicleSelectorOverlay}>
-          <View style={styles.vehicleSelectorHeader}>
-            <Text style={styles.vehicleSelectorTitle}>Seus Veículos</Text>
-            <Text style={styles.vehicleSelectorSubtitle}>
-              Selecione um veículo para atualização
-            </Text>
-          </View>
-
-          <View style={styles.vehiclesList}>
-            {vehicles.map((vehicle, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={[
-                  styles.vehicleItem,
-                  selectedVehicleId === String(idx + 1) && styles.vehicleItemSelected,
-                ]}
-                onPress={() => {
-                  setSelectedVehicleId(String(idx + 1));
-                  setShowVehicleSelector(false);
-                }}
-              >
-                <View style={styles.vehicleIconContainer}>
-                  <Car size={20} color={Colors.background.primary} />
-                </View>
-                <View style={styles.vehicleInfo}>
-                  <Text style={styles.vehicleName}>{vehicle.brand} {vehicle.name} {vehicle.model}</Text>
-                  <Text style={styles.vehicleDetails}>
-                    {vehicle.plate} • {vehicle.color}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      )}
 
       {/* Content */}
       <ScrollView
@@ -199,70 +170,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  vehicleSelectorOverlay: {
-    backgroundColor: Colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  vehicleSelectorHeader: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.background.secondary,
-  },
-  vehicleSelectorTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text.primary,
-    marginBottom: 4,
-  },
-  vehicleSelectorSubtitle: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-  },
-  vehiclesList: {
-    padding: 16,
-    gap: 12,
-  },
-  vehicleItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: Colors.border.DEFAULT,
-    backgroundColor: Colors.background.primary,
-  },
-  vehicleItemSelected: {
-    borderColor: Colors.text.primary,
-    backgroundColor: Colors.background.secondary,
-  },
-  vehicleIconContainer: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.text.primary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  vehicleInfo: {
-    flex: 1,
-  },
-  vehicleName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text.primary,
-  },
-  vehicleDetails: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    marginTop: 2,
   },
   scrollView: {
     flex: 1,
