@@ -104,7 +104,7 @@ export default function VehicleProfileScreen() {
       {/* Header */}
       <SafeAreaView edges={['top']}>
         <VehicleHeader
-          vehicleName={vehicle.name}
+          vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
           vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
           onVehiclePress={() => router.push('/vehicles-link-list')}
           rightButton={
@@ -142,7 +142,7 @@ export default function VehicleProfileScreen() {
         <View style={styles.vehicleInfoSection}>
           <View style={styles.vehicleInfoHeader}>
             <View style={styles.vehicleInfoLeft}>
-              <Text style={styles.vehicleName}>{vehicle.name}</Text>
+              <Text style={styles.vehicleName}>{vehicle.brand} {vehicle.name} {vehicle.model}</Text>
               <Text style={styles.vehicleDetails}>
                 {vehicle.plate} • {vehicle.color}
               </Text>

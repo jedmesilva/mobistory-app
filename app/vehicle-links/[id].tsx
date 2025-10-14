@@ -17,6 +17,7 @@ export default function VehicleLinksScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
+  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
   const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
   const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
   const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
@@ -96,7 +97,7 @@ export default function VehicleLinksScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <VehicleHeader
-        vehicleName={`${vehicleName} ${vehicleModel}`}
+        vehicleName={`${vehicleBrand} ${vehicleName} ${vehicleModel}`}
         vehicleDetails={`${vehiclePlate} • ${vehicleYear} • ${vehicleColor}`}
         showChevron={false}
         showVehicleIcon={false}

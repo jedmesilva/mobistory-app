@@ -57,6 +57,7 @@ export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
+  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
   const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
   const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
   const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
@@ -66,6 +67,7 @@ export default function VehicleHistoryScreen() {
 
   const [selectedVehicle] = useState({
     id: vehicleId,
+    brand: vehicleBrand,
     name: vehicleName,
     model: vehicleModel,
     plate: vehiclePlate,
@@ -362,7 +364,7 @@ export default function VehicleHistoryScreen() {
       >
         <SafeAreaView edges={['top']}>
           <VehicleHeader
-            vehicleName={selectedVehicle.name}
+            vehicleName={`${selectedVehicle.brand} ${selectedVehicle.name} ${selectedVehicle.model}`}
             vehicleDetails={`${selectedVehicle.plate} • ${selectedVehicle.year} • ${selectedVehicle.color}`}
             onVehiclePress={() => router.push(`/vehicle-details/${selectedVehicle.id}`)}
             showChevron={false}
