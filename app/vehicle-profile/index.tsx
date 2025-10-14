@@ -19,8 +19,7 @@ import {
   Car,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
-import { FeedNavBottom } from '@/components/feed';
-import { MomentCard } from '@/components/vehicle-profile';
+import { FeedNavBottom, PostCard } from '@/components/feed';
 import { OdometerIcon } from '@/components/icons';
 import { VehicleHeader } from '@/components/ui';
 
@@ -40,7 +39,7 @@ export default function VehicleProfileScreen() {
     fuelType: 'Gasolina',
   };
 
-  const moments = [
+  const posts = [
     {
       id: 1,
       type: 'image' as const,
@@ -50,6 +49,7 @@ export default function VehicleProfileScreen() {
       caption: 'Manhã de domingo com meu querido Civic! 🌅 Rodão impecável!',
       likes: 24,
       comments: 3,
+      following: false,
       tags: [
         { icon: 'odometer' as const, label: 'Quilometragem', value: '45.230 km' },
         { icon: 'fuel' as const, label: 'Combustível', value: '60%' },
@@ -65,6 +65,7 @@ export default function VehicleProfileScreen() {
       caption: 'Dia de manutenção preventiva! Carro sempre caprichado.',
       likes: 18,
       comments: 5,
+      following: true,
       tags: [
         { icon: 'odometer' as const, label: 'Quilometragem', value: '44.690 km' },
         { icon: 'fuel' as const, label: 'Combustível', value: '45%' },
@@ -79,6 +80,7 @@ export default function VehicleProfileScreen() {
       caption: 'Abasteci no caminho pro trabalho. Consumo está ótimo!',
       likes: 12,
       comments: 2,
+      following: false,
       tags: [
         { icon: 'odometer' as const, label: 'Quilometragem', value: '44.120 km' },
         { icon: 'fuel' as const, label: 'Combustível', value: 'Completo' },
@@ -245,14 +247,14 @@ export default function VehicleProfileScreen() {
           <View style={styles.momentsSectionHeader}>
             <Text style={styles.momentsSectionTitle}>Momentos do Veículo</Text>
             <Text style={styles.momentsSectionSubtitle}>
-              {moments.length} publicações
+              {posts.length} publicações
             </Text>
           </View>
 
           {/* Lista de Momentos */}
           <View style={styles.momentsList}>
-            {moments.map((moment) => (
-              <MomentCard key={moment.id} moment={moment} />
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
             ))}
           </View>
         </View>
