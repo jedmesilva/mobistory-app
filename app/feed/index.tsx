@@ -255,7 +255,7 @@ export default function FeedScreen() {
       {/* Botão Flutuante */}
       <FeedFAB
         scale={fabScale}
-        onPress={() => console.log('Novo evento')}
+        onPress={() => router.push('/new-update')}
         navBottomHeight={navBottomHeight}
       />
 

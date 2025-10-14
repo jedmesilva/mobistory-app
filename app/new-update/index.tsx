@@ -27,7 +27,9 @@ import {
 import { Colors } from '@/constants';
 
 interface Vehicle {
+  brand: string;
   name: string;
+  model: string;
   plate: string;
   year: string;
   color: string;
@@ -42,13 +44,13 @@ interface ActivityType {
 
 export default function NewUpdateScreen() {
   const router = useRouter();
-  const [selectedVehicle, setSelectedVehicle] = useState('Civic');
+  const [selectedVehicleId, setSelectedVehicleId] = useState('1');
   const [showVehicleSelector, setShowVehicleSelector] = useState(false);
 
   const vehicles: Vehicle[] = [
-    { name: 'Civic', plate: 'ABC-1234', year: '2020', color: 'Prata' },
-    { name: 'Corolla', plate: 'XYZ-5678', year: '2019', color: 'Preto' },
-    { name: 'Ka', plate: 'DEF-9012', year: '2021', color: 'Branco' },
+    { brand: 'Honda', name: 'Civic', model: 'XLI', plate: 'ABC-1234', year: '2020', color: 'Prata' },
+    { brand: 'Toyota', name: 'Corolla', model: 'XEI', plate: 'XYZ-5678', year: '2019', color: 'Preto' },
+    { brand: 'Ford', name: 'Ka', model: 'SE', plate: 'DEF-9012', year: '2021', color: 'Branco' },
   ];
 
   const activityTypes: ActivityType[] = [
@@ -102,7 +104,7 @@ export default function NewUpdateScreen() {
     },
   ];
 
-  const selectedVehicleData = vehicles.find((v) => v.name === selectedVehicle);
+  const selectedVehicleData = vehicles[parseInt(selectedVehicleId) - 1];
 
   const handleActivityPress = (activityId: string) => {
     console.log('Selected activity:', activityId);
@@ -135,7 +137,7 @@ export default function NewUpdateScreen() {
             <View style={styles.headerTextContainer}>
               <Text style={styles.headerTitle}>Nova Atualização</Text>
               <Text style={styles.headerSubtitle} numberOfLines={1}>
-                {selectedVehicle} • {selectedVehicleData?.plate} • {selectedVehicleData?.year}
+                {selectedVehicleData?.brand} {selectedVehicleData?.name} {selectedVehicleData?.model} • {selectedVehicleData?.plate} • {selectedVehicleData?.year}
               </Text>
             </View>
 
@@ -160,10 +162,10 @@ export default function NewUpdateScreen() {
                 key={idx}
                 style={[
                   styles.vehicleItem,
-                  selectedVehicle === vehicle.name && styles.vehicleItemSelected,
+                  selectedVehicleId === String(idx + 1) && styles.vehicleItemSelected,
                 ]}
                 onPress={() => {
-                  setSelectedVehicle(vehicle.name);
+                  setSelectedVehicleId(String(idx + 1));
                   setShowVehicleSelector(false);
                 }}
               >
@@ -171,7 +173,7 @@ export default function NewUpdateScreen() {
                   <Car size={20} color={Colors.background.primary} />
                 </View>
                 <View style={styles.vehicleInfo}>
-                  <Text style={styles.vehicleName}>{vehicle.name}</Text>
+                  <Text style={styles.vehicleName}>{vehicle.brand} {vehicle.name} {vehicle.model}</Text>
                   <Text style={styles.vehicleDetails}>
                     {vehicle.plate} • {vehicle.color}
                   </Text>

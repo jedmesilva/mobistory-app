@@ -441,7 +441,7 @@ export default function VehicleHistoryScreen() {
       {/* Botão Flutuante */}
       <FeedFAB
         scale={fabScale}
-        onPress={() => setShowCaptureModal(true)}
+        onPress={() => router.push('/new-update')}
       />
 
       <SmartCaptureModal
