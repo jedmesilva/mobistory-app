@@ -91,11 +91,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     gap: 12,
   },
   headerVehicleInfo: {
-    flex: 1,
+    flexShrink: 1,
   },
   headerVehicleNameText: {
     fontSize: 20,
