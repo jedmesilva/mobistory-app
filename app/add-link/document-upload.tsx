@@ -382,13 +382,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: Colors.primary.dark,
-    textAlign: 'center',
+    textAlign: 'left',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
     color: Colors.text.secondary,
-    textAlign: 'center',
+    textAlign: 'left',
     marginBottom: 24,
   },
   vehicleName: {
