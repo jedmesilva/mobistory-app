@@ -392,33 +392,35 @@ export default function StationSelectionScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          {selectedStation ? (
-            <View style={styles.footerActions}>
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedStation(null);
-                  handleContinue();
-                }}
-                style={styles.skipButton}
-              >
-                <Text style={styles.skipButtonText}>Pular</Text>
-              </TouchableOpacity>
+      <View style={styles.footerContainer}>
+        <SafeAreaView edges={['bottom']}>
+          <View style={styles.footer}>
+            {selectedStation ? (
+              <View style={styles.footerActions}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedStation(null);
+                    handleContinue();
+                  }}
+                  style={styles.skipButton}
+                >
+                  <Text style={styles.skipButtonText}>Pular</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
-                <Text style={styles.continueButtonText}>
-                  Continuar com {selectedStation.name}
-                </Text>
+                <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+                  <Text style={styles.continueButtonText}>
+                    Continuar com {selectedStation.name}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity onPress={handleContinue} style={styles.continueButtonFull}>
+                <Text style={styles.continueButtonText}>Continuar sem Posto</Text>
               </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity onPress={handleContinue} style={styles.continueButtonFull}>
-              <Text style={styles.continueButtonText}>Continuar sem Posto</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </SafeAreaView>
+            )}
+          </View>
+        </SafeAreaView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -595,7 +597,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.background.tertiary,
   },
-  footerSafeArea: {
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,

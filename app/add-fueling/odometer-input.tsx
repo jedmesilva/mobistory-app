@@ -283,43 +283,45 @@ export default function OdometerInputScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          <CaptureButton
-            onPress={() => setShowCaptureModal(true)}
-            subtitle="Detectar quilometragem automaticamente"
-          />
+      <View style={styles.footerContainer}>
+        <SafeAreaView edges={['bottom']}>
+          <View style={styles.footer}>
+            <CaptureButton
+              onPress={() => setShowCaptureModal(true)}
+              subtitle="Detectar quilometragem automaticamente"
+            />
 
-          <View style={styles.footerActions}>
-            <TouchableOpacity
-              onPress={skipKm}
-              disabled={isProcessing}
-              style={[styles.skipButton, isProcessing && styles.buttonDisabled]}
-            >
-              <Text style={styles.skipButtonText}>
-                {isProcessing && actionType === 'skip' ? 'Pulando...' : 'Pular'}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.footerActions}>
+              <TouchableOpacity
+                onPress={skipKm}
+                disabled={isProcessing}
+                style={[styles.skipButton, isProcessing && styles.buttonDisabled]}
+              >
+                <Text style={styles.skipButtonText}>
+                  {isProcessing && actionType === 'skip' ? 'Pulando...' : 'Pular'}
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={handleSubmit}
-              disabled={isProcessing || !km || !!error}
-              style={[
-                styles.submitButton,
-                (isProcessing || !km || !!error) && styles.buttonDisabled
-              ]}
-            >
-              <Text style={styles.submitButtonText}>
-                {isProcessing && actionType === 'submit'
-                  ? 'Finalizando...'
-                  : km
-                    ? `Finalizar com ${km} km`
-                    : 'Finalizar'}
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSubmit}
+                disabled={isProcessing || !km || !!error}
+                style={[
+                  styles.submitButton,
+                  (isProcessing || !km || !!error) && styles.buttonDisabled
+                ]}
+              >
+                <Text style={styles.submitButtonText}>
+                  {isProcessing && actionType === 'submit'
+                    ? 'Finalizando...'
+                    : km
+                      ? `Finalizar com ${km} km`
+                      : 'Finalizar'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </View>
 
       {/* Capture Modal */}
       <SmartCaptureModal
@@ -543,19 +545,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 4,
   },
-  footerSafeArea: {
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: Colors.background.primary,
-    maxWidth: '100%',
   },
   footer: {
     backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
     borderTopColor: Colors.border.DEFAULT,
-    width: '100%',
   },
   footerActions: {
     flexDirection: 'row',

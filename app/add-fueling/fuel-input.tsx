@@ -477,24 +477,26 @@ export default function FuelInputScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          <CaptureButton
-            onPress={() => setShowCaptureModal(true)}
-            subtitle="Detectar valores automaticamente"
-          />
+      <View style={styles.footerContainer}>
+        <SafeAreaView edges={['bottom']}>
+          <View style={styles.footer}>
+            <CaptureButton
+              onPress={() => setShowCaptureModal(true)}
+              subtitle="Detectar valores automaticamente"
+            />
 
-          <TouchableOpacity
-            onPress={handleContinue}
-            disabled={fuelItems.length === 0 || isProcessing}
-            style={[styles.continueButton, (fuelItems.length === 0 || isProcessing) && styles.continueButtonDisabled]}
-          >
-            <Text style={[styles.continueButtonText, (fuelItems.length === 0 || isProcessing) && styles.continueButtonTextDisabled]}>
-              {isProcessing ? 'Processando...' : `Continuar (${fuelItems.length} item${fuelItems.length > 1 ? 's' : ''})`}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+            <TouchableOpacity
+              onPress={handleContinue}
+              disabled={fuelItems.length === 0 || isProcessing}
+              style={[styles.continueButton, (fuelItems.length === 0 || isProcessing) && styles.continueButtonDisabled]}
+            >
+              <Text style={[styles.continueButtonText, (fuelItems.length === 0 || isProcessing) && styles.continueButtonTextDisabled]}>
+                {isProcessing ? 'Processando...' : `Continuar (${fuelItems.length} item${fuelItems.length > 1 ? 's' : ''})`}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </View>
 
       {/* Capture Modal */}
       <SmartCaptureModal
@@ -665,7 +667,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 4,
   },
-  footerSafeArea: {
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,

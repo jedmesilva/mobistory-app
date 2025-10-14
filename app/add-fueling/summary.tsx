@@ -337,17 +337,19 @@ export default function SummaryScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => router.push('/add-fueling/fuel-input')} style={styles.reviewButton}>
-            <Text style={styles.reviewButtonText}>Revisar</Text>
-          </TouchableOpacity>
+      <View style={styles.footerContainer}>
+        <SafeAreaView edges={['bottom']}>
+          <View style={styles.footer}>
+            <TouchableOpacity onPress={() => router.push('/add-fueling/fuel-input')} style={styles.reviewButton}>
+              <Text style={styles.reviewButtonText}>Revisar</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
-            <Text style={styles.completeButtonText}>Concluir e Fechar</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+            <TouchableOpacity onPress={handleComplete} style={styles.completeButton}>
+              <Text style={styles.completeButtonText}>Concluir e Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -533,7 +535,7 @@ const styles = StyleSheet.create({
   detailValue: { fontSize: 14, fontWeight: '500', color: Colors.primary.dark },
   detailLabelGray: { fontSize: 14, color: Colors.text.placeholder },
   detailValueGray: { fontSize: 14, color: Colors.text.tertiary },
-  footerSafeArea: {
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
