@@ -3,10 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import {
   View,
   Text,
-  ScrollView,
   StyleSheet,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,19 +28,55 @@ interface Post {
   }>;
 }
 
+const HEADER_HEIGHT = 120;
+const NAV_BOTTOM_HEIGHT = 100;
+const SCROLL_THRESHOLD = 80;
+
 export default function FeedScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('home');
 
-  const lastScrollY = useRef(0);
-  const scrollDistanceY = useRef(0);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navBottomHeight, setNavBottomHeight] = useState(0);
-  const headerTranslateY = useRef(new Animated.Value(0)).current;
-  const headerOpacity = useRef(new Animated.Value(1)).current;
-  const navBottomTranslateY = useRef(new Animated.Value(0)).current;
-  const navBottomOpacity = useRef(new Animated.Value(1)).current;
-  const fabScale = useRef(new Animated.Value(1)).current;
+
+  // Valor de scroll animado
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // diffClamp para limitar o range do scroll
+  const scrollYClamped = Animated.diffClamp(scrollY, 0, SCROLL_THRESHOLD);
+
+  // Interpolações para header
+  const headerTranslateY = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD],
+    outputRange: [0, -(headerHeight > 0 ? headerHeight : HEADER_HEIGHT)],
+    extrapolate: 'clamp',
+  });
+
+  const headerOpacity = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD / 2, SCROLL_THRESHOLD],
+    outputRange: [1, 0.5, 0],
+    extrapolate: 'clamp',
+  });
+
+  // Interpolações para nav bottom
+  const navBottomTranslateY = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD],
+    outputRange: [0, navBottomHeight > 0 ? navBottomHeight : NAV_BOTTOM_HEIGHT],
+    extrapolate: 'clamp',
+  });
+
+  const navBottomOpacity = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD / 2, SCROLL_THRESHOLD],
+    outputRange: [1, 0.5, 0],
+    extrapolate: 'clamp',
+  });
+
+  // Interpolação para FAB
+  const fabScale = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
 
   const posts: Post[] = [
     {
@@ -124,91 +157,6 @@ export default function FeedScreen() {
     },
   ];
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-    const scrollDiff = currentScrollY - lastScrollY.current;
-
-    // Acumular distância scrollada
-    if (scrollDiff > 0) {
-      // Scrolling down
-      scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
-    } else {
-      // Scrolling up
-      scrollDistanceY.current = Math.min(0, scrollDistanceY.current + scrollDiff);
-    }
-
-    // Se scrollou para baixo mais de 80px, esconder
-    if (scrollDistanceY.current > 80) {
-      scrollDistanceY.current = 80;
-
-      const headerTranslate = headerHeight > 0 ? -headerHeight : -120;
-      const navTranslate = navBottomHeight > 0 ? navBottomHeight : 100;
-
-      Animated.parallel([
-        Animated.spring(headerTranslateY, {
-          toValue: headerTranslate,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(headerOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(navBottomTranslateY, {
-          toValue: navTranslate,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(navBottomOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(fabScale, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 6,
-        }),
-      ]).start();
-    }
-
-    // Se scrollou para cima mais de 40px, mostrar
-    if (scrollDistanceY.current < -40) {
-      scrollDistanceY.current = -40;
-
-      Animated.parallel([
-        Animated.spring(headerTranslateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(headerOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(navBottomTranslateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(navBottomOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(fabScale, {
-          toValue: 1,
-          useNativeDriver: true,
-          friction: 6,
-        }),
-      ]).start();
-    }
-
-    lastScrollY.current = currentScrollY;
-  };
-
   const handleTabChange = (tab: 'home' | 'profile') => {
     setActiveTab(tab);
     if (tab === 'profile') {
@@ -231,10 +179,13 @@ export default function FeedScreen() {
       />
 
       {/* Conteúdo */}
-      <ScrollView
+      <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        onScroll={handleScroll}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
@@ -250,7 +201,7 @@ export default function FeedScreen() {
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Botão Flutuante */}
       <FeedFAB
