@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: Colors.text.primary,
+    lineHeight: 24,
   },
   headerVehicleDetails: {
     fontSize: 14,
