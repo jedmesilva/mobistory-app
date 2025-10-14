@@ -26,48 +26,50 @@ export const ActionFooter = ({
   onNext,
 }: ActionFooterProps) => {
   return (
-    <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-      <View style={styles.footer}>
-        {!hasAutoData && !isProcessing && (
-          <CaptureButton
-            onPress={onShowCaptureModal}
-            title="Captura Rápida"
-            subtitle="Envie documento ou foto do veículo"
-          />
-        )}
+    <View style={styles.footerContainer}>
+      <SafeAreaView edges={['bottom']}>
+        <View style={styles.footer}>
+          {!hasAutoData && !isProcessing && (
+            <CaptureButton
+              onPress={onShowCaptureModal}
+              title="Captura Rápida"
+              subtitle="Envie documento ou foto do veículo"
+            />
+          )}
 
-        <View style={styles.footerActions}>
-          {hasAutoData ? (
-            <TouchableOpacity onPress={onSaveVehicle} style={styles.primaryButton}>
-              <Text style={styles.primaryButtonText}>Confirmar e Cadastrar</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={onNext}
-              disabled={!canProceed || isProcessing}
-              style={[
-                styles.primaryButton,
-                (!canProceed || isProcessing) && styles.primaryButtonDisabled,
-              ]}
-            >
-              <Text
+          <View style={styles.footerActions}>
+            {hasAutoData ? (
+              <TouchableOpacity onPress={onSaveVehicle} style={styles.primaryButton}>
+                <Text style={styles.primaryButtonText}>Confirmar e Cadastrar</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={onNext}
+                disabled={!canProceed || isProcessing}
                 style={[
-                  styles.primaryButtonText,
-                  (!canProceed || isProcessing) && styles.primaryButtonTextDisabled,
+                  styles.primaryButton,
+                  (!canProceed || isProcessing) && styles.primaryButtonDisabled,
                 ]}
               >
-                {isEditMode ? 'Salvar Alteração' : currentStep === 5 ? 'Revisar dados' : 'Continuar'}
-              </Text>
-            </TouchableOpacity>
-          )}
+                <Text
+                  style={[
+                    styles.primaryButtonText,
+                    (!canProceed || isProcessing) && styles.primaryButtonTextDisabled,
+                  ]}
+                >
+                  {isEditMode ? 'Salvar Alteração' : currentStep === 5 ? 'Revisar dados' : 'Continuar'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  footerSafeArea: {
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
