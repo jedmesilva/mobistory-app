@@ -43,14 +43,14 @@ export const VehicleHeader: React.FC<VehicleHeaderProps> = ({
             <Car size={24} color={Colors.text.secondary} />
           </View>
         )}
-        <View style={styles.headerVehicleInfo}>
-          <View style={styles.headerVehicleName}>
+        <View style={styles.headerVehicleContent}>
+          <View style={styles.headerVehicleInfo}>
             <Text style={styles.headerVehicleNameText}>{vehicleName}</Text>
-            {showChevron && onVehiclePress && (
-              <ChevronsUpDown size={20} color={Colors.text.secondary} />
-            )}
+            <Text style={styles.headerVehicleDetails}>{vehicleDetails}</Text>
           </View>
-          <Text style={styles.headerVehicleDetails}>{vehicleDetails}</Text>
+          {showChevron && onVehiclePress && (
+            <ChevronsUpDown size={20} color={Colors.text.secondary} />
+          )}
         </View>
       </TouchableOpacity>
 
@@ -87,19 +87,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerVehicleInfo: {
+  headerVehicleContent: {
     flex: 1,
-  },
-  headerVehicleName: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  headerVehicleInfo: {
+    flex: 1,
   },
   headerVehicleNameText: {
     fontSize: 20,
     fontWeight: '700',
     color: Colors.text.primary,
-    lineHeight: 24,
   },
   headerVehicleDetails: {
     fontSize: 14,
