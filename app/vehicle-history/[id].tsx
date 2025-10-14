@@ -440,7 +440,6 @@ export default function VehicleHistoryScreen() {
       <FeedFAB
         scale={fabScale}
         onPress={() => setShowCaptureModal(true)}
-        bottom={24}
       />
 
       <SmartCaptureModal

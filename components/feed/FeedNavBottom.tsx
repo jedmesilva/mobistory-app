@@ -1,10 +1,10 @@
 import React from 'react';
 import {
   View,
-  TouchableOpacity,
   StyleSheet,
   Animated,
   LayoutChangeEvent,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Home, Car } from 'lucide-react-native';
@@ -43,9 +43,12 @@ export const FeedNavBottom: React.FC<FeedNavBottomProps> = ({
     >
       <SafeAreaView edges={['bottom']}>
         <View style={styles.navContent}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => onTabChange('home')}
-            style={styles.navButton}
+            style={({ pressed }) => [
+              styles.navButton,
+              pressed && styles.buttonPressed,
+            ]}
           >
             <Home
               size={24}
@@ -55,11 +58,14 @@ export const FeedNavBottom: React.FC<FeedNavBottomProps> = ({
                   : Colors.text.tertiary
               }
             />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             onPress={() => onTabChange('profile')}
-            style={styles.navButton}
+            style={({ pressed }) => [
+              styles.navButton,
+              pressed && styles.buttonPressed,
+            ]}
           >
             <Car
               size={24}
@@ -69,7 +75,7 @@ export const FeedNavBottom: React.FC<FeedNavBottomProps> = ({
                   : Colors.text.tertiary
               }
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </SafeAreaView>
     </Animated.View>
@@ -97,5 +103,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonPressed: {
+    opacity: 0.6,
   },
 });

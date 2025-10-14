@@ -2,10 +2,10 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Animated,
   LayoutChangeEvent,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Car, MessageCircle } from 'lucide-react-native';
@@ -46,27 +46,36 @@ export const FeedHeader: React.FC<FeedHeaderProps> = ({
     >
       <SafeAreaView edges={['top']}>
         <View style={styles.headerContent}>
-          <TouchableOpacity
-            style={styles.headerButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.headerButton,
+              pressed && styles.buttonPressed,
+            ]}
             onPress={onVehiclePress}
           >
             <Car size={24} color={Colors.text.secondary} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
-            style={styles.searchButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.searchButton,
+              pressed && styles.buttonPressed,
+            ]}
             onPress={onSearchPress}
           >
             <Search size={20} color={Colors.text.tertiary} />
             <Text style={styles.searchPlaceholder}>Buscar...</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
-            style={styles.headerButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.headerButton,
+              pressed && styles.buttonPressed,
+            ]}
             onPress={onMessagePress}
           >
             <MessageCircle size={24} color={Colors.text.secondary} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </SafeAreaView>
     </Animated.View>
@@ -112,5 +121,8 @@ const styles = StyleSheet.create({
   searchPlaceholder: {
     fontSize: 14,
     color: Colors.text.tertiary,
+  },
+  buttonPressed: {
+    opacity: 0.6,
   },
 });

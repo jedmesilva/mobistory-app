@@ -256,6 +256,7 @@ export default function FeedScreen() {
       <FeedFAB
         scale={fabScale}
         onPress={() => console.log('Novo evento')}
+        navBottomHeight={navBottomHeight}
       />
 
       {/* Nav Bottom */}
