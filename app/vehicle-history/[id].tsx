@@ -52,6 +52,7 @@ interface DateGroup {
 
 const HEADER_HEIGHT = 120;
 const SCROLL_THRESHOLD = 80;
+const SNAP_POINT = SCROLL_THRESHOLD / 2; // 50% do threshold
 
 export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
@@ -82,11 +83,12 @@ export default function VehicleHistoryScreen() {
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const scrollViewRef = useRef<Animated.ScrollView>(null);
+  const scrollViewRef = useRef<any>(null);
   const isInitialLoad = useRef(true);
 
   // Valor de scroll animado
   const scrollY = useRef(new Animated.Value(0)).current;
+  const currentScrollValue = useRef(0);
 
   // diffClamp INVERTIDO para scroll de timeline (como chat)
   // Valores negativos (scrolling up) aumentam o clamp, valores positivos (scrolling down) diminuem
@@ -292,6 +294,43 @@ export default function VehicleHistoryScreen() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Listener para trackear o valor atual do scrollYClamped
+  useEffect(() => {
+    const listenerId = scrollYClamped.addListener(({ value }) => {
+      currentScrollValue.current = value;
+    });
+
+    return () => {
+      scrollYClamped.removeListener(listenerId);
+    };
+  }, [scrollYClamped]);
+
+  // Efeito snap magnético quando o usuário solta o scroll
+  const handleScrollEndDrag = () => {
+    if (isInitialLoad.current) return;
+
+    const currentValue = currentScrollValue.current;
+
+    // Se passou do ponto de snap (50%), completa escondendo tudo
+    if (currentValue >= SNAP_POINT) {
+      Animated.spring(scrollY, {
+        toValue: (scrollY as any)._value - (SCROLL_THRESHOLD - currentValue),
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    }
+    // Se não passou, volta para mostrar tudo
+    else if (currentValue > 0) {
+      Animated.spring(scrollY, {
+        toValue: (scrollY as any)._value + currentValue,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    }
+  };
+
   const handleCapture = (method: 'camera' | 'voice' | 'gallery') => {
     setShowCaptureModal(false);
     setIsProcessing(true);
@@ -371,6 +410,8 @@ export default function VehicleHistoryScreen() {
             },
           }
         )}
+        onScrollEndDrag={handleScrollEndDrag}
+        onMomentumScrollEnd={handleScrollEndDrag}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >

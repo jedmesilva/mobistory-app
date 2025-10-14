@@ -31,6 +31,7 @@ interface Post {
 const HEADER_HEIGHT = 120;
 const NAV_BOTTOM_HEIGHT = 100;
 const SCROLL_THRESHOLD = 80;
+const SNAP_POINT = SCROLL_THRESHOLD / 2; // 50% do threshold
 
 export default function FeedScreen() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function FeedScreen() {
 
   // Valor de scroll animado
   const scrollY = useRef(new Animated.Value(0)).current;
+  const currentScrollValue = useRef(0);
 
   // diffClamp para limitar o range do scroll
   const scrollYClamped = Animated.diffClamp(scrollY, 0, SCROLL_THRESHOLD);
@@ -157,6 +159,41 @@ export default function FeedScreen() {
     },
   ];
 
+  // Listener para trackear o valor atual do scrollYClamped
+  React.useEffect(() => {
+    const listenerId = scrollYClamped.addListener(({ value }) => {
+      currentScrollValue.current = value;
+    });
+
+    return () => {
+      scrollYClamped.removeListener(listenerId);
+    };
+  }, [scrollYClamped]);
+
+  // Efeito snap magnético quando o usuário solta o scroll
+  const handleScrollEndDrag = () => {
+    const currentValue = currentScrollValue.current;
+
+    // Se passou do ponto de snap (50%), completa escondendo tudo
+    if (currentValue >= SNAP_POINT) {
+      Animated.spring(scrollY, {
+        toValue: (scrollY as any)._value + (SCROLL_THRESHOLD - currentValue),
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    }
+    // Se não passou, volta para mostrar tudo
+    else if (currentValue > 0) {
+      Animated.spring(scrollY, {
+        toValue: (scrollY as any)._value - currentValue,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    }
+  };
+
   const handleTabChange = (tab: 'home' | 'profile') => {
     setActiveTab(tab);
     if (tab === 'profile') {
@@ -186,6 +223,8 @@ export default function FeedScreen() {
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
         )}
+        onScrollEndDrag={handleScrollEndDrag}
+        onMomentumScrollEnd={handleScrollEndDrag}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
