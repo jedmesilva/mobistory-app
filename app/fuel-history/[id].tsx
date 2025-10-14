@@ -195,7 +195,7 @@ export default function FuelHistoryScreen() {
       {/* Header */}
       <SafeAreaView edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.push(`/vehicle-history/${vehicleId}`)} style={styles.headerButton}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
             <ArrowLeft size={20} color={Colors.text.secondary} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
