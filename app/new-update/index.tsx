@@ -11,9 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
   Car,
-  Camera,
   ArrowLeft,
-  Zap,
   Fuel,
   Gauge,
   Wrench,
@@ -25,6 +23,7 @@ import {
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { VehicleHeader } from '@/components/ui';
+import { ActivitiesGrid, QuickCaptureFooter, type ActivityType } from '@/components/new-update';
 
 interface Vehicle {
   brand: string;
@@ -33,13 +32,6 @@ interface Vehicle {
   plate: string;
   year: string;
   color: string;
-}
-
-interface ActivityType {
-  id: string;
-  icon: any;
-  label: string;
-  description: string;
 }
 
 export default function NewUpdateScreen() {
@@ -183,54 +175,14 @@ export default function NewUpdateScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.activitiesGrid}>
-          {activityTypes.map((activity) => {
-            const IconComponent = activity.icon;
-            return (
-              <TouchableOpacity
-                key={activity.id}
-                style={styles.activityCard}
-                onPress={() => handleActivityPress(activity.id)}
-              >
-                <View style={styles.activityIconContainer}>
-                  <IconComponent size={24} color={Colors.text.secondary} />
-                </View>
-                <Text style={styles.activityLabel}>{activity.label}</Text>
-                <Text style={styles.activityDescription}>
-                  {activity.description}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <ActivitiesGrid
+          activities={activityTypes}
+          onActivityPress={handleActivityPress}
+        />
       </ScrollView>
 
-      {/* Captura Rápida - Footer Fixo */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          <TouchableOpacity
-            style={styles.quickCaptureButton}
-            onPress={handleQuickCapture}
-          >
-            <View style={styles.quickCaptureIconContainer}>
-              <Zap size={24} color={Colors.text.primary} />
-            </View>
-            <View style={styles.quickCaptureTextContainer}>
-              <View style={styles.quickCaptureTitleRow}>
-                <Text style={styles.quickCaptureTitle}>Captura Automática</Text>
-                <View style={styles.iaBadge}>
-                  <Text style={styles.iaBadgeText}>IA</Text>
-                </View>
-              </View>
-              <Text style={styles.quickCaptureDescription}>
-                Tire uma foto e deixe a IA identificar os dados
-              </Text>
-              <Text style={styles.quickCaptureCredits}>2 grátis</Text>
-            </View>
-            <Camera size={20} color={Colors.text.inverse} />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      {/* Footer de Captura Rápida */}
+      <QuickCaptureFooter onPress={handleQuickCapture} creditsRemaining={2} />
     </SafeAreaView>
   );
 }
@@ -319,102 +271,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 140,
-  },
-  activitiesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'space-between',
-  },
-  activityCard: {
-    width: '48%',
-    backgroundColor: Colors.background.primary,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border.DEFAULT,
-  },
-  activityIconContainer: {
-    width: 56,
-    height: 56,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  activityLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text.primary,
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  activityDescription: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  footerSafeArea: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  footer: {
-    backgroundColor: Colors.text.primary,
-    borderTopWidth: 1,
-    borderTopColor: '#374151',
-  },
-  quickCaptureButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    padding: 20,
-  },
-  quickCaptureIconContainer: {
-    width: 48,
-    height: 48,
-    backgroundColor: Colors.background.primary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickCaptureTextContainer: {
-    flex: 1,
-  },
-  quickCaptureTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 2,
-  },
-  quickCaptureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text.inverse,
-  },
-  iaBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    backgroundColor: Colors.background.primary,
-    borderRadius: 12,
-  },
-  iaBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.text.primary,
-  },
-  quickCaptureDescription: {
-    fontSize: 14,
-    color: '#d1d5db',
-    marginTop: 2,
-  },
-  quickCaptureCredits: {
-    fontSize: 12,
-    color: '#9ca3af',
-    marginTop: 4,
   },
 });
