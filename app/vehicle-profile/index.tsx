@@ -17,6 +17,10 @@ import {
   Users,
   Fuel,
   Car,
+  ChevronDown,
+  ChevronUp,
+  Droplet,
+  CircleDot,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { FeedNavBottom, PostCard } from '@/components/feed';
@@ -27,6 +31,7 @@ export default function VehicleProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('profile');
   const [following, setFollowing] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
 
   // Mock data - em produção virá da API ou do estado global
   const vehicle = {
@@ -244,6 +249,61 @@ export default function VehicleProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Botão Mais Opções */}
+        <View style={styles.moreOptionsSection}>
+          <TouchableOpacity
+            style={styles.moreOptionsButton}
+            onPress={() => setShowMoreOptions(!showMoreOptions)}
+          >
+            <Text style={styles.moreOptionsButtonText}>
+              {showMoreOptions ? 'Menos opções' : 'Mais opções'}
+            </Text>
+            {showMoreOptions ? (
+              <ChevronUp size={20} color={Colors.text.secondary} />
+            ) : (
+              <ChevronDown size={20} color={Colors.text.secondary} />
+            )}
+          </TouchableOpacity>
+
+          {/* Opções Expandidas */}
+          {showMoreOptions && (
+            <View style={styles.expandedOptionsGrid}>
+              <TouchableOpacity
+                style={styles.expandedOptionCard}
+                onPress={() => router.push({
+                  pathname: '/fuel-history/[id]',
+                  params: { id: vehicle.id }
+                })}
+              >
+                <View style={styles.expandedOptionIcon}>
+                  <Fuel size={20} color={Colors.text.secondary} />
+                </View>
+                <Text style={styles.expandedOptionText}>Abastecimentos</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.expandedOptionCard}
+                onPress={() => console.log('Histórico de Óleo')}
+              >
+                <View style={styles.expandedOptionIcon}>
+                  <Droplet size={20} color={Colors.text.secondary} />
+                </View>
+                <Text style={styles.expandedOptionText}>Óleo</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.expandedOptionCard}
+                onPress={() => console.log('Histórico de Pneus')}
+              >
+                <View style={styles.expandedOptionIcon}>
+                  <CircleDot size={20} color={Colors.text.secondary} />
+                </View>
+                <Text style={styles.expandedOptionText}>Pneus</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
         {/* Seção de Momentos */}
         <View style={styles.momentsSection}>
           <View style={styles.momentsSectionHeader}>
@@ -387,6 +447,57 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: Colors.text.secondary,
+    textAlign: 'center',
+  },
+  moreOptionsSection: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  moreOptionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border.DEFAULT,
+  },
+  moreOptionsButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.text.secondary,
+  },
+  expandedOptionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 12,
+  },
+  expandedOptionCard: {
+    flex: 1,
+    minWidth: '30%',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.border.DEFAULT,
+  },
+  expandedOptionIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: Colors.background.primary,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  expandedOptionText: {
     fontSize: 12,
     fontWeight: '500',
     color: Colors.text.secondary,
