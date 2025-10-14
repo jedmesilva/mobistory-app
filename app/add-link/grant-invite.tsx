@@ -360,17 +360,19 @@ export default function GrantInviteScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          onPress={handleSendInvite}
-          style={[styles.sendButton, !canSubmit() && styles.sendButtonDisabled]}
-          disabled={!canSubmit()}
-        >
-          <Text style={styles.sendButtonText}>
-            {selectedMethod === 'link' ? 'Concluir' : 'Enviar convite'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
+        <View style={styles.footer}>
+          <TouchableOpacity
+            onPress={handleSendInvite}
+            style={[styles.sendButton, !canSubmit() && styles.sendButtonDisabled]}
+            disabled={!canSubmit()}
+          >
+            <Text style={styles.sendButtonText}>
+              {selectedMethod === 'link' ? 'Concluir' : 'Enviar convite'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </SafeAreaView>
   );
 }
@@ -638,11 +640,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.primary.dark,
   },
-  footer: {
+  footerSafeArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: Colors.background.primary,
+  },
+  footer: {
     padding: 24,
     backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
