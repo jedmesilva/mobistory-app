@@ -5,8 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
@@ -52,6 +53,7 @@ export default function FuelHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const vehicleId = params.id as string;
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -189,25 +191,27 @@ export default function FuelHistoryScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push(`/vehicle-history/${vehicleId}`)} style={styles.headerButton}>
-          <ArrowLeft size={20} color={Colors.text.secondary} />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Abastecimentos</Text>
-          <Text style={styles.headerSubtitle}>
-            {currentVehicle.name} • {currentVehicle.plate}
-          </Text>
+      <SafeAreaView edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.push(`/vehicle-history/${vehicleId}`)} style={styles.headerButton}>
+            <ArrowLeft size={20} color={Colors.text.secondary} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Abastecimentos</Text>
+            <Text style={styles.headerSubtitle}>
+              {currentVehicle.name} • {currentVehicle.plate}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowFilters(!showFilters)}
+            style={styles.headerButton}
+          >
+            <Filter size={20} color={Colors.text.secondary} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => setShowFilters(!showFilters)}
-          style={styles.headerButton}
-        >
-          <Filter size={20} color={Colors.text.secondary} />
-        </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
@@ -258,14 +262,24 @@ export default function FuelHistoryScreen() {
       </ScrollView>
 
       {/* Botão Flutuante */}
-      <SafeAreaView style={styles.fabContainer} edges={['bottom']}>
-        <TouchableOpacity
-          style={styles.fab}
+      <View
+        style={[
+          styles.fabContainer,
+          {
+            bottom: insets.bottom + 24,
+          },
+        ]}
+      >
+        <Pressable
+          style={({ pressed }) => [
+            styles.fab,
+            pressed && styles.fabPressed,
+          ]}
           onPress={() => router.push('/add-fueling/station-selection')}
         >
           <Fuel size={24} color={Colors.background.primary} />
-        </TouchableOpacity>
-      </SafeAreaView>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -338,13 +352,12 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: 'absolute',
-    bottom: 0,
     right: 24,
+    zIndex: 20,
   },
   fab: {
     width: 64,
     height: 64,
-    marginBottom: 24,
     backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 16,
     alignItems: 'center',
@@ -354,5 +367,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  fabPressed: {
+    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
   },
 });

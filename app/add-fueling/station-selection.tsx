@@ -187,20 +187,22 @@ export default function StationSelectionScreen() {
   const recentStations = savedStations.filter((s) => !s.isFavorite);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
-          <ArrowLeft size={20} color={Colors.text.secondary} />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Selecionar Posto</Text>
-          <Text style={styles.headerSubtitle}>
-            {currentVehicle.name} • {currentVehicle.plate}
-          </Text>
+      <SafeAreaView edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+            <ArrowLeft size={20} color={Colors.text.secondary} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Selecionar Posto</Text>
+            <Text style={styles.headerSubtitle}>
+              {currentVehicle.name} • {currentVehicle.plate}
+            </Text>
+          </View>
+          <ProgressIndicator currentStep={1} totalSteps={3} />
         </View>
-        <ProgressIndicator currentStep={1} totalSteps={3} />
-      </View>
+      </SafeAreaView>
 
       <ScrollView
         style={styles.scrollView}
