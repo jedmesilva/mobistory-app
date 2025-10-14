@@ -12,8 +12,7 @@ import { useRouter } from 'expo-router';
 import {
   Car,
   Camera,
-  ChevronLeft,
-  ChevronsUpDown,
+  ArrowLeft,
   Zap,
   Fuel,
   Gauge,
@@ -25,6 +24,7 @@ import {
   Droplet,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
+import { VehicleHeader } from '@/components/ui';
 
 interface Vehicle {
   brand: string;
@@ -122,28 +122,21 @@ export default function NewUpdateScreen() {
 
       {/* Header */}
       <SafeAreaView edges={['top']}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <ChevronLeft size={20} color={Colors.text.secondary} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.headerCenter}
-            onPress={() => setShowVehicleSelector(!showVehicleSelector)}
-          >
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Nova Atualização</Text>
-              <Text style={styles.headerSubtitle} numberOfLines={1}>
-                {selectedVehicleData?.brand} {selectedVehicleData?.name} {selectedVehicleData?.model} • {selectedVehicleData?.plate} • {selectedVehicleData?.year}
-              </Text>
-            </View>
-
-            <ChevronsUpDown size={20} color={Colors.text.secondary} />
-          </TouchableOpacity>
-        </View>
+        <VehicleHeader
+          vehicleName={selectedVehicleData ? `${selectedVehicleData.brand} ${selectedVehicleData.name} ${selectedVehicleData.model}` : 'Selecione um veículo'}
+          vehicleDetails={selectedVehicleData ? `${selectedVehicleData.plate} • ${selectedVehicleData.year} • ${selectedVehicleData.color}` : ''}
+          onVehiclePress={() => setShowVehicleSelector(!showVehicleSelector)}
+          showChevron={true}
+          showVehicleIcon={true}
+          leftButton={
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <ArrowLeft size={24} color={Colors.text.secondary} />
+            </TouchableOpacity>
+          }
+        />
       </SafeAreaView>
 
       {/* Vehicle Selector Overlay */}
@@ -247,16 +240,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
-    backgroundColor: Colors.background.primary,
-  },
   backButton: {
     width: 40,
     height: 40,
@@ -264,31 +247,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  headerCenter: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    marginHorizontal: -8,
-    borderRadius: 12,
-  },
-  headerTextContainer: {
-    flex: 1,
-    minWidth: 0,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text.primary,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    marginTop: 2,
   },
   vehicleSelectorOverlay: {
     backgroundColor: Colors.background.primary,
