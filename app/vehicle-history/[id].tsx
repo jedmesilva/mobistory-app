@@ -4,11 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -53,6 +50,9 @@ interface DateGroup {
   activities: Activity[];
 }
 
+const HEADER_HEIGHT = 120;
+const SCROLL_THRESHOLD = 80;
+
 export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -82,13 +82,39 @@ export default function VehicleHistoryScreen() {
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const lastScrollY = useRef(0);
-  const scrollViewRef = useRef<ScrollView>(null);
-  const scrollDistanceY = useRef(0);
+  const scrollViewRef = useRef<Animated.ScrollView>(null);
   const isInitialLoad = useRef(true);
-  const fabScale = useRef(new Animated.Value(1)).current;
-  const headerTranslateY = useRef(new Animated.Value(0)).current;
-  const headerOpacity = useRef(new Animated.Value(1)).current;
+
+  // Valor de scroll animado
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // diffClamp INVERTIDO para scroll de timeline (como chat)
+  // Valores negativos (scrolling up) aumentam o clamp, valores positivos (scrolling down) diminuem
+  const scrollYClamped = Animated.diffClamp(
+    Animated.multiply(scrollY, -1), // Inverte o sinal para comportamento de chat
+    0,
+    SCROLL_THRESHOLD
+  );
+
+  // Interpolações para header
+  const headerTranslateY = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD],
+    outputRange: [0, -(headerHeight > 0 ? headerHeight : HEADER_HEIGHT)],
+    extrapolate: 'clamp',
+  });
+
+  const headerOpacity = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD / 2, SCROLL_THRESHOLD],
+    outputRange: [1, 0.5, 0],
+    extrapolate: 'clamp',
+  });
+
+  // Interpolação para FAB
+  const fabScale = scrollYClamped.interpolate({
+    inputRange: [0, SCROLL_THRESHOLD],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
 
   const timelineData = useMemo<DateGroup[]>(() => [
     {
@@ -266,75 +292,6 @@ export default function VehicleHistoryScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (isInitialLoad.current) {
-      return;
-    }
-
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-    const scrollDiff = currentScrollY - lastScrollY.current;
-
-    // Acumular distância scrollada
-    // INVERTIDO: Na timeline, scrollDiff negativo = subindo (lendo histórico antigo)
-    if (scrollDiff < 0) {
-      // Scrolling up (lendo histórico antigo)
-      scrollDistanceY.current = Math.min(0, scrollDistanceY.current + scrollDiff);
-    } else {
-      // Scrolling down (voltando para eventos recentes)
-      scrollDistanceY.current = Math.max(0, scrollDistanceY.current + scrollDiff);
-    }
-
-    // Se scrollou PARA CIMA mais de 80px (lendo histórico antigo), esconder
-    if (scrollDistanceY.current < -80) {
-      scrollDistanceY.current = -80;
-
-      const translateValue = headerHeight > 0 ? -headerHeight : -120;
-
-      Animated.parallel([
-        Animated.spring(headerTranslateY, {
-          toValue: translateValue,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(headerOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(fabScale, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 6,
-        }),
-      ]).start();
-    }
-
-    // Se scrollou PARA BAIXO mais de 40px (voltando para eventos recentes), mostrar
-    if (scrollDistanceY.current > 40) {
-      scrollDistanceY.current = 40;
-
-      Animated.parallel([
-        Animated.spring(headerTranslateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(headerOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(fabScale, {
-          toValue: 1,
-          useNativeDriver: true,
-          friction: 6,
-        }),
-      ]).start();
-    }
-
-    lastScrollY.current = currentScrollY;
-  };
-
   const handleCapture = (method: 'camera' | 'voice' | 'gallery') => {
     setShowCaptureModal(false);
     setIsProcessing(true);
@@ -398,11 +355,22 @@ export default function VehicleHistoryScreen() {
         </SafeAreaView>
       </Animated.View>
 
-      <ScrollView
+      <Animated.ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        onScroll={handleScroll}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          {
+            useNativeDriver: true,
+            listener: (event: any) => {
+              // Previne animação durante carregamento inicial
+              if (isInitialLoad.current) {
+                return;
+              }
+            },
+          }
+        )}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
@@ -436,7 +404,7 @@ export default function VehicleHistoryScreen() {
         </View>
 
         <View style={{ height: 20 }} />
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Botão Flutuante */}
       <FeedFAB
