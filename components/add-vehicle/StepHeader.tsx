@@ -30,7 +30,7 @@ export const StepHeader = ({
 
 const styles = StyleSheet.create({
   stepHeader: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 8,
   },
   stepIcon: {
@@ -49,11 +49,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: Colors.primary.dark,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   stepSubtitle: {
     fontSize: 16,
     color: Colors.text.tertiary,
-    textAlign: 'center',
+    textAlign: 'left',
   },
 });
