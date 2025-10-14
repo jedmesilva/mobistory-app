@@ -340,19 +340,21 @@ export default function DocumentUploadScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <SafeAreaView style={styles.footerSafeArea} edges={['bottom']}>
-        <View style={styles.footer}>
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={!canSubmit()}
-            style={[styles.submitButton, !canSubmit() && styles.submitButtonDisabled]}
-          >
-            <Text style={styles.submitButtonText}>
-              {action === 'request' ? 'Enviar Solicitação' : 'Enviar para Validação'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <View style={styles.footerContainer}>
+        <SafeAreaView edges={['bottom']}>
+          <View style={styles.footer}>
+            <TouchableOpacity
+              onPress={handleSubmit}
+              disabled={!canSubmit()}
+              style={[styles.submitButton, !canSubmit() && styles.submitButtonDisabled]}
+            >
+              <Text style={styles.submitButtonText}>
+                {action === 'request' ? 'Enviar Solicitação' : 'Enviar para Validação'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -604,18 +606,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1e40af',
   },
-  footerSafeArea: {
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: Colors.background.primary,
-  },
-  footer: {
-    padding: 24,
-    backgroundColor: Colors.background.primary,
     borderTopWidth: 1,
     borderTopColor: Colors.border.DEFAULT,
+  },
+  footer: {
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
   submitButton: {
     backgroundColor: Colors.primary.dark,
