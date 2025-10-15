@@ -9,7 +9,7 @@ interface ActivityCardProps {
   onPress: () => void;
 }
 
-export const ActivityCard: React.FC<ActivityCardProps> = ({
+export const ActivityCard: React.FC<ActivityCardProps> = React.memo(({
   icon: IconComponent,
   label,
   description,
@@ -24,7 +24,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
       <Text style={styles.description}>{description}</Text>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {

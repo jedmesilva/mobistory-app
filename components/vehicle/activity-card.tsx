@@ -24,7 +24,7 @@ interface ActivityCardProps {
   activity: Activity;
 }
 
-export const ActivityCard = ({ activity }: ActivityCardProps) => {
+export const ActivityCard = React.memo(({ activity }: ActivityCardProps) => {
   const IconComponent = activity.icon;
 
   const getIconColor = () => {
@@ -72,7 +72,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   activityCard: {

@@ -18,7 +18,7 @@ interface FeedNavBottomProps {
   onLayout?: (height: number) => void;
 }
 
-export const FeedNavBottom: React.FC<FeedNavBottomProps> = ({
+export const FeedNavBottom: React.FC<FeedNavBottomProps> = React.memo(({
   translateY,
   opacity,
   activeTab,
@@ -80,7 +80,7 @@ export const FeedNavBottom: React.FC<FeedNavBottomProps> = ({
       </SafeAreaView>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   navBottom: {

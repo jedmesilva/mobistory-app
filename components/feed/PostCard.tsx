@@ -43,7 +43,7 @@ interface PostCardProps {
   post: Post;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ post }) => {
+export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes || 0);
@@ -206,7 +206,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
       </Modal>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

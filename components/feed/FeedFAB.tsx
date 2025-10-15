@@ -15,7 +15,7 @@ interface FeedFABProps {
   navBottomHeight?: number;
 }
 
-export const FeedFAB: React.FC<FeedFABProps> = ({
+export const FeedFAB: React.FC<FeedFABProps> = React.memo(({
   scale,
   onPress,
   navBottomHeight = 0,
@@ -47,7 +47,7 @@ export const FeedFAB: React.FC<FeedFABProps> = ({
       </Pressable>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   fabContainer: {

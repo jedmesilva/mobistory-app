@@ -20,7 +20,7 @@ interface FeedHeaderProps {
   onLayout?: (height: number) => void;
 }
 
-export const FeedHeader: React.FC<FeedHeaderProps> = ({
+export const FeedHeader: React.FC<FeedHeaderProps> = React.memo(({
   translateY,
   opacity,
   onSearchPress,
@@ -80,7 +80,7 @@ export const FeedHeader: React.FC<FeedHeaderProps> = ({
       </SafeAreaView>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   header: {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   View,
@@ -47,7 +47,7 @@ export default function FeedScreen() {
   const navBottomOpacity = useRef(new Animated.Value(1)).current;
   const fabScale = useRef(new Animated.Value(1)).current;
 
-  const posts: Post[] = [
+  const posts: Post[] = useMemo(() => [
     {
       id: 1,
       type: 'image',
@@ -124,7 +124,7 @@ export default function FeedScreen() {
         { icon: 'fuel', label: 'Combustível', value: '75%' },
       ],
     },
-  ];
+  ], []);
 
   // Função para mostrar todos os elementos
   const showAllElements = () => {
@@ -218,12 +218,28 @@ export default function FeedScreen() {
     }
   };
 
-  const handleTabChange = (tab: 'home' | 'profile') => {
+  const handleTabChange = useCallback((tab: 'home' | 'profile') => {
     setActiveTab(tab);
     if (tab === 'profile') {
       router.push('/vehicle-profile');
     }
-  };
+  }, [router]);
+
+  const handleSearchPress = useCallback(() => {
+    router.push('/feed/search');
+  }, [router]);
+
+  const handleVehiclePress = useCallback(() => {
+    router.push('/vehicles-link-list');
+  }, [router]);
+
+  const handleMessagePress = useCallback(() => {
+    router.push('/conversations');
+  }, [router]);
+
+  const handleNewUpdatePress = useCallback(() => {
+    router.push('/new-update');
+  }, [router]);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -233,9 +249,9 @@ export default function FeedScreen() {
       <FeedHeader
         translateY={headerTranslateY}
         opacity={headerOpacity}
-        onSearchPress={() => router.push('/feed/search')}
-        onVehiclePress={() => router.push('/vehicles-link-list')}
-        onMessagePress={() => router.push('/conversations')}
+        onSearchPress={handleSearchPress}
+        onVehiclePress={handleVehiclePress}
+        onMessagePress={handleMessagePress}
         onLayout={setHeaderHeight}
       />
 
@@ -265,7 +281,7 @@ export default function FeedScreen() {
       {/* Botão Flutuante */}
       <FeedFAB
         scale={fabScale}
-        onPress={() => router.push('/new-update')}
+        onPress={handleNewUpdatePress}
         navBottomHeight={navBottomHeight}
       />
 

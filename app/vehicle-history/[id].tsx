@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -340,7 +340,7 @@ export default function VehicleHistoryScreen() {
     }
   };
 
-  const handleCapture = (method: 'camera' | 'voice' | 'gallery') => {
+  const handleCapture = useCallback((method: 'camera' | 'voice' | 'gallery') => {
     setShowCaptureModal(false);
     setIsProcessing(true);
 
@@ -348,7 +348,32 @@ export default function VehicleHistoryScreen() {
       console.log(`Captura automática via ${method} concluída`);
       setIsProcessing(false);
     }, 2000);
-  };
+  }, []);
+
+  const handleVehiclePress = useCallback(() => {
+    router.push(`/vehicle-details/${selectedVehicle.id}`);
+  }, [router, selectedVehicle.id]);
+
+  const handleBackPress = useCallback(() => {
+    router.back();
+  }, [router]);
+
+  const handleChatPress = useCallback(() => {
+    router.push({
+      pathname: '/conversations/[id]',
+      params: {
+        id: selectedVehicle.id,
+        name: selectedVehicle.name,
+        plate: selectedVehicle.plate,
+        year: selectedVehicle.year,
+        color: selectedVehicle.color
+      }
+    });
+  }, [router, selectedVehicle]);
+
+  const handleNewUpdatePress = useCallback(() => {
+    router.push('/new-update');
+  }, [router]);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -371,12 +396,12 @@ export default function VehicleHistoryScreen() {
           <VehicleHeader
             vehicleName={`${selectedVehicle.brand} ${selectedVehicle.name} ${selectedVehicle.model}`}
             vehicleDetails={`${selectedVehicle.plate} • ${selectedVehicle.year} • ${selectedVehicle.color}`}
-            onVehiclePress={() => router.push(`/vehicle-details/${selectedVehicle.id}`)}
+            onVehiclePress={handleVehiclePress}
             showChevron={false}
             showVehicleIcon={false}
             leftButton={
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={handleBackPress}
                 style={styles.backButton}
               >
                 <ArrowLeft size={24} color={Colors.text.secondary} />
@@ -385,16 +410,7 @@ export default function VehicleHistoryScreen() {
             rightButton={
               <TouchableOpacity
                 style={styles.chatButton}
-                onPress={() => router.push({
-                  pathname: '/conversations/[id]',
-                  params: {
-                    id: selectedVehicle.id,
-                    name: selectedVehicle.name,
-                    plate: selectedVehicle.plate,
-                    year: selectedVehicle.year,
-                    color: selectedVehicle.color
-                  }
-                })}
+                onPress={handleChatPress}
               >
                 <MessageCircle size={24} color={Colors.text.secondary} />
               </TouchableOpacity>
@@ -447,7 +463,7 @@ export default function VehicleHistoryScreen() {
       {/* Botão Flutuante */}
       <FeedFAB
         scale={fabScale}
-        onPress={() => router.push('/new-update')}
+        onPress={handleNewUpdatePress}
       />
 
       <SmartCaptureModal

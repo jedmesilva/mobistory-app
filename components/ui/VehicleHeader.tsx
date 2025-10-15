@@ -14,7 +14,7 @@ interface VehicleHeaderProps {
   showVehicleIcon?: boolean;
 }
 
-export const VehicleHeader: React.FC<VehicleHeaderProps> = ({
+export const VehicleHeader: React.FC<VehicleHeaderProps> = React.memo(({
   vehicleName,
   vehicleDetails,
   onVehiclePress,
@@ -57,7 +57,7 @@ export const VehicleHeader: React.FC<VehicleHeaderProps> = ({
       {rightButton}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   header: {

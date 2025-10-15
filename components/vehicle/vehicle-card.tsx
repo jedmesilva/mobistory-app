@@ -10,7 +10,7 @@ interface VehicleCardProps {
   relationshipConfig: {[key: string]: any};
 }
 
-export const VehicleCard = ({
+export const VehicleCard = React.memo(({
   vehicle,
   isHistorical = false,
   navigateToVehicleHistory,
@@ -70,7 +70,7 @@ export const VehicleCard = ({
       </View>
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {
