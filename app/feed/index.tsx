@@ -31,6 +31,7 @@ interface Post {
 const HEADER_HEIGHT = 120;
 const NAV_BOTTOM_HEIGHT = 100;
 const SCROLL_THRESHOLD = 80;
+const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para esconder (ajustável)
 
 export default function FeedScreen() {
   const router = useRouter();
@@ -39,45 +40,12 @@ export default function FeedScreen() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navBottomHeight, setNavBottomHeight] = useState(0);
 
-  // Valor de scroll animado
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const currentScrollValue = useRef(0);
-
-  // diffClamp para limitar o range do scroll
-  const scrollYClamped = Animated.diffClamp(scrollY, 0, SCROLL_THRESHOLD);
-
-  // Interpolações para header
-  const headerTranslateY = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD],
-    outputRange: [0, -(headerHeight > 0 ? headerHeight : HEADER_HEIGHT)],
-    extrapolate: 'clamp',
-  });
-
-  const headerOpacity = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD / 2, SCROLL_THRESHOLD],
-    outputRange: [1, 0.5, 0],
-    extrapolate: 'clamp',
-  });
-
-  // Interpolações para nav bottom
-  const navBottomTranslateY = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD],
-    outputRange: [0, navBottomHeight > 0 ? navBottomHeight : NAV_BOTTOM_HEIGHT],
-    extrapolate: 'clamp',
-  });
-
-  const navBottomOpacity = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD / 2, SCROLL_THRESHOLD],
-    outputRange: [1, 0.5, 0],
-    extrapolate: 'clamp',
-  });
-
-  // Interpolação para FAB
-  const fabScale = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  });
+  // Valores animados controlados manualmente
+  const headerTranslateY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = useRef(new Animated.Value(1)).current;
+  const navBottomTranslateY = useRef(new Animated.Value(0)).current;
+  const navBottomOpacity = useRef(new Animated.Value(1)).current;
+  const fabScale = useRef(new Animated.Value(1)).current;
 
   const posts: Post[] = [
     {
@@ -158,30 +126,72 @@ export default function FeedScreen() {
     },
   ];
 
-  // Listener para trackear o valor atual do scrollYClamped
-  React.useEffect(() => {
-    const listenerId = scrollYClamped.addListener(({ value }) => {
-      currentScrollValue.current = value;
-    });
+  // Lógica baseada APENAS em velocidade do scroll
+  const handleScrollEndDrag = (event: any) => {
+    const velocity = event.nativeEvent.velocity?.y || 0;
 
-    return () => {
-      scrollYClamped.removeListener(listenerId);
-    };
-  }, [scrollYClamped]);
+    // Scroll rápido para CIMA (velocity negativa < -threshold) → ESCONDE tudo
+    if (velocity < -VELOCITY_THRESHOLD) {
+      const headerTranslate = headerHeight > 0 ? -headerHeight : -HEADER_HEIGHT;
+      const navTranslate = navBottomHeight > 0 ? navBottomHeight : NAV_BOTTOM_HEIGHT;
 
-  // Efeito snap magnético quando o usuário solta o scroll
-  // Uma vez que começou a esconder (currentValue > 0), completa automaticamente
-  const handleScrollEndDrag = () => {
-    const currentValue = currentScrollValue.current;
-
-    // Se começou a esconder (qualquer valor > 0), completa escondendo tudo
-    if (currentValue > 0) {
-      Animated.spring(scrollY, {
-        toValue: (scrollY as any)._value + (SCROLL_THRESHOLD - currentValue),
-        useNativeDriver: true,
-        friction: 8,
-        tension: 40,
-      }).start();
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: headerTranslate,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(navBottomTranslateY, {
+          toValue: navTranslate,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(navBottomOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
+    }
+    // Qualquer scroll para BAIXO (velocity positiva > 0) → MOSTRA tudo
+    else if (velocity > 0) {
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(navBottomTranslateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(navBottomOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 1,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
     }
   };
 
@@ -210,10 +220,6 @@ export default function FeedScreen() {
       <Animated.ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
         onScrollEndDrag={handleScrollEndDrag}
         onMomentumScrollEnd={handleScrollEndDrag}
         scrollEventThrottle={16}

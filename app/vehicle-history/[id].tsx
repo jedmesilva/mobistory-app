@@ -52,6 +52,7 @@ interface DateGroup {
 
 const HEADER_HEIGHT = 120;
 const SCROLL_THRESHOLD = 80;
+const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para esconder (ajustável)
 
 export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
@@ -85,37 +86,10 @@ export default function VehicleHistoryScreen() {
   const scrollViewRef = useRef<any>(null);
   const isInitialLoad = useRef(true);
 
-  // Valor de scroll animado
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const currentScrollValue = useRef(0);
-
-  // diffClamp INVERTIDO para scroll de timeline (como chat)
-  // Valores negativos (scrolling up) aumentam o clamp, valores positivos (scrolling down) diminuem
-  const scrollYClamped = Animated.diffClamp(
-    Animated.multiply(scrollY, -1), // Inverte o sinal para comportamento de chat
-    0,
-    SCROLL_THRESHOLD
-  );
-
-  // Interpolações para header
-  const headerTranslateY = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD],
-    outputRange: [0, -(headerHeight > 0 ? headerHeight : HEADER_HEIGHT)],
-    extrapolate: 'clamp',
-  });
-
-  const headerOpacity = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD / 2, SCROLL_THRESHOLD],
-    outputRange: [1, 0.5, 0],
-    extrapolate: 'clamp',
-  });
-
-  // Interpolação para FAB
-  const fabScale = scrollYClamped.interpolate({
-    inputRange: [0, SCROLL_THRESHOLD],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  });
+  // Valores animados controlados manualmente
+  const headerTranslateY = useRef(new Animated.Value(0)).current;
+  const headerOpacity = useRef(new Animated.Value(1)).current;
+  const fabScale = useRef(new Animated.Value(1)).current;
 
   const timelineData = useMemo<DateGroup[]>(() => [
     {
@@ -293,32 +267,53 @@ export default function VehicleHistoryScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Listener para trackear o valor atual do scrollYClamped
-  useEffect(() => {
-    const listenerId = scrollYClamped.addListener(({ value }) => {
-      currentScrollValue.current = value;
-    });
-
-    return () => {
-      scrollYClamped.removeListener(listenerId);
-    };
-  }, [scrollYClamped]);
-
-  // Efeito snap magnético quando o usuário solta o scroll
-  // Uma vez que começou a esconder (currentValue > 0), completa automaticamente
-  const handleScrollEndDrag = () => {
+  // Lógica baseada APENAS em velocidade do scroll
+  const handleScrollEndDrag = (event: any) => {
     if (isInitialLoad.current) return;
 
-    const currentValue = currentScrollValue.current;
+    const velocity = event.nativeEvent.velocity?.y || 0;
 
-    // Se começou a esconder (qualquer valor > 0), completa escondendo tudo
-    if (currentValue > 0) {
-      Animated.spring(scrollY, {
-        toValue: (scrollY as any)._value - (SCROLL_THRESHOLD - currentValue),
-        useNativeDriver: true,
-        friction: 8,
-        tension: 40,
-      }).start();
+    // Scroll rápido para BAIXO (velocity > threshold) → ESCONDE
+    if (velocity > VELOCITY_THRESHOLD) {
+      const headerTranslate = headerHeight > 0 ? -headerHeight : -HEADER_HEIGHT;
+
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: headerTranslate,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
+    }
+    // Qualquer scroll para CIMA (velocity < 0) → MOSTRA
+    else if (velocity < 0) {
+      Animated.parallel([
+        Animated.spring(headerTranslateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          friction: 8,
+        }),
+        Animated.timing(headerOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(fabScale, {
+          toValue: 1,
+          useNativeDriver: true,
+          friction: 6,
+        }),
+      ]).start();
     }
   };
 
@@ -389,18 +384,6 @@ export default function VehicleHistoryScreen() {
         ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          {
-            useNativeDriver: true,
-            listener: (event: any) => {
-              // Previne animação durante carregamento inicial
-              if (isInitialLoad.current) {
-                return;
-              }
-            },
-          }
-        )}
         onScrollEndDrag={handleScrollEndDrag}
         onMomentumScrollEnd={handleScrollEndDrag}
         scrollEventThrottle={16}
