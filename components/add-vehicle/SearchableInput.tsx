@@ -82,7 +82,7 @@ export const SearchableInput = ({
                 key={suggestion}
                 onPress={() => onSelectSuggestion(suggestion)}
                 style={styles.suggestionItem}
-                activeOpacity={0.7}
+                activeOpacity={1}
               >
                 <Text style={styles.suggestionText}>{suggestion}</Text>
               </TouchableOpacity>
@@ -91,7 +91,7 @@ export const SearchableInput = ({
             <TouchableOpacity
               onPress={onCreateNew}
               style={styles.createNewItem}
-              activeOpacity={0.7}
+              activeOpacity={1}
             >
               <Plus size={16} color={Colors.info.DEFAULT} />
               <Text style={styles.createNewText}>{createNewLabel}</Text>

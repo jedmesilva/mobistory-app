@@ -68,7 +68,7 @@ export const MoreOptionsModal = ({ visible, onClose, onOptionSelect }: MoreOptio
                     onOptionSelect(option.id);
                     onClose();
                   }}
-                  activeOpacity={0.7}
+                  activeOpacity={1}
                 >
                   <View style={styles.iconContainer}>
                     <IconComponent size={20} color={Colors.text.secondary} />

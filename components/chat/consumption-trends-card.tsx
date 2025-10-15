@@ -22,7 +22,7 @@ export const ConsumptionTrendsCard = ({ data }: ConsumptionTrendsCardProps) => {
       <TouchableOpacity
         style={styles.header}
         onPress={() => setExpanded(!expanded)}
-        activeOpacity={0.7}
+        activeOpacity={1}
       >
         <View style={styles.headerLeft}>
           <View style={styles.iconContainer}>

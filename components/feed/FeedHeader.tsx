@@ -123,6 +123,6 @@ const styles = StyleSheet.create({
     color: Colors.text.tertiary,
   },
   buttonPressed: {
-    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
   },
 });

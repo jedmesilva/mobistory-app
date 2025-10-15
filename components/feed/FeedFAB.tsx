@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   fabPressed: {
-    opacity: 0.8,
     transform: [{ scale: 0.95 }],
   },
 });

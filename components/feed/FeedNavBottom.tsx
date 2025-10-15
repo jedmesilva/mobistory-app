@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonPressed: {
-    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
   },
 });
