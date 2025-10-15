@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, Search, X, Clock } from 'lucide-react-native';
+import { ArrowLeft, Clock, X, Search } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { PostCard } from '../../components/feed';
 
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    height: 40,
     backgroundColor: Colors.background.secondary,
     borderRadius: 12,
   },

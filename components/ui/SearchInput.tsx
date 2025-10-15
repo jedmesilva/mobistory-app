@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   searchIcon: {
     marginRight: 12,
