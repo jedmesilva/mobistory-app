@@ -52,7 +52,6 @@ interface DateGroup {
 
 const HEADER_HEIGHT = 120;
 const SCROLL_THRESHOLD = 80;
-const SNAP_POINT = SCROLL_THRESHOLD / 2; // 50% do threshold
 
 export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
@@ -306,24 +305,16 @@ export default function VehicleHistoryScreen() {
   }, [scrollYClamped]);
 
   // Efeito snap magnético quando o usuário solta o scroll
+  // Uma vez que começou a esconder (currentValue > 0), completa automaticamente
   const handleScrollEndDrag = () => {
     if (isInitialLoad.current) return;
 
     const currentValue = currentScrollValue.current;
 
-    // Se passou do ponto de snap (50%), completa escondendo tudo
-    if (currentValue >= SNAP_POINT) {
+    // Se começou a esconder (qualquer valor > 0), completa escondendo tudo
+    if (currentValue > 0) {
       Animated.spring(scrollY, {
         toValue: (scrollY as any)._value - (SCROLL_THRESHOLD - currentValue),
-        useNativeDriver: true,
-        friction: 8,
-        tension: 40,
-      }).start();
-    }
-    // Se não passou, volta para mostrar tudo
-    else if (currentValue > 0) {
-      Animated.spring(scrollY, {
-        toValue: (scrollY as any)._value + currentValue,
         useNativeDriver: true,
         friction: 8,
         tension: 40,
