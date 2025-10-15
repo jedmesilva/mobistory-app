@@ -267,53 +267,76 @@ export default function VehicleHistoryScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Lógica baseada APENAS em velocidade do scroll
+  // Função para mostrar todos os elementos
+  const showAllElements = () => {
+    Animated.parallel([
+      Animated.spring(headerTranslateY, {
+        toValue: 0,
+        useNativeDriver: true,
+        friction: 8,
+      }),
+      Animated.timing(headerOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.spring(fabScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 6,
+      }),
+    ]).start();
+  };
+
+  // Função para esconder todos os elementos
+  const hideAllElements = () => {
+    const headerTranslate = headerHeight > 0 ? -headerHeight : -HEADER_HEIGHT;
+
+    Animated.parallel([
+      Animated.spring(headerTranslateY, {
+        toValue: headerTranslate,
+        useNativeDriver: true,
+        friction: 8,
+      }),
+      Animated.timing(headerOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.spring(fabScale, {
+        toValue: 0,
+        useNativeDriver: true,
+        friction: 6,
+      }),
+    ]).start();
+  };
+
+  // Lógica baseada em velocidade E detecção de limites
   const handleScrollEndDrag = (event: any) => {
     if (isInitialLoad.current) return;
 
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
     const velocity = event.nativeEvent.velocity?.y || 0;
+
+    // Detecta se chegou no TOPO (contentOffset.y ≈ 0)
+    const isAtTop = contentOffset.y <= 10;
+
+    // Detecta se chegou no FIM (contentOffset.y + altura visível ≈ altura total)
+    const isAtBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 10;
+
+    // Se chegou no topo OU no fim → SEMPRE MOSTRA
+    if (isAtTop || isAtBottom) {
+      showAllElements();
+      return;
+    }
 
     // Scroll rápido para BAIXO (velocity > threshold) → ESCONDE
     if (velocity > VELOCITY_THRESHOLD) {
-      const headerTranslate = headerHeight > 0 ? -headerHeight : -HEADER_HEIGHT;
-
-      Animated.parallel([
-        Animated.spring(headerTranslateY, {
-          toValue: headerTranslate,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(headerOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(fabScale, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 6,
-        }),
-      ]).start();
+      hideAllElements();
     }
     // Qualquer scroll para CIMA (velocity < 0) → MOSTRA
     else if (velocity < 0) {
-      Animated.parallel([
-        Animated.spring(headerTranslateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 8,
-        }),
-        Animated.timing(headerOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(fabScale, {
-          toValue: 1,
-          useNativeDriver: true,
-          friction: 6,
-        }),
-      ]).start();
+      showAllElements();
     }
   };
 
