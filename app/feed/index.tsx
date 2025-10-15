@@ -233,7 +233,7 @@ export default function FeedScreen() {
       <FeedHeader
         translateY={headerTranslateY}
         opacity={headerOpacity}
-        onSearchPress={() => console.log('Abrir busca')}
+        onSearchPress={() => router.push('/feed/search')}
         onVehiclePress={() => router.push('/vehicles-link-list')}
         onMessagePress={() => router.push('/conversations')}
         onLayout={setHeaderHeight}
