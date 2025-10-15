@@ -128,7 +128,7 @@ export default function NewUpdateScreen() {
           vehicleDetails={`${selectedVehicleData.plate} • ${selectedVehicleData.year} • ${selectedVehicleData.color}`}
           onVehiclePress={() => router.push('/vehicles-link-list')}
           showChevron={true}
-          showVehicleIcon={true}
+          showVehicleIcon={false}
           leftButton={
             <TouchableOpacity
               style={styles.backButton}
