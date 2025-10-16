@@ -221,6 +221,75 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['vehicle_entity_links']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['vehicle_entity_links']['Insert']>
       }
+      moments: {
+        Row: {
+          id: string
+          vehicle_id: string
+          entity_id: string
+          caption: string | null
+          type: 'image' | 'video' | 'text'
+          location: string | null
+          tags: Json
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['moments']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['moments']['Insert']>
+      }
+      moment_images: {
+        Row: {
+          id: string
+          moment_id: string
+          image_url: string
+          image_order: number
+          width: number | null
+          height: number | null
+          size_bytes: number | null
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['moment_images']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['moment_images']['Insert']>
+      }
+      moment_reactions: {
+        Row: {
+          id: string
+          moment_id: string
+          entity_id: string
+          reaction_type: 'like' | 'love' | 'care' | 'wow' | 'sad' | 'angry'
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['moment_reactions']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['moment_reactions']['Insert']>
+      }
+      moment_comments: {
+        Row: {
+          id: string
+          moment_id: string
+          entity_id: string
+          comment: string
+          parent_comment_id: string | null
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['moment_comments']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['moment_comments']['Insert']>
+      }
+      vehicle_images: {
+        Row: {
+          id: string
+          vehicle_id: string
+          image_url: string
+          is_primary: boolean
+          width: number | null
+          height: number | null
+          size_bytes: number | null
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['vehicle_images']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['vehicle_images']['Insert']>
+      }
     }
     Views: {}
     Functions: {}
@@ -238,5 +307,21 @@ export type VehicleWithDetails = Database['public']['Tables']['vehicles']['Row']
   colors: Database['public']['Tables']['colors']['Row'][]
   vehicle_fuels: (Database['public']['Tables']['vehicle_fuels']['Row'] & {
     fuels: Database['public']['Tables']['fuels']['Row']
+  })[]
+}
+
+export type MomentWithDetails = Database['public']['Tables']['moments']['Row'] & {
+  vehicles: Database['public']['Tables']['vehicles']['Row'] & {
+    brands: Database['public']['Tables']['brands']['Row']
+    models: Database['public']['Tables']['models']['Row']
+    model_versions: Database['public']['Tables']['model_versions']['Row'] | null
+  }
+  entities: Database['public']['Tables']['entities']['Row']
+  moment_images: Database['public']['Tables']['moment_images']['Row'][]
+  moment_reactions: (Database['public']['Tables']['moment_reactions']['Row'] & {
+    entities: Database['public']['Tables']['entities']['Row']
+  })[]
+  moment_comments: (Database['public']['Tables']['moment_comments']['Row'] & {
+    entities: Database['public']['Tables']['entities']['Row']
   })[]
 }
