@@ -33,7 +33,7 @@ export const VehicleCard = React.memo(({
 
         <View style={styles.cardInfo}>
           <Text style={[styles.cardTitle, isHistorical && styles.textHistorical]}>
-            {vehicle.name} {vehicle.model}
+            {vehicle.brand} {vehicle.name} {vehicle.model}
           </Text>
 
           <Text style={styles.cardSubtitle}>
