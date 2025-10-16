@@ -2,92 +2,89 @@ import { Colors } from '@/constants';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft, Plus, Search } from 'lucide-react-native';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import {
     Animated,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from '../components/ui';
 import { SectionHeader, VehicleCard } from '../components/vehicle';
+import { useVehiclesWithLinks } from '@/hooks/vehicle';
 
 export default function Index() {
   const router = useRouter();
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  const [vehicles] = useState([
-    {
-      id: 1,
-      brand: 'Honda',
-      name: 'Civic',
-      model: 'XLI',
-      plate: 'ABC-1234',
-      color: 'Prata',
-      year: 2018,
-      relationshipType: 'owner',
-      status: 'active',
-      relationshipStart: '12 Jan 2018',
-      lastEvent: '19 Set 2025'
-    },
-    {
-      id: 2,
-      brand: 'Toyota',
-      name: 'Corolla',
-      model: 'GLI',
-      plate: 'DEF-5678',
-      color: 'Branco',
-      year: 2020,
-      relationshipType: 'owner',
-      status: 'active',
-      relationshipStart: '05 Mar 2020',
-      lastEvent: '15 Set 2025'
-    },
-    {
-      id: 3,
-      brand: 'Volkswagen',
-      name: 'Gol',
-      model: 'G4',
-      plate: 'GHI-9012',
-      color: 'Azul',
-      year: 2015,
-      relationshipType: 'renter',
-      status: 'active',
-      relationshipStart: '01 Ago 2024',
-      lastEvent: '10 Set 2025'
-    },
-    {
-      id: 4,
-      brand: 'Ford',
-      name: 'Ka',
-      model: 'SE Plus',
-      plate: 'JKL-3456',
-      color: 'Vermelho',
-      year: 2019,
-      relationshipType: 'authorized_driver',
-      status: 'active',
-      relationshipStart: '15 Mai 2023',
-      lastEvent: '22 Set 2025'
-    },
-    {
-      id: 5,
-      brand: 'Fiat',
-      name: 'Uno',
-      model: 'Mille',
-      plate: 'PQR-1122',
-      color: 'Branco',
-      year: 2014,
-      relationshipType: 'owner',
-      status: 'former',
-      relationshipStart: '10 Fev 2014',
-      lastEvent: '12 Jun 2025'
-    },
-  ]);
+  const { vehicles: vehiclesData, loading, error } = useVehiclesWithLinks();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
+
+  // Transform Supabase data to match the expected format
+  const vehicles = useMemo(() => {
+    // Create a flat list of vehicles with their links
+    const vehicleLinks = vehiclesData.flatMap((vehicle) => {
+      const activePlate = vehicle.plates?.find(p => p.active) || vehicle.plates?.[0]
+      const activeColor = vehicle.colors?.find(c => c.active) || vehicle.colors?.[0]
+
+      // Get all active links for this vehicle
+      const activeLinks = vehicle.vehicle_entity_links?.filter(link => link.active) || []
+
+      // If no links, still show the vehicle (for backwards compatibility)
+      if (activeLinks.length === 0) {
+        return [{
+          id: vehicle.id,
+          brand: vehicle.brands.brand,
+          name: vehicle.models.model,
+          model: vehicle.model_versions?.version || '',
+          plate: activePlate?.plate || 'Sem placa',
+          color: activeColor?.color || 'Sem cor',
+          year: vehicle.model_year,
+          relationshipType: 'owner',
+          status: 'active',
+          relationshipStart: new Date(vehicle.created_at).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }),
+          lastEvent: new Date().toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          })
+        }]
+      }
+
+      // Map each link to a vehicle entry
+      return activeLinks.map((link) => ({
+        id: vehicle.id,
+        brand: vehicle.brands.brand,
+        name: vehicle.models.model,
+        model: vehicle.model_versions?.version || '',
+        plate: activePlate?.plate || 'Sem placa',
+        color: activeColor?.color || 'Sem cor',
+        year: vehicle.model_year,
+        relationshipType: link.relationship_type,
+        status: link.end_date && new Date(link.end_date) < new Date() ? 'former' : link.status,
+        relationshipStart: new Date(link.start_date).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }),
+        lastEvent: new Date().toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        })
+      }))
+    });
+
+    return vehicleLinks;
+  }, [vehiclesData]);
 
   const filteredVehicles = vehicles.filter(vehicle =>
     vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -178,7 +175,22 @@ export default function Index() {
 
         {/* Content */}
         <View style={styles.content}>
-          {filteredVehicles.length === 0 && searchTerm ? (
+          {loading ? (
+            /* Loading State */
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+              <Text style={styles.loadingText}>Carregando veículos...</Text>
+            </View>
+          ) : error ? (
+            /* Error State */
+            <View style={styles.emptyState}>
+              <View style={styles.emptyStateIcon}>
+                <Search size={40} color={Colors.text.placeholder} />
+              </View>
+              <Text style={styles.emptyStateTitle}>Erro ao carregar veículos</Text>
+              <Text style={styles.emptyStateSubtitle}>{error.message}</Text>
+            </View>
+          ) : filteredVehicles.length === 0 && searchTerm ? (
             /* Empty State */
             <View style={styles.emptyState}>
               <View style={styles.emptyStateIcon}>
@@ -416,5 +428,14 @@ const styles = StyleSheet.create({
     color: Colors.text.tertiary,
     textAlign: 'center',
     paddingHorizontal: 32,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.text.tertiary,
+    marginTop: 16,
   },
 });
