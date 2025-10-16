@@ -68,6 +68,13 @@ async function testMomentsSystem() {
           console.log(`      💬 ${comment.entities.name}: "${comment.comment}"`);
         });
       }
+
+      console.log(`   Imagens: ${moment.moment_images.length}`);
+      if (moment.moment_images.length > 0) {
+        moment.moment_images.forEach((img, idx) => {
+          console.log(`      🖼️  Imagem ${idx + 1}: ${img.image_url}`);
+        });
+      }
       console.log('');
     });
 
