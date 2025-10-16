@@ -5,11 +5,13 @@ import {
   Text,
   StyleSheet,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants';
 import { PostCard, FeedHeader, FeedNavBottom, FeedFAB } from '../../components/feed';
+import { useMoments } from '@/hooks/moment';
 
 interface Post {
   id: number;
@@ -36,6 +38,7 @@ const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para esconder (ajustável)
 export default function FeedScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('home');
+  const { moments, loading } = useMoments();
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navBottomHeight, setNavBottomHeight] = useState(0);
@@ -47,7 +50,35 @@ export default function FeedScreen() {
   const navBottomOpacity = useRef(new Animated.Value(1)).current;
   const fabScale = useRef(new Animated.Value(1)).current;
 
-  const posts: Post[] = useMemo(() => [
+  // Transform moments data to posts format
+  const posts: Post[] = useMemo(() => moments.map((moment) => {
+    const activePlate = moment.vehicles.plates?.find(p => p.active) || moment.vehicles.plates?.[0];
+    const vehicleName = `${moment.vehicles.brands.brand} ${moment.vehicles.models.model}`;
+
+    return {
+      id: parseInt(moment.id.slice(0, 8), 16), // Convert UUID to number
+      type: moment.type as 'image' | 'video',
+      userName: moment.entities.name,
+      userRole: 'Condutor', // TODO: Get from relationship type
+      vehicleName,
+      vehiclePlate: activePlate?.plate || '',
+      date: new Date(moment.created_at).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      caption: moment.caption || '',
+      imageUrl: moment.moment_images[0]?.image_url,
+      likes: moment.moment_reactions.length,
+      comments: moment.moment_comments.length,
+      following: false,
+      tags: moment.tags as any || [],
+    };
+  }), [moments]);
+
+  // Keep old mock data as fallback
+  const mockPosts: Post[] = useMemo(() => [
     {
       id: 1,
       type: 'image',
@@ -272,10 +303,26 @@ export default function FeedScreen() {
           </Text>
         </View>
 
+        {/* Loading State */}
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+            <Text style={styles.loadingText}>Carregando momentos...</Text>
+          </View>
+        )}
+
         {/* Posts */}
-        {posts.map((post) => (
+        {!loading && posts.length > 0 && posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
+
+        {/* Empty State */}
+        {!loading && posts.length === 0 && (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>Nenhum momento publicado ainda.</Text>
+            <Text style={styles.emptyStateSubtext}>Seja o primeiro a compartilhar!</Text>
+          </View>
+        )}
       </Animated.ScrollView>
 
       {/* Botão Flutuante */}
@@ -324,5 +371,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.tertiary,
     lineHeight: 20,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: Colors.text.tertiary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text.secondary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: Colors.text.tertiary,
+    textAlign: 'center',
   },
 });
