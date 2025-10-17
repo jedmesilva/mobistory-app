@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -24,10 +24,13 @@ import {
   Document,
 } from '../../components/vehicle-details';
 import { VehicleHeader } from '@/components/ui';
+import { useSelectedVehicle } from '@/contexts';
+import { useVehicle } from '@/hooks/vehicle';
 
 interface Vehicle {
   marca: string;
   modelo: string;
+  versao: string;
   tipo: string;
   categoria: string;
   ano: number;
@@ -50,26 +53,66 @@ export default function VehicleDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
-  const [vehicle] = useState<Vehicle>({
-    marca: 'Toyota',
-    modelo: 'Corolla XEi',
-    tipo: 'Carro',
-    categoria: 'Sedan',
-    ano: 2023,
-    placa: 'ABC-1D23',
-    cor: 'Prata',
-    quilometragem: '15.420 km',
-    combustivel: 'Flex',
-    seguro: 'Porto Seguro',
-    localizacao: 'São Paulo, SP',
-    renavam: '12345678910',
-    chassi: '9BWHE21JX24060831',
-    motor: '1.8 16V',
-    paisOrigem: 'Brasil',
-    paisLicenciamento: 'Brasil',
-    anoModelo: 2023,
-    anoFabricacao: 2022,
-  });
+  // Get selected vehicle from context or params
+  const { selectedVehicleId: contextVehicleId } = useSelectedVehicle();
+  const paramsId = Array.isArray(id) ? id[0] : id;
+  const vehicleId = paramsId || contextVehicleId;
+
+  // Fetch vehicle data
+  const { vehicle: vehicleData } = useVehicle(vehicleId || undefined);
+
+  // Transform vehicle data for display
+  const vehicle = useMemo<Vehicle>(() => {
+    if (!vehicleData || !vehicleData.models || !vehicleData.brands) {
+      return {
+        marca: '',
+        modelo: '',
+        versao: '',
+        tipo: '',
+        categoria: '',
+        ano: 0,
+        placa: '',
+        cor: '',
+        quilometragem: '0 km',
+        combustivel: '',
+        seguro: '',
+        localizacao: '',
+        renavam: '',
+        chassi: '',
+        motor: '',
+        paisOrigem: '',
+        paisLicenciamento: '',
+        anoModelo: 0,
+        anoFabricacao: 0,
+      };
+    }
+
+    const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
+    const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
+    const activeFuel = vehicleData.vehicle_fuels?.find(f => f.active) || vehicleData.vehicle_fuels?.[0];
+
+    return {
+      marca: vehicleData.brands?.brand || '',
+      modelo: vehicleData.models?.model || '',
+      versao: vehicleData.model_versions?.version || '',
+      tipo: 'Carro', // TODO: Get from vehicle type
+      categoria: vehicleData.vehicle_categories?.category || '',
+      ano: vehicleData.model_year || 0,
+      placa: activePlate?.plate || '',
+      cor: activeColor?.color || '',
+      quilometragem: '0 km', // TODO: Get from vehicle_odometer_readings
+      combustivel: activeFuel?.fuels?.name || '',
+      seguro: '', // TODO: Get from insurance table
+      localizacao: '', // TODO: Get from location
+      renavam: vehicleData.renavam || '',
+      chassi: vehicleData.chassis || '',
+      motor: '', // TODO: Get from engine specs
+      paisOrigem: '', // TODO: Get from vehicle data
+      paisLicenciamento: '', // TODO: Get from vehicle data
+      anoModelo: vehicleData.model_year || 0,
+      anoFabricacao: vehicleData.manufacture_year || 0,
+    };
+  }, [vehicleData]);
 
   const [documents] = useState<Document[]>([
     {
@@ -123,7 +166,7 @@ export default function VehicleDetailsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <VehicleHeader
-        vehicleName={`${vehicle.marca} ${vehicle.modelo}`}
+        vehicleName={`${vehicle.marca} ${vehicle.modelo} ${vehicle.versao}`}
         vehicleDetails={`${showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)} • ${vehicle.ano} • ${vehicle.cor}`}
         showChevron={false}
         showVehicleIcon={false}

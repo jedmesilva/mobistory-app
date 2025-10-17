@@ -26,6 +26,8 @@ import { ActivityCard } from '../../components/vehicle';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
 import { VehicleHeader } from '@/components/ui';
 import { FeedFAB } from '../../components/feed';
+import { useSelectedVehicle } from '@/contexts';
+import { useVehicle } from '@/hooks/vehicle';
 
 interface ActivityDetail {
   label: string;
@@ -58,27 +60,50 @@ export default function VehicleHistoryScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
-  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
-  const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
-  const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
-  const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');
-  const vehicleYear = Array.isArray(params.year) ? params.year[0] : (params.year || '2018');
-  const vehicleId = Array.isArray(params.id) ? params.id[0] : (params.id || '1');
+  // Get selected vehicle from context or params
+  const { selectedVehicleId: contextVehicleId } = useSelectedVehicle();
+  const paramsId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const vehicleId = paramsId || contextVehicleId;
 
-  const [selectedVehicle] = useState({
-    id: vehicleId,
-    brand: vehicleBrand,
-    name: vehicleName,
-    model: vehicleModel,
-    plate: vehiclePlate,
-    color: vehicleColor,
-    year: vehicleYear,
-    odometer: 45230,
-    fuelType: 'Gasolina',
-    status: 'active',
-    lastEvent: '19 Set 2025',
-  });
+  // Fetch vehicle data
+  const { vehicle: vehicleData } = useVehicle(vehicleId || undefined);
+
+  // Transform vehicle data for display
+  const selectedVehicle = useMemo(() => {
+    if (!vehicleData || !vehicleData.models || !vehicleData.brands) {
+      return {
+        id: '',
+        brand: '',
+        name: '',
+        model: '',
+        plate: '',
+        color: '',
+        year: '',
+        odometer: 0,
+        fuelType: '',
+        status: 'active',
+        lastEvent: '',
+      };
+    }
+
+    const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
+    const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
+    const activeFuel = vehicleData.vehicle_fuels?.find(f => f.active) || vehicleData.vehicle_fuels?.[0];
+
+    return {
+      id: vehicleData.id,
+      brand: vehicleData.brands?.brand || '',
+      name: vehicleData.models?.model || '',
+      model: vehicleData.model_versions?.version || '',
+      plate: activePlate?.plate || '',
+      color: activeColor?.color || '',
+      year: vehicleData.model_year?.toString() || '',
+      odometer: 0, // TODO: Get from vehicle_odometer_readings
+      fuelType: activeFuel?.fuels?.name || '',
+      status: 'active',
+      lastEvent: '',
+    };
+  }, [vehicleData]);
 
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);

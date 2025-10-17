@@ -15,12 +15,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from '../components/ui';
 import { SectionHeader, VehicleCard } from '../components/vehicle';
 import { useVehiclesWithLinks } from '@/hooks/vehicle';
+import { useSelectedVehicle } from '@/contexts';
 
 export default function Index() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const scrollY = useRef(new Animated.Value(0)).current;
   const { vehicles: vehiclesData, loading, error } = useVehiclesWithLinks();
+  const { setSelectedVehicleId } = useSelectedVehicle();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
@@ -112,38 +114,19 @@ export default function Index() {
   };
 
   // Função para navegar de volta com o veículo selecionado
-  const navigateToVehicleProfile = (vehicle: any) => {
+  const navigateToVehicleProfile = async (vehicle: any) => {
+    // Salva o veículo selecionado globalmente
+    await setSelectedVehicleId(vehicle.id);
+
     // Determina para onde navegar baseado no parâmetro 'from'
     const fromRoute = (Array.isArray(params.from) ? params.from[0] : params.from) || 'vehicle-profile';
 
     if (fromRoute === 'new-update') {
       // Volta para tela de nova atualização com o veículo selecionado
-      router.push({
-        pathname: '/new-update',
-        params: {
-          vehicleId: vehicle.id,
-          brand: vehicle.brand,
-          name: vehicle.name,
-          model: vehicle.model,
-          plate: vehicle.plate,
-          color: vehicle.color,
-          year: vehicle.year,
-        }
-      });
+      router.push('/new-update');
     } else if (fromRoute === 'vehicle-profile') {
       // Volta para tela de perfil do veículo com o veículo selecionado
-      router.push({
-        pathname: '/vehicle-profile',
-        params: {
-          vehicleId: vehicle.id,
-          brand: vehicle.brand,
-          name: vehicle.name,
-          model: vehicle.model,
-          plate: vehicle.plate,
-          color: vehicle.color,
-          year: vehicle.year,
-        }
-      });
+      router.push('/vehicle-profile');
     } else if (fromRoute === 'feed') {
       // Feed não precisa selecionar veículo, apenas volta
       router.back();

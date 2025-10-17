@@ -30,6 +30,7 @@ import { OdometerIcon } from '@/components/icons';
 import { VehicleHeader } from '@/components/ui';
 import { useVehicle } from '@/hooks/vehicle';
 import { useVehicleMoments } from '@/hooks/moment';
+import { useSelectedVehicle } from '@/contexts';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
@@ -42,8 +43,17 @@ export default function VehicleProfileScreen() {
   const navBottomTranslateY = useRef(new Animated.Value(0)).current;
   const navBottomOpacity = useRef(new Animated.Value(1)).current;
 
-  // Get the vehicle ID from params
-  const selectedVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : params.vehicleId;
+  // Get selected vehicle from context or params (params takes priority for navigation from feed)
+  const { selectedVehicleId: contextVehicleId, setSelectedVehicleId } = useSelectedVehicle();
+  const paramsVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : params.vehicleId;
+  const selectedVehicleId = paramsVehicleId || contextVehicleId;
+
+  // Update context if navigated from params (e.g., from feed post)
+  React.useEffect(() => {
+    if (paramsVehicleId && paramsVehicleId !== contextVehicleId) {
+      setSelectedVehicleId(paramsVehicleId);
+    }
+  }, [paramsVehicleId, contextVehicleId, setSelectedVehicleId]);
 
   // Fetch the vehicle data directly by ID (public access to any vehicle)
   const { vehicle: vehicleData, loading: vehiclesLoading, error: vehiclesError } = useVehicle(selectedVehicleId);

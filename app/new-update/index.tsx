@@ -24,37 +24,44 @@ import {
 import { Colors } from '@/constants';
 import { VehicleHeader } from '@/components/ui';
 import { ActivitiesGrid, QuickCaptureFooter, type ActivityType } from '@/components/new-update';
-
-interface Vehicle {
-  brand: string;
-  name: string;
-  model: string;
-  plate: string;
-  year: string;
-  color: string;
-}
+import { useSelectedVehicle } from '@/contexts';
+import { useVehicle } from '@/hooks/vehicle';
 
 export default function NewUpdateScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  // Recebe o veículo selecionado da tela de lista, ou usa o primeiro como padrão
-  const selectedVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : (params.vehicleId || '1');
-  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
-  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
-  const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
-  const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
-  const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');
-  const vehicleYear = Array.isArray(params.year) ? params.year[0] : (params.year || '2020');
+  // Get selected vehicle from context
+  const { selectedVehicleId } = useSelectedVehicle();
 
-  const selectedVehicleData: Vehicle = {
-    brand: vehicleBrand,
-    name: vehicleName,
-    model: vehicleModel,
-    plate: vehiclePlate,
-    year: vehicleYear,
-    color: vehicleColor,
-  };
+  // Fetch vehicle data
+  const { vehicle: vehicleData } = useVehicle(selectedVehicleId || undefined);
+
+  // Transform vehicle data for display
+  const selectedVehicleData = React.useMemo(() => {
+    if (!vehicleData || !vehicleData.models || !vehicleData.brands) {
+      return {
+        brand: 'Selecione',
+        name: 'um veículo',
+        model: '',
+        plate: '',
+        year: '',
+        color: '',
+      };
+    }
+
+    const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
+    const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
+
+    return {
+      brand: vehicleData.brands?.brand || '',
+      name: vehicleData.models?.model || '',
+      model: vehicleData.model_versions?.version || '',
+      plate: activePlate?.plate || '',
+      year: vehicleData.model_year?.toString() || '',
+      color: activeColor?.color || '',
+    };
+  }, [vehicleData]);
 
   const activityTypes: ActivityType[] = [
     {
