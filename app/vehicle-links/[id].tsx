@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
@@ -69,6 +70,12 @@ export default function VehicleLinksScreen() {
 
   // Transform links to LinkedPerson format
   const linkedPeople = useMemo<LinkedPerson[]>(() => {
+    console.log('Transforming links:', {
+      vehicleId,
+      linksCount: links.length,
+      links
+    });
+
     return links.map((link) => ({
       id: parseInt(link.id.slice(0, 8), 16), // Convert UUID to number
       name: link.entities.name,
@@ -87,7 +94,7 @@ export default function VehicleLinksScreen() {
         year: 'numeric',
       }),
     }));
-  }, [links]);
+  }, [links, vehicleId]);
 
   const [selectedPerson, setSelectedPerson] = useState<LinkedPerson | null>(null);
   const [showHistoryFor, setShowHistoryFor] = useState<{ [key: string]: boolean }>({});
@@ -183,6 +190,24 @@ export default function VehicleLinksScreen() {
             onSelectPerson={setSelectedPerson}
           />
         )}
+
+        {/* Loading State */}
+        {linksLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+            <Text style={styles.loadingText}>Carregando vínculos...</Text>
+          </View>
+        )}
+
+        {/* Empty State */}
+        {!linksLoading && linkedPeople.length === 0 && (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>Nenhum vínculo encontrado</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Este veículo ainda não possui vínculos cadastrados.
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -241,5 +266,31 @@ const styles = StyleSheet.create({
     color: Colors.background.primary,
     fontSize: 14,
     fontWeight: '500',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: Colors.text.tertiary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text.secondary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: Colors.text.tertiary,
+    textAlign: 'center',
   },
 });

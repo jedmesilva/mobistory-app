@@ -32,7 +32,7 @@ export function useVehicleLinks(vehicleId: string | undefined) {
         .from('vehicle_entity_links')
         .select(`
           *,
-          entities (
+          entities!vehicle_entity_links_entity_id_fkey (
             id,
             entity_type,
             name,
@@ -49,6 +49,12 @@ export function useVehicleLinks(vehicleId: string | undefined) {
         .order('created_at', { ascending: false })
 
       if (fetchError) throw fetchError
+
+      console.log('Vehicle Links fetched:', {
+        vehicleId,
+        count: data?.length || 0,
+        data
+      })
 
       setLinks(data as VehicleLinkWithDetails[])
     } catch (err) {
