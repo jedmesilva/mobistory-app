@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,18 +12,57 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { UserPlus, ArrowLeft } from 'lucide-react-native';
 import { LinkSection, LinkedPerson } from '../../components/vehicle-details';
 import { VehicleHeader } from '@/components/ui';
+import { useSelectedVehicle } from '@/contexts';
+import { useVehicle } from '@/hooks/vehicle';
 
 export default function VehicleLinksScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
-  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
-  const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
-  const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
-  const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');
-  const vehicleYear = Array.isArray(params.year) ? params.year[0] : (params.year || '2018');
-  const vehicleId = Array.isArray(params.id) ? params.id[0] : (params.id || '1');
+  // Get selected vehicle from context or params
+  const { selectedVehicleId: contextVehicleId, setSelectedVehicleId } = useSelectedVehicle();
+  const paramsId = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  // Update context once if navigated from params
+  React.useEffect(() => {
+    if (paramsId && paramsId !== contextVehicleId) {
+      setSelectedVehicleId(paramsId);
+    }
+  }, [paramsId]);
+
+  // Always use context as source of truth
+  const vehicleId = contextVehicleId;
+
+  // Fetch vehicle data
+  const { vehicle: vehicleData } = useVehicle(vehicleId || undefined);
+
+  // Transform vehicle data for display
+  const vehicle = useMemo(() => {
+    if (!vehicleData || !vehicleData.models || !vehicleData.brands) {
+      return {
+        id: '',
+        brand: '',
+        name: '',
+        model: '',
+        plate: '',
+        color: '',
+        year: 0,
+      };
+    }
+
+    const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
+    const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
+
+    return {
+      id: vehicleData.id,
+      brand: vehicleData.brands?.brand || '',
+      name: vehicleData.models?.model || '',
+      model: vehicleData.model_versions?.version || '',
+      plate: activePlate?.plate || '',
+      color: activeColor?.color || '',
+      year: vehicleData.model_year || 0,
+    };
+  }, [vehicleData]);
 
   const [linkedPeople] = useState<LinkedPerson[]>([
     {
@@ -97,8 +136,8 @@ export default function VehicleLinksScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <VehicleHeader
-        vehicleName={`${vehicleBrand} ${vehicleName} ${vehicleModel}`}
-        vehicleDetails={`${vehiclePlate} • ${vehicleYear} • ${vehicleColor}`}
+        vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
+        vehicleDetails={`${vehicle.plate} • ${vehicle.year} • ${vehicle.color}`}
         showChevron={false}
         showVehicleIcon={false}
         leftButton={
@@ -123,7 +162,7 @@ export default function VehicleLinksScreen() {
             style={styles.newLinkButton}
             onPress={() => router.push({
               pathname: '/add-link/select-action',
-              params: { vehicleId: vehicleId }
+              params: { vehicleId: vehicle.id }
             })}
           >
             <UserPlus size={16} color={Colors.background.primary} />
