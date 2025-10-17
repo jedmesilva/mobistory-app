@@ -57,6 +57,13 @@ export function useVehicle(vehicleId: string | undefined) {
               name,
               type
             )
+          ),
+          vehicle_images (
+            id,
+            image_url,
+            is_primary,
+            width,
+            height
           )
         `)
         .eq('id', id)

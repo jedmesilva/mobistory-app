@@ -7,6 +7,7 @@ import {
   Image as RNImage,
   Modal,
 } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import {
   Heart,
   MessageCircle,
@@ -35,6 +36,7 @@ interface Post {
   vehicleId?: string;
   vehicleName?: string;
   vehiclePlate?: string;
+  vehicleImageUrl?: string;
   date: string;
   caption?: string;
   imageUrl?: string;
@@ -146,7 +148,16 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
           activeOpacity={0.7}
         >
           <View style={styles.vehicleAvatar}>
-            <Car size={20} color={Colors.text.tertiary} />
+            {post.vehicleImageUrl ? (
+              <ExpoImage
+                source={{ uri: post.vehicleImageUrl }}
+                style={styles.vehicleAvatarImage}
+                contentFit="cover"
+                transition={200}
+              />
+            ) : (
+              <Car size={20} color={Colors.text.tertiary} />
+            )}
           </View>
           <View style={styles.vehicleInfo}>
             <Text style={styles.vehicleName}>{post.vehicleName || 'Honda Civic XLI'}</Text>
@@ -318,6 +329,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  vehicleAvatarImage: {
+    width: '100%',
+    height: '100%',
   },
   vehicleInfo: {
     flex: 1,

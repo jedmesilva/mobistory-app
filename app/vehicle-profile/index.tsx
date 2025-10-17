@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Animated,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
@@ -74,12 +75,14 @@ export default function VehicleProfileScreen() {
         year: 0,
         odometer: 0,
         fuelType: '',
+        imageUrl: null,
       };
     }
 
     const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
     const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
     const activeFuel = vehicleData.vehicle_fuels?.find(f => f.active) || vehicleData.vehicle_fuels?.[0];
+    const primaryImage = vehicleData.vehicle_images?.find(img => img.is_primary) || vehicleData.vehicle_images?.[0];
 
     return {
       id: vehicleData.id,
@@ -91,6 +94,7 @@ export default function VehicleProfileScreen() {
       year: vehicleData.model_year || 0,
       odometer: 0, // TODO: Get from vehicle_odometer_readings table
       fuelType: activeFuel?.fuels?.name || '',
+      imageUrl: primaryImage?.image_url || null,
     };
   }, [vehicleData]);
 
@@ -98,6 +102,7 @@ export default function VehicleProfileScreen() {
   const posts = useMemo(() => moments.map((moment) => {
     const activePlate = moment.vehicles.plates?.find(p => p.active) || moment.vehicles.plates?.[0];
     const vehicleName = `${moment.vehicles.brands.brand} ${moment.vehicles.models.model}`;
+    const primaryVehicleImage = moment.vehicles.vehicle_images?.find(img => img.is_primary) || moment.vehicles.vehicle_images?.[0];
 
     return {
       id: parseInt(moment.id.slice(0, 8), 16),
@@ -107,6 +112,7 @@ export default function VehicleProfileScreen() {
       vehicleId: moment.vehicles.id,
       vehicleName,
       vehiclePlate: activePlate?.plate || '',
+      vehicleImageUrl: primaryVehicleImage?.image_url,
       date: new Date(moment.created_at).toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: 'short',
@@ -170,7 +176,16 @@ export default function VehicleProfileScreen() {
       >
         {/* Imagem do Veículo */}
         <View style={styles.vehicleImageContainer}>
-          <Car size={64} color={Colors.text.secondary} />
+          {vehicle.imageUrl ? (
+            <Image
+              source={{ uri: vehicle.imageUrl }}
+              style={styles.vehicleImage}
+              contentFit="cover"
+              transition={300}
+            />
+          ) : (
+            <Car size={64} color={Colors.text.secondary} />
+          )}
         </View>
 
         {/* Informações e Botão Seguir */}
@@ -414,6 +429,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignSelf: 'center',
     maxWidth: '92%',
+    overflow: 'hidden',
+  },
+  vehicleImage: {
+    width: '100%',
+    height: '100%',
   },
   vehicleInfoSection: {
     paddingHorizontal: 16,

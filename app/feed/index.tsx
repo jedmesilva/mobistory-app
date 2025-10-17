@@ -54,6 +54,7 @@ export default function FeedScreen() {
   const posts: Post[] = useMemo(() => moments.map((moment) => {
     const activePlate = moment.vehicles.plates?.find(p => p.active) || moment.vehicles.plates?.[0];
     const vehicleName = `${moment.vehicles.brands.brand} ${moment.vehicles.models.model}`;
+    const primaryVehicleImage = moment.vehicles.vehicle_images?.find(img => img.is_primary) || moment.vehicles.vehicle_images?.[0];
 
     return {
       id: parseInt(moment.id.slice(0, 8), 16), // Convert UUID to number
@@ -63,6 +64,7 @@ export default function FeedScreen() {
       vehicleId: moment.vehicles.id,
       vehicleName,
       vehiclePlate: activePlate?.plate || '',
+      vehicleImageUrl: primaryVehicleImage?.image_url,
       date: new Date(moment.created_at).toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: 'short',

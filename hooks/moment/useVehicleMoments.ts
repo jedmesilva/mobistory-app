@@ -44,6 +44,13 @@ export function useVehicleMoments(vehicleId?: string) {
               plate,
               state,
               active
+            ),
+            vehicle_images (
+              id,
+              image_url,
+              is_primary,
+              width,
+              height
             )
           ),
           entities!moments_entity_id_fkey (
