@@ -44,17 +44,20 @@ export default function VehicleProfileScreen() {
   const navBottomTranslateY = useRef(new Animated.Value(0)).current;
   const navBottomOpacity = useRef(new Animated.Value(1)).current;
 
-  // Get selected vehicle from context or params (params takes priority for navigation from feed)
+  // Get selected vehicle from context
   const { selectedVehicleId: contextVehicleId, setSelectedVehicleId } = useSelectedVehicle();
   const paramsVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : params.vehicleId;
-  const selectedVehicleId = paramsVehicleId || contextVehicleId;
 
-  // Update context if navigated from params (e.g., from feed post)
+  // Update context once if navigated from params (e.g., from feed post)
+  // After the first update, always use context (so vehicle changes work properly)
   React.useEffect(() => {
     if (paramsVehicleId && paramsVehicleId !== contextVehicleId) {
       setSelectedVehicleId(paramsVehicleId);
     }
-  }, [paramsVehicleId, contextVehicleId, setSelectedVehicleId]);
+  }, [paramsVehicleId]); // Only depend on paramsVehicleId to run once
+
+  // Always use context as source of truth
+  const selectedVehicleId = contextVehicleId;
 
   // Fetch the vehicle data directly by ID (public access to any vehicle)
   const { vehicle: vehicleData, loading: vehiclesLoading, error: vehiclesError } = useVehicle(selectedVehicleId);
