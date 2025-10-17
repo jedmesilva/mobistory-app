@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Car, ChevronRight, MessageCircle } from 'lucide-react-native';
+import { Car, ChevronRight } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { SimpleHeader } from '@/components/ui';
 import { useConversations } from '@/hooks/conversation';
@@ -21,48 +21,25 @@ export default function ConversationsScreen() {
   const { entityId, loading: entityLoading } = useAuthEntity();
   const { conversations, loading: conversationsLoading } = useConversations(entityId);
 
-  // Transform conversations to display format
-  const conversationsList = useMemo(() => {
+  // Transform conversations to display format (mantendo estrutura original)
+  const vehicles = useMemo(() => {
     return conversations.map((conversation) => {
       const vehicle = conversation.vehicles;
       const activePlate = vehicle.plates?.find(p => p.active) || vehicle.plates?.[0];
       const activeColor = vehicle.colors?.find(c => c.active) || vehicle.colors?.[0];
 
       return {
-        id: conversation.id,
-        vehicleId: vehicle.id,
-        vehicleName: `${vehicle.brands.brand} ${vehicle.models.model}`,
-        vehicleModel: vehicle.model_versions?.version || '',
+        id: vehicle.id,
+        name: vehicle.models.model,
+        model: vehicle.model_versions?.version || '',
         plate: activePlate?.plate || '',
         year: vehicle.model_year || 0,
         color: activeColor?.color || '',
-        lastMessage: conversation.last_message_preview || 'Sem mensagens',
-        lastMessageTime: conversation.last_message_at
-          ? formatTime(conversation.last_message_at)
-          : '',
-        unreadCount: conversation.unread_count,
       };
     });
   }, [conversations]);
 
-  function formatTime(timestamp: string) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Agora';
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays === 1) return 'Ontem';
-    if (diffDays < 7) return `${diffDays}d`;
-
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-  }
-
-  const handleConversationPress = (vehicleId: string) => {
+  const handleVehiclePress = (vehicleId: string) => {
     router.push({
       pathname: '/conversations/[id]',
       params: {
@@ -92,66 +69,45 @@ export default function ConversationsScreen() {
       {/* Header */}
       <SimpleHeader title="Conversas" />
 
-      {/* Lista de Conversas */}
+      {/* Lista de Veículos */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {conversationsList.length === 0 ? (
+        {vehicles.length === 0 ? (
           /* Empty State */
           <View style={styles.emptyState}>
             <View style={styles.emptyStateIcon}>
-              <MessageCircle size={48} color={Colors.text.tertiary} />
+              <Car size={48} color={Colors.text.tertiary} />
             </View>
             <Text style={styles.emptyStateTitle}>Nenhuma conversa</Text>
             <Text style={styles.emptyStateSubtitle}>
-              Você ainda não tem conversas com veículos.{'\n'}
-              Acesse o perfil de um veículo e inicie uma conversa.
+              Você ainda não tem conversas com veículos
             </Text>
           </View>
         ) : (
-          /* Lista de Conversas */
-          <View style={styles.conversationsList}>
-            {conversationsList.map((conversation) => (
+          /* Lista de Veículos */
+          <View style={styles.vehiclesList}>
+            {vehicles.map((vehicle) => (
               <TouchableOpacity
-                key={conversation.id}
-                style={styles.conversationCard}
-                onPress={() => handleConversationPress(conversation.vehicleId)}
+                key={vehicle.id}
+                style={styles.vehicleCard}
+                onPress={() => handleVehiclePress(vehicle.id)}
                 activeOpacity={0.7}
               >
-                <View style={styles.conversationCardLeft}>
+                <View style={styles.vehicleCardLeft}>
                   <View style={styles.vehicleIcon}>
                     <Car size={24} color={Colors.text.secondary} />
                   </View>
 
-                  <View style={styles.conversationInfo}>
-                    <View style={styles.conversationHeader}>
-                      <Text style={styles.vehicleName} numberOfLines={1}>
-                        {conversation.vehicleName}
-                      </Text>
-                      {conversation.lastMessageTime && (
-                        <Text style={styles.lastMessageTime}>
-                          {conversation.lastMessageTime}
-                        </Text>
-                      )}
-                    </View>
-
-                    <View style={styles.conversationFooter}>
-                      <Text
-                        style={styles.lastMessage}
-                        numberOfLines={1}
-                      >
-                        {conversation.lastMessage}
-                      </Text>
-                      {conversation.unreadCount > 0 && (
-                        <View style={styles.unreadBadge}>
-                          <Text style={styles.unreadBadgeText}>
-                            {conversation.unreadCount}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
+                  <View style={styles.vehicleInfo}>
+                    <Text style={styles.vehicleName}>
+                      {vehicle.name} {vehicle.model}
+                    </Text>
+                    <Text style={styles.vehicleDetails}>
+                      {vehicle.plate} • {vehicle.year} • {vehicle.color}
+                    </Text>
                   </View>
                 </View>
 
@@ -216,20 +172,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
   },
-  conversationsList: {
+  vehiclesList: {
     padding: 16,
-    gap: 0,
+    gap: 12,
   },
-  conversationCard: {
+  vehicleCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
     backgroundColor: Colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border.DEFAULT,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border.DEFAULT,
   },
-  conversationCardLeft: {
+  vehicleCardLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
@@ -239,53 +196,21 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     backgroundColor: Colors.background.secondary,
-    borderRadius: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  conversationInfo: {
+  vehicleInfo: {
     flex: 1,
-    gap: 4,
-  },
-  conversationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
   },
   vehicleName: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.text.primary,
-    flex: 1,
+    marginBottom: 4,
   },
-  lastMessageTime: {
-    fontSize: 12,
-    color: Colors.text.tertiary,
-  },
-  conversationFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  lastMessage: {
+  vehicleDetails: {
     fontSize: 14,
     color: Colors.text.secondary,
-    flex: 1,
-  },
-  unreadBadge: {
-    minWidth: 20,
-    height: 20,
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-  },
-  unreadBadgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.background.primary,
   },
 });
