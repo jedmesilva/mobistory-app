@@ -1,4 +1,6 @@
 export { useVehicles } from './useVehicles'
 export { useVehicle } from './useVehicle'
 export { useVehiclesWithLinks } from './useVehiclesWithLinks'
+export { useVehicleLinks } from './useVehicleLinks'
 export type { VehicleWithLinksAndDetails } from './useVehiclesWithLinks'
+export type { VehicleLinkWithDetails } from './useVehicleLinks'

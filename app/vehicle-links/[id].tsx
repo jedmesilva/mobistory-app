@@ -13,7 +13,7 @@ import { UserPlus, ArrowLeft } from 'lucide-react-native';
 import { LinkSection, LinkedPerson } from '../../components/vehicle-details';
 import { VehicleHeader } from '@/components/ui';
 import { useSelectedVehicle } from '@/contexts';
-import { useVehicle } from '@/hooks/vehicle';
+import { useVehicle, useVehicleLinks } from '@/hooks/vehicle';
 
 export default function VehicleLinksScreen() {
   const params = useLocalSearchParams();
@@ -35,6 +35,9 @@ export default function VehicleLinksScreen() {
 
   // Fetch vehicle data
   const { vehicle: vehicleData } = useVehicle(vehicleId || undefined);
+
+  // Fetch vehicle links
+  const { links, loading: linksLoading } = useVehicleLinks(vehicleId || undefined);
 
   // Transform vehicle data for display
   const vehicle = useMemo(() => {
@@ -64,58 +67,27 @@ export default function VehicleLinksScreen() {
     };
   }, [vehicleData]);
 
-  const [linkedPeople] = useState<LinkedPerson[]>([
-    {
-      id: 1,
-      name: 'Maria Silva Santos',
-      email: 'maria.silva@email.com',
+  // Transform links to LinkedPerson format
+  const linkedPeople = useMemo<LinkedPerson[]>(() => {
+    return links.map((link) => ({
+      id: parseInt(link.id.slice(0, 8), 16), // Convert UUID to number
+      name: link.entities.name,
+      email: link.entities.email || '',
       avatar: null,
-      relationshipType: 'owner',
-      status: 'active',
-      linkedDate: '15 Jan 2023',
-      lastAccess: '19 Set 2025',
-    },
-    {
-      id: 2,
-      name: 'João Carlos Oliveira',
-      email: 'joao.carlos@email.com',
-      avatar: null,
-      relationshipType: 'authorized_driver',
-      status: 'active',
-      linkedDate: '10 Mar 2024',
-      lastAccess: '18 Set 2025',
-    },
-    {
-      id: 3,
-      name: 'Ana Paula Costa',
-      email: 'ana.costa@email.com',
-      avatar: null,
-      relationshipType: 'renter',
-      status: 'active',
-      linkedDate: '05 Set 2025',
-      lastAccess: '20 Set 2025',
-    },
-    {
-      id: 4,
-      name: 'Pedro Henrique Lima',
-      email: 'pedro.lima@email.com',
-      avatar: null,
-      relationshipType: 'authorized_driver',
-      status: 'former',
-      linkedDate: '20 Jun 2023',
-      lastAccess: '15 Fev 2024',
-    },
-    {
-      id: 5,
-      name: 'Carla Fernandes',
-      email: 'carla.fernandes@email.com',
-      avatar: null,
-      relationshipType: 'renter',
-      status: 'former',
-      linkedDate: '10 Dez 2023',
-      lastAccess: '28 Abr 2024',
-    },
-  ]);
+      relationshipType: link.relationship_type as 'owner' | 'co_owner' | 'renter' | 'authorized_driver',
+      status: link.status === 'terminated' ? 'former' : link.status as 'active' | 'suspended' | 'pending',
+      linkedDate: new Date(link.start_date).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
+      lastAccess: new Date(link.created_at).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
+    }));
+  }, [links]);
 
   const [selectedPerson, setSelectedPerson] = useState<LinkedPerson | null>(null);
   const [showHistoryFor, setShowHistoryFor] = useState<{ [key: string]: boolean }>({});
