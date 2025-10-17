@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowUp, Plus, Camera, Calendar, ArrowLeft } from 'lucide-react-native';
@@ -24,6 +25,8 @@ import { VehicleStatsCard } from '../../components/chat/vehicle-stats-card';
 import { InsightsCard } from '../../components/chat/insights-card';
 import { MoreOptionsModal } from '../../components/chat/more-options-modal';
 import { DashboardPhotoCard } from '../../components/chat/dashboard-photo-card';
+import { useConversation, useMessages } from '@/hooks/conversation';
+import { useAuthEntity } from '@/contexts';
 
 interface ChatMessage {
   id: number;
@@ -43,13 +46,19 @@ interface ChatMessage {
 export default function ChatScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const { entityId } = useAuthEntity();
 
-  const vehicleBrand = Array.isArray(params.brand) ? params.brand[0] : (params.brand || 'Honda');
-  const vehicleName = Array.isArray(params.name) ? params.name[0] : (params.name || 'Civic');
-  const vehicleModel = Array.isArray(params.model) ? params.model[0] : (params.model || 'XLI');
-  const vehiclePlate = Array.isArray(params.plate) ? params.plate[0] : (params.plate || 'ABC-1234');
-  const vehicleYear = Array.isArray(params.year) ? params.year[0] : (params.year || '2018');
-  const vehicleColor = Array.isArray(params.color) ? params.color[0] : (params.color || 'Prata');
+  // Get vehicle ID from params (passed as 'id')
+  const vehicleId = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  // Fetch or create conversation
+  const { conversation, loading: conversationLoading, error: conversationError } = useConversation({
+    vehicleId,
+    entityId: entityId || undefined,
+  });
+
+  // Fetch messages for this conversation
+  const { messages: dbMessages, loading: messagesLoading, sendMessage } = useMessages(conversation?.id);
 
   const formatDate = (dateStr: string) => {
     const today = new Date();
@@ -64,174 +73,48 @@ export default function ChatScreen() {
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   };
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      type: 'user',
-      message: 'Abasteci 42,5L no Shell Centro por R$ 255,30',
-      timestamp: '14:30',
-      date: '2025-09-20',
-      data: {
-        liters: 42.5,
-        price: 255.30,
-        station: 'Shell Centro',
-      },
-    },
-    {
-      id: 2,
-      type: 'bot',
-      message: 'Perfeito! Analisei seu abastecimento em detalhes. Seu consumo está excelente e você fez uma boa escolha de posto.',
-      timestamp: '14:31',
-      date: '2025-09-20',
-      card: {
-        type: 'fuel-analysis',
-        volume: '42,5L',
-        consumption: '12.7 km/L',
-        price: 'R$ 6.01',
-      },
-    },
-    {
-      id: 3,
-      type: 'bot',
-      message: 'Encontrei alguns postos próximos com bons preços:',
-      timestamp: '14:32',
-      date: '2025-09-20',
-      card: {
-        type: 'price-comparison',
-        stations: [
-          { name: 'Shell Vila', distance: '2.1 km', price: 'R$ 5.85', trend: 'down', trendValue: '-0.16' },
-          { name: 'Petrobras Centro', distance: '1.5 km', price: 'R$ 6.15', trend: 'up', trendValue: '+0.14' },
-          { name: 'Ipiranga Norte', distance: '3.2 km', price: 'R$ 5.92', trend: 'down', trendValue: '-0.09' },
-        ],
-      },
-    },
-    {
-      id: 4,
-      type: 'user',
-      message: 'Foto do painel',
-      timestamp: '16:15',
-      date: '2025-09-19',
-      hasImage: true,
-    },
-    {
-      id: 5,
-      type: 'bot',
-      message: 'Identifiquei os dados da sua foto! Quilometragem atual é 44.690 km, com boa autonomia restante.',
-      timestamp: '16:15',
-      date: '2025-09-19',
-      card: {
-        type: 'dashboard-photo',
-        kilometers: '44.690 km',
-        stats: [
-          { label: '380 km desde último abastecimento', value: '' },
-          { label: 'Autonomia', value: '~160 km restantes' },
-          { label: 'Próximo abastecimento', value: 'em 2 dias' },
-        ],
-      },
-    },
-    {
-      id: 6,
-      type: 'user',
-      message: 'E qual foi a tendência de consumo nos últimos meses?',
-      timestamp: '10:33',
-      date: '2025-09-19',
-    },
-    {
-      id: 7,
-      type: 'bot',
-      message: 'Aqui está a tendência de consumo do seu veículo:',
-      timestamp: '10:33',
-      date: '2025-09-19',
-      card: {
-        type: 'consumption-trends',
-        data: [
-          { month: 'Jan', value: 11.8, percentage: 94 },
-          { month: 'Fev', value: 12.2, percentage: 97 },
-          { month: 'Mar', value: 13.1, percentage: 100 },
-          { month: 'Abr', value: 12.5, percentage: 95 },
-          { month: 'Mai', value: 12.8, percentage: 98 },
-        ],
-      },
-    },
-    {
-      id: 8,
-      type: 'bot',
-      message: 'Aqui estão algumas estatísticas gerais do seu veículo:',
-      timestamp: '10:34',
-      date: '2025-09-19',
-      card: {
-        type: 'vehicle-stats',
-        stats: [
-          { label: 'Total de KM rodados', value: '45,234 km' },
-          { label: 'Consumo médio geral', value: '12.5 km/L' },
-          { label: 'Total gasto em combustível', value: 'R$ 8,456.00' },
-          { label: 'Manutenções realizadas', value: '8 serviços' },
-        ],
-      },
-    },
-    {
-      id: 9,
-      type: 'bot',
-      message: '',
-      timestamp: '10:35',
-      date: '2025-09-18',
-      card: {
-        type: 'insight-alert',
-        title: 'Atenção: Revisão Próxima',
-        description: 'Seu veículo está se aproximando dos 50.000 km. Recomendamos agendar uma revisão completa.',
-      },
-    },
-    {
-      id: 10,
-      type: 'bot',
-      message: 'Alerta de preços na sua região! Encontrei oportunidades de economia.',
-      timestamp: '19:20',
-      date: '2025-09-18',
-      card: {
-        type: 'insights-list',
-        isAlert: true,
-        insights: [
-          { text: 'Gasolina subiu R$ 0,15 centavos' },
-          { text: 'Shell Vila: R$ 5,85 (mais barato)' },
-          { text: 'Melhor horário: terça de manhã' },
-        ],
-      },
-    },
-    {
-      id: 11,
-      type: 'bot',
-      message: '',
-      timestamp: '10:36',
-      date: '2025-09-17',
-      card: {
-        type: 'insight-info',
-        title: 'Dica de Economia',
-        description: 'Você pode economizar até R$ 45,00 por mês abastecendo no Posto Ipiranga que está a 1.2 km de você.',
-      },
-    },
-  ]);
-
   const [inputText, setInputText] = useState('');
   const [moreOptionsVisible, setMoreOptionsVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const handleSend = () => {
-    if (inputText.trim()) {
-      const now = new Date();
-      const newMessage: ChatMessage = {
-        id: messages.length + 1,
-        type: 'user',
-        message: inputText.trim(),
-        timestamp: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        date: now.toISOString().split('T')[0],
-      };
-      setMessages([...messages, newMessage]);
-      setInputText('');
-      Keyboard.dismiss();
+  // Transform database messages to ChatMessage format
+  const messages: ChatMessage[] = dbMessages.map((msg, index) => {
+    const isBot = msg.sender.entity_type === 'ai_assistant';
+    const timestamp = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const date = new Date(msg.created_at).toISOString().split('T')[0];
 
+    return {
+      id: index + 1,
+      type: isBot ? 'bot' : 'user',
+      message: msg.content || '',
+      timestamp,
+      date,
+    };
+  });
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messages.length > 0) {
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
+    }
+  }, [messages.length]);
+
+  const handleSend = async () => {
+    if (inputText.trim() && conversation && entityId) {
+      try {
+        await sendMessage({
+          conversationId: conversation.id,
+          senderId: entityId,
+          content: inputText.trim(),
+          messageType: 'text',
+        });
+        setInputText('');
+        Keyboard.dismiss();
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
     }
   };
 
@@ -287,6 +170,41 @@ export default function ChatScreen() {
     }
   };
 
+  // Loading state
+  if (conversationLoading || messagesLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <StatusBar style="dark" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+          <Text style={styles.loadingText}>Carregando conversa...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Error state
+  if (conversationError || !conversation) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <StatusBar style="dark" />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.errorText}>Erro ao carregar conversa</Text>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButtonError}>
+            <Text style={styles.backButtonErrorText}>Voltar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Extract vehicle info from conversation
+  const vehicle = conversation.vehicles;
+  const activePlate = vehicle.plates?.find(p => p.active) || vehicle.plates?.[0];
+  const activeColor = vehicle.colors?.find(c => c.active) || vehicle.colors?.[0];
+  const vehicleName = `${vehicle.brands.brand} ${vehicle.models.model}`;
+  const vehicleDetails = `${activePlate?.plate || ''} • ${vehicle.model_year || ''}${activeColor?.color ? ` • ${activeColor.color}` : ''}`;
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <StatusBar style="dark" />
@@ -299,9 +217,12 @@ export default function ChatScreen() {
         {/* Header */}
         <SafeAreaView edges={['top']}>
           <VehicleHeader
-            vehicleName={`${vehicleBrand} ${vehicleName} ${vehicleModel}`}
-            vehicleDetails={`${vehiclePlate} • ${vehicleYear} • ${vehicleColor}`}
-            onVehiclePress={() => router.push(`/vehicle-profile`)}
+            vehicleName={vehicleName}
+            vehicleDetails={vehicleDetails}
+            onVehiclePress={() => router.push({
+              pathname: '/vehicle-profile',
+              params: { vehicleId: vehicle.id }
+            })}
             showChevron={false}
             showVehicleIcon={false}
             leftButton={
@@ -509,5 +430,34 @@ const styles = StyleSheet.create({
   },
   sendButtonActive: {
     backgroundColor: Colors.primary.DEFAULT,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: Colors.text.tertiary,
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.error.text,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  backButtonError: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: Colors.primary.DEFAULT,
+    borderRadius: 12,
+  },
+  backButtonErrorText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.background.primary,
   },
 });
