@@ -46,12 +46,12 @@ interface ChatMessage {
 export default function ChatScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
-  const { entityId } = useAuthEntity();
+  const { entityId, loading: entityLoading } = useAuthEntity();
 
   // Get vehicle ID from params (passed as 'id')
   const vehicleId = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  // Fetch or create conversation
+  // Fetch or create conversation (only when entityId is available)
   const { conversation, loading: conversationLoading, error: conversationError } = useConversation({
     vehicleId,
     entityId: entityId || undefined,
@@ -171,13 +171,15 @@ export default function ChatScreen() {
   };
 
   // Loading state
-  if (conversationLoading || messagesLoading) {
+  if (entityLoading || conversationLoading || messagesLoading) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <StatusBar style="dark" />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
-          <Text style={styles.loadingText}>Carregando conversa...</Text>
+          <Text style={styles.loadingText}>
+            {entityLoading ? 'Carregando usuário...' : 'Carregando conversa...'}
+          </Text>
         </View>
       </SafeAreaView>
     );
