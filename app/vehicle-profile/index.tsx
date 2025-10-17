@@ -10,7 +10,7 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
   MessageCircle,
   FileText,
@@ -33,6 +33,7 @@ import { useVehicleMoments } from '@/hooks/moment';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ vehicleId?: string }>();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('profile');
   const [following, setFollowing] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -47,8 +48,11 @@ export default function VehicleProfileScreen() {
 
   const { vehicleLinks, loading: vehiclesLoading } = useEntityVehicles(TEMP_ENTITY_ID);
 
-  // Get the first vehicle (or could be selected by user)
-  const vehicleLink = vehicleLinks[0];
+  // Get the selected vehicle by ID from params, or use the first vehicle
+  const selectedVehicleId = params.vehicleId;
+  const vehicleLink = selectedVehicleId
+    ? vehicleLinks.find(link => link.vehicles.id === selectedVehicleId) || vehicleLinks[0]
+    : vehicleLinks[0];
   const vehicleData = vehicleLink?.vehicles;
 
   // Fetch moments for this vehicle
@@ -130,7 +134,10 @@ export default function VehicleProfileScreen() {
         <VehicleHeader
           vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
           vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
-          onVehiclePress={() => router.push('/vehicles-link-list')}
+          onVehiclePress={() => router.push({
+            pathname: '/vehicles-link-list',
+            params: { from: 'vehicle-profile' }
+          })}
           rightButton={
             <TouchableOpacity
               style={styles.headerMessageButton}

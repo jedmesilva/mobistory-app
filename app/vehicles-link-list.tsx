@@ -1,5 +1,5 @@
 import { Colors } from '@/constants';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ArrowLeft, Plus, Search } from 'lucide-react-native';
 import React, { useRef, useState, useMemo } from 'react';
@@ -18,6 +18,7 @@ import { useVehiclesWithLinks } from '@/hooks/vehicle';
 
 export default function Index() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ from?: string }>();
   const scrollY = useRef(new Animated.Value(0)).current;
   const { vehicles: vehiclesData, loading, error } = useVehiclesWithLinks();
 
@@ -110,21 +111,43 @@ export default function Index() {
     }));
   };
 
-  // Função para navegar para o perfil do veículo ou nova atualização
+  // Função para navegar de volta com o veículo selecionado
   const navigateToVehicleProfile = (vehicle: any) => {
-    // Verifica se veio da tela de nova atualização
-    router.push({
-      pathname: '/new-update',
-      params: {
-        vehicleId: vehicle.id,
-        brand: vehicle.brand,
-        name: vehicle.name,
-        model: vehicle.model,
-        plate: vehicle.plate,
-        color: vehicle.color,
-        year: vehicle.year,
-      }
-    });
+    // Determina para onde navegar baseado no parâmetro 'from'
+    const fromRoute = params.from || 'vehicle-profile';
+
+    if (fromRoute === 'new-update') {
+      // Volta para tela de nova atualização com o veículo selecionado
+      router.push({
+        pathname: '/new-update',
+        params: {
+          vehicleId: vehicle.id,
+          brand: vehicle.brand,
+          name: vehicle.name,
+          model: vehicle.model,
+          plate: vehicle.plate,
+          color: vehicle.color,
+          year: vehicle.year,
+        }
+      });
+    } else if (fromRoute === 'vehicle-profile') {
+      // Volta para tela de perfil do veículo com o veículo selecionado
+      router.push({
+        pathname: '/vehicle-profile',
+        params: {
+          vehicleId: vehicle.id,
+          brand: vehicle.brand,
+          name: vehicle.name,
+          model: vehicle.model,
+          plate: vehicle.plate,
+          color: vehicle.color,
+          year: vehicle.year,
+        }
+      });
+    } else if (fromRoute === 'feed') {
+      // Feed não precisa selecionar veículo, apenas volta
+      router.back();
+    }
   };
 
   const headerBorderWidth = scrollY.interpolate({

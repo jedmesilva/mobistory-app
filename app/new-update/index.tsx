@@ -126,7 +126,10 @@ export default function NewUpdateScreen() {
         <VehicleHeader
           vehicleName={`${selectedVehicleData.brand} ${selectedVehicleData.name} ${selectedVehicleData.model}`}
           vehicleDetails={`${selectedVehicleData.plate} • ${selectedVehicleData.year} • ${selectedVehicleData.color}`}
-          onVehiclePress={() => router.push('/vehicles-link-list')}
+          onVehiclePress={() => router.push({
+            pathname: '/vehicles-link-list',
+            params: { from: 'new-update' }
+          })}
           showChevron={true}
           showVehicleIcon={false}
           leftButton={
