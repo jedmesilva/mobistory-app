@@ -31,8 +31,11 @@ interface Post {
   type: 'image' | 'video';
   userName: string;
   userRole: string;
+  vehicleName?: string;
+  vehiclePlate?: string;
   date: string;
   caption?: string;
+  imageUrl?: string;
   likes: number;
   comments: number;
   following: boolean;
@@ -82,7 +85,15 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
     <View style={styles.container}>
       {/* Imagem/Vídeo */}
       <View style={styles.mediaContainer}>
-        <Image size={48} color={Colors.text.tertiary} style={styles.mediaPlaceholder} />
+        {post.imageUrl ? (
+          <RNImage
+            source={{ uri: post.imageUrl }}
+            style={styles.mediaImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <Image size={48} color={Colors.text.tertiary} style={styles.mediaPlaceholder} />
+        )}
         <View style={styles.mediaTypeBadge}>
           <Text style={styles.mediaTypeText}>
             {post.type === 'image' ? 'Imagem' : 'Vídeo'}
@@ -120,8 +131,8 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
             <Car size={20} color={Colors.text.tertiary} />
           </View>
           <View style={styles.vehicleInfo}>
-            <Text style={styles.vehicleName}>Honda Civic XLI</Text>
-            <Text style={styles.vehicleDetails}>ABC-1234 • Prata</Text>
+            <Text style={styles.vehicleName}>{post.vehicleName || 'Honda Civic XLI'}</Text>
+            <Text style={styles.vehicleDetails}>{post.vehiclePlate || 'ABC-1234'} • Prata</Text>
           </View>
         </View>
 
@@ -221,6 +232,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+  },
+  mediaImage: {
+    width: '100%',
+    height: '100%',
   },
   mediaPlaceholder: {
     opacity: 0.3,

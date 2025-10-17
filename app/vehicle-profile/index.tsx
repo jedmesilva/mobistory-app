@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   View,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -26,6 +28,8 @@ import { Colors } from '@/constants';
 import { FeedNavBottom, PostCard } from '@/components/feed';
 import { OdometerIcon } from '@/components/icons';
 import { VehicleHeader } from '@/components/ui';
+import { useEntityVehicles } from '@/hooks/entity';
+import { useVehicleMoments } from '@/hooks/moment';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
@@ -33,67 +37,82 @@ export default function VehicleProfileScreen() {
   const [following, setFollowing] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
 
-  // Mock data - em produção virá da API ou do estado global
-  const vehicle = {
-    id: 1,
-    name: 'Civic',
-    brand: 'Honda',
-    model: 'XLI',
-    plate: 'ABC-1234',
-    color: 'Prata',
-    year: 2019,
-    odometer: 45230,
-    fuelType: 'Gasolina',
-  };
+  // Static animated values (no animation in this screen)
+  const navBottomTranslateY = useRef(new Animated.Value(0)).current;
+  const navBottomOpacity = useRef(new Animated.Value(1)).current;
 
-  const posts = [
-    {
-      id: 1,
-      type: 'image' as const,
-      userName: 'Carlos Silva',
-      userRole: 'Condutor',
-      date: '30 Set, 14:30',
-      caption: 'Manhã de domingo com meu querido Civic! 🌅 Rodão impecável!',
-      likes: 24,
-      comments: 3,
+  // TODO: Get entity_id from auth session
+  // For now, using the first entity from seed data
+  const TEMP_ENTITY_ID = '123e4567-e89b-12d3-a456-426614174000';
+
+  const { vehicleLinks, loading: vehiclesLoading } = useEntityVehicles(TEMP_ENTITY_ID);
+
+  // Get the first vehicle (or could be selected by user)
+  const vehicleLink = vehicleLinks[0];
+  const vehicleData = vehicleLink?.vehicles;
+
+  // Fetch moments for this vehicle
+  const { moments, loading: momentsLoading } = useVehicleMoments(vehicleData?.id);
+
+  // Transform vehicle data for display
+  const vehicle = useMemo(() => {
+    if (!vehicleData) {
+      return {
+        id: '',
+        name: '',
+        brand: '',
+        model: '',
+        plate: '',
+        color: '',
+        year: 0,
+        odometer: 0,
+        fuelType: '',
+      };
+    }
+
+    const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
+    const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
+    const activeFuel = vehicleData.vehicle_fuels?.find(f => f.active) || vehicleData.vehicle_fuels?.[0];
+
+    return {
+      id: vehicleData.id,
+      name: vehicleData.models.model,
+      brand: vehicleData.brands.brand,
+      model: vehicleData.model_versions?.version || '',
+      plate: activePlate?.plate || '',
+      color: activeColor?.color || '',
+      year: vehicleData.model_year || 0,
+      odometer: 0, // TODO: Get from vehicle_odometer_readings table
+      fuelType: activeFuel?.fuels.name || '',
+    };
+  }, [vehicleData]);
+
+  // Transform moments data to posts format
+  const posts = useMemo(() => moments.map((moment) => {
+    const activePlate = moment.vehicles.plates?.find(p => p.active) || moment.vehicles.plates?.[0];
+    const vehicleName = `${moment.vehicles.brands.brand} ${moment.vehicles.models.model}`;
+
+    return {
+      id: parseInt(moment.id.slice(0, 8), 16),
+      type: moment.type as 'image' | 'video',
+      userName: moment.entities.name,
+      userRole: 'Condutor', // TODO: Get from relationship type
+      vehicleName,
+      vehiclePlate: activePlate?.plate || '',
+      date: new Date(moment.created_at).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      caption: moment.caption || '',
+      imageUrl: moment.moment_images[0]?.image_url,
+      likes: moment.moment_reactions.length,
+      comments: moment.moment_comments.length,
       following: false,
-      tags: [
-        { icon: 'odometer' as const, label: 'Quilometragem', value: '45.230 km' },
-        { icon: 'fuel' as const, label: 'Combustível', value: '60%' },
-        { icon: 'userCheck' as const, label: 'Vínculo', value: 'Condutor' },
-      ],
-    },
-    {
-      id: 2,
-      type: 'image' as const,
-      userName: 'Ana Costa',
-      userRole: 'Proprietária',
-      date: '28 Set, 10:15',
-      caption: 'Dia de manutenção preventiva! Carro sempre caprichado.',
-      likes: 18,
-      comments: 5,
-      following: true,
-      tags: [
-        { icon: 'odometer' as const, label: 'Quilometragem', value: '44.690 km' },
-        { icon: 'fuel' as const, label: 'Combustível', value: '45%' },
-      ],
-    },
-    {
-      id: 3,
-      type: 'video' as const,
-      userName: 'João Pereira',
-      userRole: 'Proprietário',
-      date: '25 Set, 18:40',
-      caption: 'Abasteci no caminho pro trabalho. Consumo está ótimo!',
-      likes: 12,
-      comments: 2,
-      following: false,
-      tags: [
-        { icon: 'odometer' as const, label: 'Quilometragem', value: '44.120 km' },
-        { icon: 'fuel' as const, label: 'Combustível', value: 'Completo' },
-      ],
-    },
-  ];
+      tags: moment.tags as any || [],
+    };
+  }), [moments]);
 
   const handleTabChange = (tab: 'home' | 'profile') => {
     setActiveTab(tab);
@@ -308,23 +327,44 @@ export default function VehicleProfileScreen() {
         <View style={styles.momentsSection}>
           <View style={styles.momentsSectionHeader}>
             <Text style={styles.momentsSectionTitle}>Momentos do Veículo</Text>
-            <Text style={styles.momentsSectionSubtitle}>
-              {posts.length} publicações
-            </Text>
+            {!momentsLoading && (
+              <Text style={styles.momentsSectionSubtitle}>
+                {posts.length} publicações
+              </Text>
+            )}
           </View>
 
+          {/* Loading State */}
+          {momentsLoading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+              <Text style={styles.loadingText}>Carregando momentos...</Text>
+            </View>
+          )}
+
           {/* Lista de Momentos */}
-          <View style={styles.momentsList}>
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </View>
+          {!momentsLoading && posts.length > 0 && (
+            <View style={styles.momentsList}>
+              {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </View>
+          )}
+
+          {/* Empty State */}
+          {!momentsLoading && posts.length === 0 && (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>Nenhum momento publicado ainda.</Text>
+              <Text style={styles.emptyStateSubtext}>Seja o primeiro a compartilhar!</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
 
       {/* Nav Bottom */}
       <FeedNavBottom
-        translateY={0}
+        translateY={navBottomTranslateY}
+        opacity={navBottomOpacity}
         activeTab={activeTab}
         onTabChange={handleTabChange}
       />
@@ -524,5 +564,32 @@ const styles = StyleSheet.create({
   },
   momentsList: {
     gap: 0,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 16,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: Colors.text.tertiary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 40,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.text.secondary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: Colors.text.tertiary,
+    textAlign: 'center',
   },
 });
