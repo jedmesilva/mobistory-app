@@ -68,6 +68,11 @@ export function useMoments() {
               state,
               active
             ),
+            colors (
+              id,
+              color,
+              active
+            ),
             vehicle_images (
               id,
               image_url,

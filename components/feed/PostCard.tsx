@@ -36,6 +36,7 @@ interface Post {
   vehicleId?: string;
   vehicleName?: string;
   vehiclePlate?: string;
+  vehicleColor?: string;
   vehicleImageUrl?: string;
   date: string;
   caption?: string;
@@ -161,7 +162,9 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
           </View>
           <View style={styles.vehicleInfo}>
             <Text style={styles.vehicleName}>{post.vehicleName || 'Honda Civic XLI'}</Text>
-            <Text style={styles.vehicleDetails}>{post.vehiclePlate || 'ABC-1234'} • Prata</Text>
+            <Text style={styles.vehicleDetails}>
+              {post.vehiclePlate || 'ABC-1234'}{post.vehicleColor ? ` • ${post.vehicleColor}` : ''}
+            </Text>
           </View>
         </TouchableOpacity>
 
