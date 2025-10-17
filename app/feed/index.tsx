@@ -60,6 +60,7 @@ export default function FeedScreen() {
       type: moment.type as 'image' | 'video',
       userName: moment.entities.name,
       userRole: 'Condutor', // TODO: Get from relationship type
+      vehicleId: moment.vehicles.id,
       vehicleName,
       vehiclePlate: activePlate?.plate || '',
       date: new Date(moment.created_at).toLocaleDateString('pt-BR', {

@@ -28,12 +28,12 @@ import { Colors } from '@/constants';
 import { FeedNavBottom, PostCard } from '@/components/feed';
 import { OdometerIcon } from '@/components/icons';
 import { VehicleHeader } from '@/components/ui';
-import { useEntityVehicles } from '@/hooks/entity';
+import { useVehicle } from '@/hooks/vehicle';
 import { useVehicleMoments } from '@/hooks/moment';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ vehicleId?: string }>();
+  const params = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('profile');
   const [following, setFollowing] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -42,25 +42,18 @@ export default function VehicleProfileScreen() {
   const navBottomTranslateY = useRef(new Animated.Value(0)).current;
   const navBottomOpacity = useRef(new Animated.Value(1)).current;
 
-  // TODO: Get entity_id from auth session
-  // For now, using the first entity from seed data
-  const TEMP_ENTITY_ID = '123e4567-e89b-12d3-a456-426614174000';
+  // Get the vehicle ID from params
+  const selectedVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : params.vehicleId;
 
-  const { vehicleLinks, loading: vehiclesLoading } = useEntityVehicles(TEMP_ENTITY_ID);
-
-  // Get the selected vehicle by ID from params, or use the first vehicle
-  const selectedVehicleId = params.vehicleId;
-  const vehicleLink = selectedVehicleId
-    ? vehicleLinks.find(link => link.vehicles.id === selectedVehicleId) || vehicleLinks[0]
-    : vehicleLinks[0];
-  const vehicleData = vehicleLink?.vehicles;
+  // Fetch the vehicle data directly by ID (public access to any vehicle)
+  const { vehicle: vehicleData, loading: vehiclesLoading, error: vehiclesError } = useVehicle(selectedVehicleId);
 
   // Fetch moments for this vehicle
   const { moments, loading: momentsLoading } = useVehicleMoments(vehicleData?.id);
 
   // Transform vehicle data for display
   const vehicle = useMemo(() => {
-    if (!vehicleData) {
+    if (!vehicleData || !vehicleData.models || !vehicleData.brands) {
       return {
         id: '',
         name: '',
@@ -80,14 +73,14 @@ export default function VehicleProfileScreen() {
 
     return {
       id: vehicleData.id,
-      name: vehicleData.models.model,
-      brand: vehicleData.brands.brand,
+      name: vehicleData.models?.model || '',
+      brand: vehicleData.brands?.brand || '',
       model: vehicleData.model_versions?.version || '',
       plate: activePlate?.plate || '',
       color: activeColor?.color || '',
       year: vehicleData.model_year || 0,
       odometer: 0, // TODO: Get from vehicle_odometer_readings table
-      fuelType: activeFuel?.fuels.name || '',
+      fuelType: activeFuel?.fuels?.name || '',
     };
   }, [vehicleData]);
 
@@ -101,6 +94,7 @@ export default function VehicleProfileScreen() {
       type: moment.type as 'image' | 'video',
       userName: moment.entities.name,
       userRole: 'Condutor', // TODO: Get from relationship type
+      vehicleId: moment.vehicles.id,
       vehicleName,
       vehiclePlate: activePlate?.plate || '',
       date: new Date(moment.created_at).toLocaleDateString('pt-BR', {

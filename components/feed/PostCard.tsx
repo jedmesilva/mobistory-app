@@ -17,6 +17,7 @@ import {
   UserCheck,
   Image,
 } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { Colors } from '@/constants';
 import { OdometerIcon } from '../icons';
 
@@ -31,6 +32,7 @@ interface Post {
   type: 'image' | 'video';
   userName: string;
   userRole: string;
+  vehicleId?: string;
   vehicleName?: string;
   vehiclePlate?: string;
   date: string;
@@ -47,6 +49,7 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
+  const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes || 0);
@@ -64,6 +67,17 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
 
   const handleFollow = () => {
     setFollowing(!following);
+  };
+
+  const handleVehiclePress = () => {
+    if (post.vehicleId) {
+      router.push({
+        pathname: '/vehicle-profile',
+        params: {
+          vehicleId: post.vehicleId,
+        }
+      });
+    }
   };
 
   const renderIcon = (iconType: string, size: number = 16) => {
@@ -126,7 +140,11 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
 
       {/* Cabeçalho com Veículo */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        <TouchableOpacity
+          style={styles.headerLeft}
+          onPress={handleVehiclePress}
+          activeOpacity={0.7}
+        >
           <View style={styles.vehicleAvatar}>
             <Car size={20} color={Colors.text.tertiary} />
           </View>
@@ -134,7 +152,7 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
             <Text style={styles.vehicleName}>{post.vehicleName || 'Honda Civic XLI'}</Text>
             <Text style={styles.vehicleDetails}>{post.vehiclePlate || 'ABC-1234'} • Prata</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={handleFollow} style={[
           styles.followButton,

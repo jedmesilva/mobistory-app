@@ -18,7 +18,7 @@ import { useVehiclesWithLinks } from '@/hooks/vehicle';
 
 export default function Index() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ from?: string }>();
+  const params = useLocalSearchParams();
   const scrollY = useRef(new Animated.Value(0)).current;
   const { vehicles: vehiclesData, loading, error } = useVehiclesWithLinks();
 
@@ -114,7 +114,7 @@ export default function Index() {
   // Função para navegar de volta com o veículo selecionado
   const navigateToVehicleProfile = (vehicle: any) => {
     // Determina para onde navegar baseado no parâmetro 'from'
-    const fromRoute = params.from || 'vehicle-profile';
+    const fromRoute = (Array.isArray(params.from) ? params.from[0] : params.from) || 'vehicle-profile';
 
     if (fromRoute === 'new-update') {
       // Volta para tela de nova atualização com o veículo selecionado
