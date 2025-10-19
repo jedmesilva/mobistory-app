@@ -53,6 +53,7 @@ export default function FeedScreen() {
   // Transform moments data to posts format
   const posts: Post[] = useMemo(() => moments.map((moment) => {
     const activePlate = moment.vehicles.plates?.find(p => p.active) || moment.vehicles.plates?.[0];
+    const activeColor = moment.vehicles.colors?.find(c => c.active) || moment.vehicles.colors?.[0];
     const vehicleName = `${moment.vehicles.brands.brand} ${moment.vehicles.models.model}`;
     const primaryVehicleImage = moment.vehicles.vehicle_images?.find(img => img.is_primary) || moment.vehicles.vehicle_images?.[0];
 
@@ -64,6 +65,7 @@ export default function FeedScreen() {
       vehicleId: moment.vehicles.id,
       vehicleName,
       vehiclePlate: activePlate?.plate || '',
+      vehicleColor: activeColor?.color || '',
       vehicleImageUrl: primaryVehicleImage?.image_url,
       date: new Date(moment.created_at).toLocaleDateString('pt-BR', {
         day: '2-digit',
