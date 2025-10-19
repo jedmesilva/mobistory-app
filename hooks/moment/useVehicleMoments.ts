@@ -45,6 +45,11 @@ export function useVehicleMoments(vehicleId?: string) {
               state,
               active
             ),
+            colors (
+              id,
+              color,
+              active
+            ),
             vehicle_images (
               id,
               image_url,
