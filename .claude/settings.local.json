@@ -29,7 +29,8 @@
       "Bash(del componentsvehicle-profileMomentCard.tsx)",
       "Bash(npx supabase:*)",
       "Bash(export SUPABASE_ACCESS_TOKEN=sbp_173276a4b59b2bd188373a98b6747f577fb68737)",
-      "Bash(if not exist \"contexts\" mkdir contexts)"
+      "Bash(if not exist \"contexts\" mkdir contexts)",
+      "Bash(npx kill-port:*)"
     ],
     "deny": [],
     "ask": []
