@@ -10,10 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Image as ExpoImage } from 'expo-image';
 import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
 import {
   Camera,
   Image,
@@ -29,16 +27,15 @@ export default function QuickCaptureScreen() {
   const cameraRef = useRef<CameraView>(null);
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
+  const recordingStartTime = useRef<number | null>(null);
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const [facing, setFacing] = useState<CameraType>('back');
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPressed, setIsPressed] = useState(false);
-  const [lastPhoto, setLastPhoto] = useState<string | null>(null);
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -53,46 +50,6 @@ export default function QuickCaptureScreen() {
       }
     };
   }, []);
-
-  // Fetch last photo from gallery
-  useEffect(() => {
-    const fetchLastPhoto = async () => {
-      if (mediaLibraryPermission?.granted) {
-        try {
-          const albums = await MediaLibrary.getAlbumsAsync();
-          const recentAlbum = albums.find(album => album.title === 'Recent' || album.title === 'Recents');
-
-          if (recentAlbum) {
-            const assets = await MediaLibrary.getAssetsAsync({
-              album: recentAlbum,
-              first: 1,
-              mediaType: 'photo',
-              sortBy: 'creationTime',
-            });
-
-            if (assets.assets.length > 0) {
-              setLastPhoto(assets.assets[0].uri);
-            }
-          } else {
-            // Fallback: get recent assets without album
-            const assets = await MediaLibrary.getAssetsAsync({
-              first: 1,
-              mediaType: 'photo',
-              sortBy: 'creationTime',
-            });
-
-            if (assets.assets.length > 0) {
-              setLastPhoto(assets.assets[0].uri);
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching last photo:', error);
-        }
-      }
-    };
-
-    fetchLastPhoto();
-  }, [mediaLibraryPermission?.granted]);
 
   if (!cameraPermission || !microphonePermission) {
     // Permissions are still loading
@@ -188,12 +145,20 @@ export default function QuickCaptureScreen() {
     }
 
     if (isRecording) {
-      // Only stop recording if it's been at least 1 second
-      if (recordingTime >= 1) {
+      // Calculate actual recording time
+      const actualRecordingTime = recordingStartTime.current
+        ? (Date.now() - recordingStartTime.current) / 1000
+        : 0;
+
+      // Minimum 2 seconds for reliable video recording
+      const MIN_RECORDING_TIME = 2;
+
+      if (actualRecordingTime >= MIN_RECORDING_TIME) {
         stopRecording();
       } else {
-        // Wait until at least 1 second has passed
-        const waitTime = (1 - recordingTime) * 1000;
+        // Wait until at least 2 seconds has passed
+        const waitTime = (MIN_RECORDING_TIME - actualRecordingTime) * 1000;
+        console.log(`Waiting ${waitTime}ms before stopping recording...`);
         setTimeout(() => {
           stopRecording();
         }, waitTime);
@@ -208,6 +173,7 @@ export default function QuickCaptureScreen() {
     try {
       setIsRecording(true);
       setRecordingTime(0);
+      recordingStartTime.current = Date.now();
       console.log('Starting video recording...');
 
       // Start recording interval
@@ -223,24 +189,38 @@ export default function QuickCaptureScreen() {
     } catch (error) {
       console.error('Error recording video:', error);
       setIsRecording(false);
+      recordingStartTime.current = null;
+      if (recordingInterval.current) {
+        clearInterval(recordingInterval.current);
+      }
     }
   };
 
   const stopRecording = async () => {
     try {
-      console.log(`Stopping recording: ${recordingTime} seconds`);
+      const actualRecordingTime = recordingStartTime.current
+        ? (Date.now() - recordingStartTime.current) / 1000
+        : 0;
+      console.log(`Stopping recording: ${actualRecordingTime.toFixed(2)} seconds`);
 
       if (cameraRef.current) {
         await cameraRef.current.stopRecording();
       }
 
       setIsRecording(false);
+      recordingStartTime.current = null;
       if (recordingInterval.current) {
         clearInterval(recordingInterval.current);
       }
       setRecordingTime(0);
     } catch (error) {
       console.error('Error stopping recording:', error);
+      setIsRecording(false);
+      recordingStartTime.current = null;
+      if (recordingInterval.current) {
+        clearInterval(recordingInterval.current);
+      }
+      setRecordingTime(0);
     }
   };
 
@@ -262,14 +242,6 @@ export default function QuickCaptureScreen() {
 
   const handleGallery = async () => {
     try {
-      // Request permission if not granted
-      if (!mediaLibraryPermission?.granted) {
-        const permission = await requestMediaLibraryPermission();
-        if (!permission.granted) {
-          return;
-        }
-      }
-
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images', 'videos'],
         quality: 0.8,
@@ -355,15 +327,7 @@ export default function QuickCaptureScreen() {
             style={styles.galleryButton}
             onPress={handleGallery}
           >
-            {lastPhoto ? (
-              <ExpoImage
-                source={{ uri: lastPhoto }}
-                style={styles.galleryThumbnail}
-                contentFit="cover"
-              />
-            ) : (
-              <Image size={24} color="#ffffff" />
-            )}
+            <Image size={24} color="#ffffff" />
           </TouchableOpacity>
 
           {/* Capture Button */}
@@ -564,13 +528,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  galleryThumbnail: {
-    width: '100%',
-    height: '100%',
   },
   captureButtonOuter: {
     width: 80,
