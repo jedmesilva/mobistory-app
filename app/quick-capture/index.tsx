@@ -188,7 +188,16 @@ export default function QuickCaptureScreen() {
     }
 
     if (isRecording) {
-      stopRecording();
+      // Only stop recording if it's been at least 1 second
+      if (recordingTime >= 1) {
+        stopRecording();
+      } else {
+        // Wait until at least 1 second has passed
+        const waitTime = (1 - recordingTime) * 1000;
+        setTimeout(() => {
+          stopRecording();
+        }, waitTime);
+      }
     } else {
       // Take photo (quick tap)
       takePhoto();
