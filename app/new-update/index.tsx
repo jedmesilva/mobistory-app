@@ -14,7 +14,6 @@ import {
   Camera,
   ChevronRight,
   ChevronsUpDown,
-  X,
   Fuel,
   Gauge,
   Wrench,
@@ -26,6 +25,7 @@ import {
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants';
+import { BackButton } from '@/components/ui';
 import { useSelectedVehicle } from '@/contexts';
 import { useVehicle } from '@/hooks/vehicle';
 
@@ -108,13 +108,7 @@ export default function NewUpdateScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => router.back()}
-            activeOpacity={0.7}
-          >
-            <X size={20} color={Colors.text.secondary} />
-          </TouchableOpacity>
+          <BackButton variant="close" />
 
           <TouchableOpacity
             style={styles.vehicleSelector}
@@ -236,14 +230,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 12,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: Colors.background.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   vehicleSelector: {
     flex: 1,

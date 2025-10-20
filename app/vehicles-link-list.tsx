@@ -1,7 +1,7 @@
 import { Colors } from '@/constants';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ArrowLeft, Plus, Search } from 'lucide-react-native';
+import { Plus, Search } from 'lucide-react-native';
 import React, { useRef, useState, useMemo } from 'react';
 import {
     Animated,
@@ -12,7 +12,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SearchInput } from '../components/ui';
+import { SearchInput, BackButton } from '../components/ui';
 import { SectionHeader, VehicleCard } from '../components/vehicle';
 import { useVehiclesWithLinks } from '@/hooks/vehicle';
 import { useSelectedVehicle } from '@/contexts';
@@ -152,13 +152,7 @@ export default function Index() {
           },
         ]}
       >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={Colors.text.primary} />
-        </TouchableOpacity>
-
+        <BackButton />
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
       </Animated.View>
 
@@ -331,14 +325,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: Colors.background.primary,
     borderBottomColor: Colors.border.DEFAULT,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 20,

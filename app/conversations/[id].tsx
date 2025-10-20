@@ -14,9 +14,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowUp, Plus, Camera, Calendar, ArrowLeft } from 'lucide-react-native';
+import { ArrowUp, Plus, Camera, Calendar } from 'lucide-react-native';
 import { Colors } from '@/constants';
-import { VehicleHeader } from '@/components/ui';
+import { VehicleHeader, BackButton } from '@/components/ui';
 import { MessageBubble } from '../../components/chat/message-bubble';
 import { FuelAnalysisCard } from '../../components/chat/fuel-analysis-card';
 import { PriceComparisonCard } from '../../components/chat/price-comparison-card';
@@ -227,14 +227,7 @@ export default function ChatScreen() {
             })}
             showChevron={false}
             showVehicleIcon={false}
-            leftButton={
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => router.back()}
-              >
-                <ArrowLeft size={24} color={Colors.text.secondary} />
-              </TouchableOpacity>
-            }
+            leftButton={<BackButton />}
           />
         </SafeAreaView>
 
@@ -349,14 +342,6 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   messagesContainer: {
     flex: 1,

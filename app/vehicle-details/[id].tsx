@@ -15,7 +15,6 @@ import {
   Upload,
   Eye,
   EyeOff,
-  ArrowLeft,
 } from 'lucide-react-native';
 import {
   VehicleInfoSection,
@@ -23,7 +22,7 @@ import {
   DocumentItem,
   Document,
 } from '../../components/vehicle-details';
-import { VehicleHeader } from '@/components/ui';
+import { VehicleHeader, BackButton } from '@/components/ui';
 import { useSelectedVehicle } from '@/contexts';
 import { useVehicle } from '@/hooks/vehicle';
 
@@ -170,11 +169,7 @@ export default function VehicleDetailsScreen() {
         vehicleDetails={`${showSensitiveData ? vehicle.placa : maskData(vehicle.placa, 2)} • ${vehicle.ano} • ${vehicle.cor}`}
         showChevron={false}
         showVehicleIcon={false}
-        leftButton={
-          <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
-            <ArrowLeft size={24} color={Colors.text.secondary} />
-          </TouchableOpacity>
-        }
+        leftButton={<BackButton />}
         rightButton={
           <TouchableOpacity
             style={styles.headerButton}

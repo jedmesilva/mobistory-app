@@ -18,13 +18,12 @@ import {
   CheckCircle,
   UserCheck,
   Calendar,
-  ArrowLeft,
   Wrench,
 } from 'lucide-react-native';
 import { OdometerIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
 import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
-import { VehicleHeader } from '@/components/ui';
+import { VehicleHeader, BackButton } from '@/components/ui';
 import { FeedFAB } from '../../components/feed';
 import { useSelectedVehicle } from '@/contexts';
 import { useVehicle } from '@/hooks/vehicle';
@@ -424,14 +423,7 @@ export default function VehicleHistoryScreen() {
             onVehiclePress={handleVehiclePress}
             showChevron={false}
             showVehicleIcon={false}
-            leftButton={
-              <TouchableOpacity
-                onPress={handleBackPress}
-                style={styles.backButton}
-              >
-                <ArrowLeft size={24} color={Colors.text.secondary} />
-              </TouchableOpacity>
-            }
+            leftButton={<BackButton onPress={handleBackPress} />}
             rightButton={
               <TouchableOpacity
                 style={styles.chatButton}
@@ -519,14 +511,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: Colors.background.primary,
     zIndex: 10,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.background.secondary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   chatButton: {
     width: 40,
