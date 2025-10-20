@@ -415,7 +415,7 @@ export default function QuickCaptureScreen() {
             <Video
               source={{ uri: previewMedia.uri }}
               style={styles.previewMedia}
-              useNativeControls
+              useNativeControls={false}
               resizeMode="contain"
               shouldPlay
               isLooping
@@ -777,7 +777,6 @@ const styles = StyleSheet.create({
   previewMediaContainer: {
     flex: 1,
     backgroundColor: '#000000',
-    marginBottom: 100, // Space for video controls above action buttons
   },
   previewMedia: {
     flex: 1,
