@@ -199,11 +199,20 @@ export default function VehicleProfileScreen() {
             <View style={styles.vehicleInfoLeft}>
               <Text style={styles.vehicleName}>{vehicle.brand} {vehicle.name} {vehicle.model}</Text>
               <View style={styles.vehicleStats}>
-                <Text style={styles.vehicleStatText}>{vehicle.plate}</Text>
+                <View style={styles.vehicleStat}>
+                  <Car size={14} color={Colors.text.secondary} />
+                  <Text style={styles.vehicleStatText}>{vehicle.plate}</Text>
+                </View>
                 <Text style={styles.vehicleStatSeparator}>•</Text>
-                <Text style={styles.vehicleStatText}>{vehicle.year}</Text>
+                <View style={styles.vehicleStat}>
+                  <Calendar size={14} color={Colors.text.secondary} />
+                  <Text style={styles.vehicleStatText}>{vehicle.year}</Text>
+                </View>
                 <Text style={styles.vehicleStatSeparator}>•</Text>
-                <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
+                <View style={styles.vehicleStat}>
+                  <Droplet size={14} color={Colors.text.secondary} />
+                  <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
+                </View>
               </View>
             </View>
 
@@ -493,7 +502,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginTop: 4,
+    marginTop: 8,
+  },
+  vehicleStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   vehicleStatText: {
     fontSize: 14,
