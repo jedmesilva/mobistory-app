@@ -30,6 +30,7 @@ import { OdometerIcon } from '@/components/icons';
 import { VehicleHeader, BackButton } from '@/components/ui';
 import { useVehicle } from '@/hooks/vehicle';
 import { useVehicleMoments } from '@/hooks/moment';
+import { colorNameToHex } from '@/utils/colorMapping';
 
 export default function VehicleViewScreen() {
   const router = useRouter();
@@ -193,7 +194,11 @@ export default function VehicleViewScreen() {
                 </View>
                 <Text style={styles.vehicleStatSeparator}>•</Text>
                 <View style={styles.vehicleStat}>
-                  <CircleDot size={14} color={Colors.text.secondary} fill={Colors.text.secondary} />
+                  <CircleDot
+                    size={14}
+                    color={colorNameToHex(vehicle.color)}
+                    fill={colorNameToHex(vehicle.color)}
+                  />
                   <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
                 </View>
               </View>

@@ -32,6 +32,7 @@ import { VehicleHeader } from '@/components/ui';
 import { useVehicle } from '@/hooks/vehicle';
 import { useVehicleMoments } from '@/hooks/moment';
 import { useSelectedVehicle } from '@/contexts';
+import { colorNameToHex } from '@/utils/colorMapping';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
@@ -210,7 +211,11 @@ export default function VehicleProfileScreen() {
                 </View>
                 <Text style={styles.vehicleStatSeparator}>•</Text>
                 <View style={styles.vehicleStat}>
-                  <CircleDot size={14} color={Colors.text.secondary} fill={Colors.text.secondary} />
+                  <CircleDot
+                    size={14}
+                    color={colorNameToHex(vehicle.color)}
+                    fill={colorNameToHex(vehicle.color)}
+                  />
                   <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
                 </View>
               </View>
