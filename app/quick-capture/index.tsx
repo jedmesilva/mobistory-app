@@ -50,6 +50,9 @@ export default function QuickCaptureScreen() {
   const device = useCameraDevice(cameraPosition);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Check if device supports flash
+  const supportsFlash = device?.hasFlash ?? false;
+
   useEffect(() => {
     return () => {
       // Cleanup timers on unmount
@@ -66,6 +69,13 @@ export default function QuickCaptureScreen() {
   useEffect(() => {
     loadLastMedia();
   }, [mediaLibraryPermission?.granted]);
+
+  // Disable flash when switching to front camera (most front cameras don't have flash)
+  useEffect(() => {
+    if (cameraPosition === 'front' && !supportsFlash) {
+      setFlash('off');
+    }
+  }, [cameraPosition, supportsFlash]);
 
   const loadLastMedia = async () => {
     if (mediaLibraryPermission?.granted) {
@@ -228,8 +238,11 @@ export default function QuickCaptureScreen() {
       }, 1000);
 
       // Start recording
+      // Only use flash if device supports it and flash is enabled
+      const shouldUseFlash = supportsFlash && flash === 'on';
+
       await cameraRef.current.startRecording({
-        flash: flash === 'on' ? 'on' : 'off',
+        flash: shouldUseFlash ? 'on' : 'off',
         onRecordingFinished: async (video) => {
           console.log('✅ Video gravado com sucesso!');
           console.log('📁 URI:', video.path);
@@ -309,10 +322,14 @@ export default function QuickCaptureScreen() {
   const takePhoto = async () => {
     try {
       console.log('📸 Taking photo...');
+      console.log('Flash support:', supportsFlash, '| Flash setting:', flash, '| Camera:', cameraPosition);
 
       if (cameraRef.current) {
+        // Only use flash if device supports it and flash is enabled
+        const shouldUseFlash = supportsFlash && flash === 'on';
+
         const photo = await cameraRef.current.takePhoto({
-          flash: flash === 'on' ? 'on' : 'off',
+          flash: shouldUseFlash ? 'on' : 'off',
           enableShutterSound: Platform.OS === 'ios',
         });
 
@@ -473,14 +490,19 @@ export default function QuickCaptureScreen() {
           <TouchableOpacity
             style={[
               styles.headerButton,
-              flash === 'on' && styles.flashButtonActive
+              flash === 'on' && styles.flashButtonActive,
+              !supportsFlash && styles.flashButtonDisabled
             ]}
-            onPress={toggleFlash}
+            onPress={supportsFlash ? toggleFlash : undefined}
+            disabled={!supportsFlash}
           >
             {flash === 'on' ? (
               <Zap size={20} color="#000000" />
             ) : (
-              <ZapOff size={20} color="#ffffff" />
+              <ZapOff
+                size={20}
+                color={supportsFlash ? "#ffffff" : "#666666"}
+              />
             )}
           </TouchableOpacity>
         </View>
@@ -646,6 +668,9 @@ const styles = StyleSheet.create({
   },
   flashButtonActive: {
     backgroundColor: '#fbbf24',
+  },
+  flashButtonDisabled: {
+    opacity: 0.5,
   },
   headerTitle: {
     fontSize: 16,
