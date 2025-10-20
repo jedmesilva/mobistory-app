@@ -27,8 +27,7 @@
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.READ_MEDIA_VIDEO",
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_MEDIA_LOCATION"
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -62,7 +61,7 @@
         {
           "photosPermission": "Permite que o $(PRODUCT_NAME) acesse suas fotos para exibir a última imagem capturada.",
           "savePhotosPermission": "Permite que o $(PRODUCT_NAME) salve fotos e vídeos na galeria.",
-          "isAccessMediaLocationEnabled": true
+          "isAccessMediaLocationEnabled": false
         }
       ]
     ],
