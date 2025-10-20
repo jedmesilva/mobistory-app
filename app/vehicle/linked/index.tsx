@@ -23,7 +23,7 @@ import {
   ChevronDown,
   ChevronUp,
   Droplet,
-  CircleDot,
+  Paintbrush,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { FeedNavBottom, PostCard } from '@/components/feed';
@@ -211,11 +211,7 @@ export default function VehicleProfileScreen() {
                 </View>
                 <Text style={styles.vehicleStatSeparator}>•</Text>
                 <View style={styles.vehicleStat}>
-                  <CircleDot
-                    size={14}
-                    color={colorNameToHex(vehicle.color)}
-                    fill={colorNameToHex(vehicle.color)}
-                  />
+                  <Paintbrush size={14} color={Colors.text.secondary} />
                   <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
                 </View>
               </View>
