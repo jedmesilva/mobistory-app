@@ -28,6 +28,7 @@ export default function QuickCaptureScreen() {
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
   const recordingStartTime = useRef<number | null>(null);
+  const recordingPromise = useRef<Promise<any> | null>(null);
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
@@ -171,56 +172,81 @@ export default function QuickCaptureScreen() {
 
   const startRecording = async () => {
     try {
+      if (!cameraRef.current) {
+        console.error('❌ Camera ref not available');
+        return;
+      }
+
       setIsRecording(true);
       setRecordingTime(0);
       recordingStartTime.current = Date.now();
-      console.log('Starting video recording...');
+      console.log('🎥 Starting video recording...');
 
       // Start recording interval
       recordingInterval.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
       }, 1000);
 
-      if (cameraRef.current) {
+      // Start recording - this promise will resolve when stopRecording() is called
+      try {
+        console.log('📹 Calling recordAsync with options...');
         const video = await cameraRef.current.recordAsync();
-        console.log('Video recorded:', video);
-        // TODO: Process video
+
+        // Recording completed successfully
+        console.log('✅ Video gravado com sucesso!');
+        console.log('📹 Duração:', video?.duration, 'ms');
+        console.log('📁 URI:', video?.uri);
+        console.log('📦 Objeto completo:', JSON.stringify(video, null, 2));
+
+        // Clean up after successful recording
+        recordingStartTime.current = null;
+        recordingPromise.current = null;
+
+        // TODO: Save or process the video
+
+      } catch (recordError: any) {
+        console.error('❌ Erro completo:', recordError);
+        console.error('Message:', recordError.message);
+        console.error('Code:', recordError.code);
+        console.error('Stack:', recordError.stack);
       }
+
     } catch (error) {
-      console.error('Error recording video:', error);
+      console.error('❌ Error starting video recording:', error);
+    } finally {
+      // Always clean up state
       setIsRecording(false);
       recordingStartTime.current = null;
+      recordingPromise.current = null;
       if (recordingInterval.current) {
         clearInterval(recordingInterval.current);
+        recordingInterval.current = null;
       }
+      setRecordingTime(0);
     }
   };
 
-  const stopRecording = async () => {
+  const stopRecording = () => {
     try {
       const actualRecordingTime = recordingStartTime.current
         ? (Date.now() - recordingStartTime.current) / 1000
         : 0;
-      console.log(`Stopping recording: ${actualRecordingTime.toFixed(2)} seconds`);
+      console.log(`⏹️ Stopping recording: ${actualRecordingTime.toFixed(2)} seconds`);
+      console.log('📹 isRecording:', isRecording);
+      console.log('📹 cameraRef.current:', !!cameraRef.current);
 
-      if (cameraRef.current) {
-        await cameraRef.current.stopRecording();
+      // ONLY call stopRecording on the camera - DON'T clean up state yet!
+      // The state will be cleaned up in the startRecording's finally block
+      // after the video is successfully saved
+      if (cameraRef.current && isRecording) {
+        console.log('🛑 Calling cameraRef.current.stopRecording()...');
+        cameraRef.current.stopRecording();
+        console.log('✅ stopRecording() called successfully');
+      } else {
+        console.log('⚠️ Cannot stop recording - conditions not met');
       }
-
-      setIsRecording(false);
-      recordingStartTime.current = null;
-      if (recordingInterval.current) {
-        clearInterval(recordingInterval.current);
-      }
-      setRecordingTime(0);
     } catch (error) {
-      console.error('Error stopping recording:', error);
-      setIsRecording(false);
-      recordingStartTime.current = null;
-      if (recordingInterval.current) {
-        clearInterval(recordingInterval.current);
-      }
-      setRecordingTime(0);
+      console.error('❌ Error in stopRecording function:', error);
     }
   };
 
