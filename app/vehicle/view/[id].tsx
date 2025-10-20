@@ -22,7 +22,7 @@ import {
   ChevronDown,
   ChevronUp,
   Droplet,
-  Paintbrush,
+  Palette,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { PostCard } from '@/components/feed';
@@ -194,7 +194,7 @@ export default function VehicleViewScreen() {
                 </View>
                 <Text style={styles.vehicleStatSeparator}>•</Text>
                 <View style={styles.vehicleStat}>
-                  <Paintbrush size={14} color={Colors.text.secondary} />
+                  <Palette size={14} color={Colors.text.secondary} />
                   <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
                 </View>
               </View>
