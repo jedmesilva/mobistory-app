@@ -386,68 +386,66 @@ export default function QuickCaptureScreen() {
   // Preview Screen
   if (previewMedia) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <StatusBar style="light" />
 
-        {/* Preview Media */}
-        {previewMedia.type === 'photo' ? (
-          <RNImage
-            source={{ uri: previewMedia.uri }}
-            style={styles.previewMedia}
-            resizeMode="contain"
-          />
-        ) : (
-          <Video
-            source={{ uri: previewMedia.uri }}
-            style={styles.previewMedia}
-            useNativeControls
-            resizeMode="contain"
-            shouldPlay
-            isLooping
-          />
-        )}
-
         {/* Preview Header */}
-        <SafeAreaView edges={['top']} style={styles.header}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => setPreviewMedia(null)}
-            >
-              <X size={20} color="#ffffff" />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>
-              {previewMedia.type === 'photo' ? 'Foto' : 'Vídeo'}
-            </Text>
-            <View style={styles.headerButton} />
-          </View>
-        </SafeAreaView>
+        <View style={styles.previewHeader}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => setPreviewMedia(null)}
+          >
+            <X size={20} color="#ffffff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>
+            {previewMedia.type === 'photo' ? 'Foto' : 'Vídeo'}
+          </Text>
+          <View style={styles.headerButton} />
+        </View>
+
+        {/* Preview Media Container */}
+        <View style={styles.previewMediaContainer}>
+          {previewMedia.type === 'photo' ? (
+            <RNImage
+              source={{ uri: previewMedia.uri }}
+              style={styles.previewMedia}
+              resizeMode="contain"
+            />
+          ) : (
+            <Video
+              source={{ uri: previewMedia.uri }}
+              style={styles.previewMedia}
+              useNativeControls
+              resizeMode="contain"
+              shouldPlay
+              isLooping
+            />
+          )}
+        </View>
 
         {/* Preview Bottom Actions */}
-        <SafeAreaView edges={['bottom']} style={styles.bottomControls}>
-          <View style={styles.previewActions}>
-            <TouchableOpacity
-              style={styles.previewButton}
-              onPress={() => setPreviewMedia(null)}
-            >
-              <Text style={styles.previewButtonText}>Voltar</Text>
-            </TouchableOpacity>
+        <View style={styles.previewActions}>
+          <TouchableOpacity
+            style={styles.previewButton}
+            onPress={() => setPreviewMedia(null)}
+          >
+            <Text style={styles.previewButtonText}>Voltar</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.previewButton, styles.previewButtonPrimary]}
-              onPress={() => {
-                setPreviewMedia(null);
-                // TODO: Navigate to next screen or process media
-              }}
-            >
-              <Check size={20} color="#000000" />
-              <Text style={[styles.previewButtonText, styles.previewButtonTextPrimary]}>
-                Usar {previewMedia.type === 'photo' ? 'Foto' : 'Vídeo'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </View>
+          <TouchableOpacity
+            style={[styles.previewButton, styles.previewButtonPrimary]}
+            onPress={() => {
+              setPreviewMedia(null);
+              // TODO: Navigate to next screen or process media
+            }}
+          >
+            <Check size={20} color="#000000" />
+            <Text style={[styles.previewButtonText, styles.previewButtonTextPrimary]}>
+              Usar {previewMedia.type === 'photo' ? 'Foto' : 'Vídeo'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -768,18 +766,32 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     textAlign: 'center',
   },
+  previewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: 'transparent',
+  },
+  previewMediaContainer: {
+    flex: 1,
+    backgroundColor: '#000000',
+    marginBottom: 100, // Space for video controls above action buttons
+  },
   previewMedia: {
     flex: 1,
     width: '100%',
     height: '100%',
-    backgroundColor: '#000000',
   },
   previewActions: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingTop: 16,
+    paddingBottom: 16,
+    backgroundColor: '#000000',
     gap: 16,
   },
   previewButton: {
