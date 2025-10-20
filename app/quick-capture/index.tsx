@@ -372,8 +372,17 @@ export default function QuickCaptureScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        console.log('Gallery media selected:', result.assets[0]);
-        // TODO: Process selected media
+        const asset = result.assets[0];
+        console.log('Gallery media selected:', asset);
+
+        // Determine if it's a photo or video based on the asset type
+        const mediaType = asset.type === 'video' ? 'video' : 'photo';
+
+        // Show in preview
+        setPreviewMedia({
+          uri: asset.uri,
+          type: mediaType,
+        });
       }
     } catch (error) {
       console.error('Error opening gallery:', error);
