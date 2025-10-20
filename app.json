@@ -47,6 +47,14 @@
           "microphonePermission": "Permite que o $(PRODUCT_NAME) acesse seu microfone para gravar vídeos com áudio.",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Permite que o $(PRODUCT_NAME) acesse suas fotos para exibir a última imagem capturada.",
+          "savePhotosPermission": "Permite que o $(PRODUCT_NAME) salve fotos e vídeos na galeria.",
+          "isAccessMediaLocationEnabled": true
+        }
       ]
     ],
     "experiments": {

@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Image as ExpoImage } from 'expo-image';
 import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import {
   Camera,
   Image,
@@ -30,11 +32,13 @@ export default function QuickCaptureScreen() {
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const [facing, setFacing] = useState<CameraType>('back');
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPressed, setIsPressed] = useState(false);
+  const [lastPhoto, setLastPhoto] = useState<string | null>(null);
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -49,6 +53,46 @@ export default function QuickCaptureScreen() {
       }
     };
   }, []);
+
+  // Fetch last photo from gallery
+  useEffect(() => {
+    const fetchLastPhoto = async () => {
+      if (mediaLibraryPermission?.granted) {
+        try {
+          const albums = await MediaLibrary.getAlbumsAsync();
+          const recentAlbum = albums.find(album => album.title === 'Recent' || album.title === 'Recents');
+
+          if (recentAlbum) {
+            const assets = await MediaLibrary.getAssetsAsync({
+              album: recentAlbum,
+              first: 1,
+              mediaType: 'photo',
+              sortBy: 'creationTime',
+            });
+
+            if (assets.assets.length > 0) {
+              setLastPhoto(assets.assets[0].uri);
+            }
+          } else {
+            // Fallback: get recent assets without album
+            const assets = await MediaLibrary.getAssetsAsync({
+              first: 1,
+              mediaType: 'photo',
+              sortBy: 'creationTime',
+            });
+
+            if (assets.assets.length > 0) {
+              setLastPhoto(assets.assets[0].uri);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching last photo:', error);
+        }
+      }
+    };
+
+    fetchLastPhoto();
+  }, [mediaLibraryPermission?.granted]);
 
   if (!cameraPermission || !microphonePermission) {
     // Permissions are still loading
@@ -209,6 +253,14 @@ export default function QuickCaptureScreen() {
 
   const handleGallery = async () => {
     try {
+      // Request permission if not granted
+      if (!mediaLibraryPermission?.granted) {
+        const permission = await requestMediaLibraryPermission();
+        if (!permission.granted) {
+          return;
+        }
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images', 'videos'],
         quality: 0.8,
@@ -291,10 +343,18 @@ export default function QuickCaptureScreen() {
         <View style={styles.controlsContainer}>
           {/* Gallery Button */}
           <TouchableOpacity
-            style={styles.sideButton}
+            style={styles.galleryButton}
             onPress={handleGallery}
           >
-            <Image size={24} color="#ffffff" />
+            {lastPhoto ? (
+              <ExpoImage
+                source={{ uri: lastPhoto }}
+                style={styles.galleryThumbnail}
+                contentFit="cover"
+              />
+            ) : (
+              <Image size={24} color="#ffffff" />
+            )}
           </TouchableOpacity>
 
           {/* Capture Button */}
@@ -487,6 +547,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  galleryButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  galleryThumbnail: {
+    width: '100%',
+    height: '100%',
   },
   captureButtonOuter: {
     width: 80,
