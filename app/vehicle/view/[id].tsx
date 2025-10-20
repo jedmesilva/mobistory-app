@@ -181,9 +181,13 @@ export default function VehicleViewScreen() {
           <View style={styles.vehicleInfoHeader}>
             <View style={styles.vehicleInfoLeft}>
               <Text style={styles.vehicleName}>{vehicle.brand} {vehicle.name} {vehicle.model}</Text>
-              <Text style={styles.vehicleDetails}>
-                {vehicle.plate} • {vehicle.color}
-              </Text>
+              <View style={styles.vehicleStats}>
+                <Text style={styles.vehicleStatText}>{vehicle.plate}</Text>
+                <Text style={styles.vehicleStatSeparator}>•</Text>
+                <Text style={styles.vehicleStatText}>{vehicle.year}</Text>
+                <Text style={styles.vehicleStatSeparator}>•</Text>
+                <Text style={styles.vehicleStatText}>{vehicle.color}</Text>
+              </View>
             </View>
 
             <TouchableOpacity
@@ -203,24 +207,32 @@ export default function VehicleViewScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
 
-          {/* Dados do Veículo */}
-          <View style={styles.vehicleStats}>
-            <View style={styles.vehicleStat}>
-              <Calendar size={16} color={Colors.text.secondary} />
-              <Text style={styles.vehicleStatText}>{vehicle.year}</Text>
+        {/* Marcos do Veículo */}
+        <View style={styles.milestonesSection}>
+          <Text style={styles.milestonesSectionTitle}>Marcos do Veículo</Text>
+          <View style={styles.milestonesList}>
+            <View style={styles.milestoneItem}>
+              <View style={styles.milestoneIcon}>
+                <OdometerIcon size={18} color={Colors.text.secondary} />
+              </View>
+              <View style={styles.milestoneContent}>
+                <Text style={styles.milestoneLabel}>Odômetro</Text>
+                <Text style={styles.milestoneValue}>
+                  {vehicle.odometer.toLocaleString()} km
+                </Text>
+              </View>
             </View>
-            <Text style={styles.vehicleStatSeparator}>•</Text>
-            <View style={styles.vehicleStat}>
-              <OdometerIcon size={14} color={Colors.text.secondary} />
-              <Text style={styles.vehicleStatText}>
-                {vehicle.odometer.toLocaleString()} km
-              </Text>
-            </View>
-            <Text style={styles.vehicleStatSeparator}>•</Text>
-            <View style={styles.vehicleStat}>
-              <Fuel size={16} color={Colors.text.secondary} />
-              <Text style={styles.vehicleStatText}>{vehicle.fuelType}</Text>
+
+            <View style={styles.milestoneItem}>
+              <View style={styles.milestoneIcon}>
+                <Fuel size={18} color={Colors.text.secondary} />
+              </View>
+              <View style={styles.milestoneContent}>
+                <Text style={styles.milestoneLabel}>Combustível</Text>
+                <Text style={styles.milestoneValue}>{vehicle.fuelType}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -436,11 +448,6 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     marginBottom: 4,
   },
-  vehicleDetails: {
-    fontSize: 16,
-    color: Colors.text.secondary,
-    marginBottom: 8,
-  },
   followButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -462,12 +469,8 @@ const styles = StyleSheet.create({
   vehicleStats: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-  },
-  vehicleStat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+    gap: 8,
+    marginTop: 4,
   },
   vehicleStatText: {
     fontSize: 14,
@@ -476,6 +479,48 @@ const styles = StyleSheet.create({
   vehicleStatSeparator: {
     fontSize: 14,
     color: Colors.text.tertiary,
+  },
+  milestonesSection: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  milestonesSectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginBottom: 12,
+  },
+  milestonesList: {
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 12,
+    padding: 16,
+    gap: 16,
+  },
+  milestoneItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  milestoneIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: Colors.background.primary,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  milestoneContent: {
+    flex: 1,
+  },
+  milestoneLabel: {
+    fontSize: 12,
+    color: Colors.text.tertiary,
+    marginBottom: 2,
+  },
+  milestoneValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text.primary,
   },
   actionsGrid: {
     flexDirection: 'row',
