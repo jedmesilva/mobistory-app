@@ -83,8 +83,7 @@ export default function NewUpdateScreen() {
   ];
 
   const handleQuickCapture = () => {
-    console.log('Captura Rápida');
-    // TODO: Abrir modal de captura inteligente
+    router.push('/quick-capture');
   };
 
   const handleActivityPress = (activityId: string) => {
