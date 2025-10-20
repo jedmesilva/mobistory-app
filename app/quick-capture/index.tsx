@@ -25,12 +25,15 @@ import {
   Zap,
   ZapOff,
   Check,
+  Play,
+  Pause,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 
 export default function QuickCaptureScreen() {
   const router = useRouter();
   const cameraRef = useRef<Camera>(null);
+  const videoRef = useRef<Video>(null);
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
   const recordingStartTime = useRef<number | null>(null);
@@ -46,9 +49,17 @@ export default function QuickCaptureScreen() {
   const [isPressed, setIsPressed] = useState(false);
   const [lastMediaUri, setLastMediaUri] = useState<string | null>(null);
   const [previewMedia, setPreviewMedia] = useState<{ uri: string; type: 'photo' | 'video' } | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [isSeeking, setIsSeeking] = useState(false);
+  const [showControls, setShowControls] = useState(true);
 
   const device = useCameraDevice(cameraPosition);
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const progressBarWidth = useRef(0);
+  const lastSeekTime = useRef(0);
+  const controlsTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Check if device supports flash
   const supportsFlash = device?.hasFlash ?? false;
@@ -383,6 +394,105 @@ export default function QuickCaptureScreen() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const showVideoControls = () => {
+    setShowControls(true);
+
+    // Clear existing timeout
+    if (controlsTimeout.current) {
+      clearTimeout(controlsTimeout.current);
+    }
+
+    // Hide controls after 5 seconds
+    controlsTimeout.current = setTimeout(() => {
+      setShowControls(false);
+    }, 5000);
+  };
+
+  const toggleVideoControls = () => {
+    if (showControls) {
+      // If controls are visible, hide them immediately
+      if (controlsTimeout.current) {
+        clearTimeout(controlsTimeout.current);
+      }
+      setShowControls(false);
+    } else {
+      // If controls are hidden, show them
+      showVideoControls();
+    }
+  };
+
+  const toggleVideoPlayback = async () => {
+    if (!videoRef.current) return;
+
+    showVideoControls(); // Show controls when toggling playback
+
+    if (isVideoPlaying) {
+      await videoRef.current.pauseAsync();
+      setIsVideoPlaying(false);
+    } else {
+      await videoRef.current.playAsync();
+      setIsVideoPlaying(true);
+    }
+  };
+
+  const handleVideoPlaybackStatusUpdate = (status: any) => {
+    if (status.isLoaded && !isDragging.current) {
+      setVideoProgress(status.positionMillis);
+      setVideoDuration(status.durationMillis || 0);
+    } else if (status.isLoaded && !videoDuration) {
+      // Only set duration once, even while dragging
+      setVideoDuration(status.durationMillis || 0);
+    }
+  };
+
+  const handleProgressSeek = async (value: number) => {
+    if (!videoRef.current) return;
+    await videoRef.current.setPositionAsync(value);
+  };
+
+  const formatVideoTime = (milliseconds: number) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Touch and drag handler for progress bar
+  const wasPlayingBeforeSeek = useRef(false);
+  const isDragging = useRef(false);
+
+  const handleProgressBarTouch = (x: number) => {
+    if (!videoRef.current || progressBarWidth.current === 0 || videoDuration === 0) return;
+
+    const percentage = Math.max(0, Math.min(1, x / progressBarWidth.current));
+    const newPosition = percentage * videoDuration;
+
+    if (newPosition >= 0 && newPosition <= videoDuration) {
+      // Update UI immediately for smooth visual feedback
+      setVideoProgress(newPosition);
+      // Then update the actual video position
+      videoRef.current.setPositionAsync(newPosition).catch(() => {});
+    }
+  };
+
+  const handleTouchStart = () => {
+    isDragging.current = true;
+    wasPlayingBeforeSeek.current = isVideoPlaying;
+    showVideoControls(); // Show controls when interacting with progress bar
+    if (isVideoPlaying && videoRef.current) {
+      videoRef.current.pauseAsync().catch(() => {});
+      setIsVideoPlaying(false);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    isDragging.current = false;
+    if (wasPlayingBeforeSeek.current && videoRef.current) {
+      videoRef.current.playAsync().catch(() => {});
+      setIsVideoPlaying(true);
+    }
+  };
+
   // Preview Screen
   if (previewMedia) {
     return (
@@ -412,14 +522,92 @@ export default function QuickCaptureScreen() {
               resizeMode="contain"
             />
           ) : (
-            <Video
-              source={{ uri: previewMedia.uri }}
-              style={styles.previewMedia}
-              useNativeControls={false}
-              resizeMode="contain"
-              shouldPlay
-              isLooping
-            />
+            <>
+              <TouchableOpacity
+                style={styles.videoTouchArea}
+                activeOpacity={1}
+                onPress={toggleVideoControls}
+              >
+                <Video
+                  ref={videoRef}
+                  source={{ uri: previewMedia.uri }}
+                  style={styles.previewMedia}
+                  useNativeControls={false}
+                  resizeMode="contain"
+                  shouldPlay={isVideoPlaying}
+                  isLooping
+                  onPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
+                />
+              </TouchableOpacity>
+
+              {/* Play/Pause Button Overlay */}
+              {showControls && (
+                <TouchableOpacity
+                  style={styles.videoPlayButton}
+                  onPress={toggleVideoPlayback}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.videoPlayButtonInner}>
+                    {isVideoPlaying ? (
+                      <Pause size={40} color="#ffffff" fill="#ffffff" />
+                    ) : (
+                      <Play size={40} color="#ffffff" fill="#ffffff" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              )}
+
+              {/* Video Progress Bar */}
+              {showControls && (
+                <View style={styles.videoProgressContainer}>
+                <Text style={styles.videoTimeText}>
+                  {formatVideoTime(videoProgress)}
+                </Text>
+                <View
+                  style={styles.progressBarContainer}
+                  onLayout={(e) => {
+                    progressBarWidth.current = e.nativeEvent.layout.width;
+                  }}
+                  onStartShouldSetResponder={() => true}
+                  onMoveShouldSetResponder={() => true}
+                  onResponderGrant={(e) => {
+                    handleTouchStart();
+                    handleProgressBarTouch(e.nativeEvent.locationX);
+                  }}
+                  onResponderMove={(e) => {
+                    if (isDragging.current) {
+                      handleProgressBarTouch(e.nativeEvent.locationX);
+                    }
+                  }}
+                  onResponderRelease={() => {
+                    handleTouchEnd();
+                  }}
+                  onResponderTerminate={() => {
+                    handleTouchEnd();
+                  }}
+                >
+                  <View style={styles.progressBarBackground}>
+                    <View
+                      style={[
+                        styles.progressBarFill,
+                        {
+                          width: videoDuration > 0
+                            ? `${(videoProgress / videoDuration) * 100}%`
+                            : '0%',
+                        },
+                      ]}
+                    >
+                      {/* Thumb indicator */}
+                      <View style={styles.progressThumb} />
+                    </View>
+                  </View>
+                </View>
+                <Text style={styles.videoTimeText}>
+                  {formatVideoTime(videoDuration)}
+                </Text>
+                </View>
+              )}
+            </>
           )}
         </View>
 
@@ -778,6 +966,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
+  videoTouchArea: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   previewMedia: {
     flex: 1,
     width: '100%',
@@ -814,5 +1007,72 @@ const styles = StyleSheet.create({
   },
   previewButtonTextPrimary: {
     color: '#000000',
+  },
+  videoPlayButton: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -40 }, { translateY: -40 }],
+    zIndex: 10,
+  },
+  videoPlayButtonInner: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoProgressContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    gap: 12,
+  },
+  progressBarContainer: {
+    flex: 1,
+    height: 40,
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  progressBarBackground: {
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 2,
+    overflow: 'visible',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 2,
+    position: 'relative',
+    minWidth: 12,
+  },
+  progressThumb: {
+    position: 'absolute',
+    right: -6,
+    top: -4,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  videoTimeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ffffff',
+    minWidth: 40,
+    textAlign: 'center',
   },
 });
