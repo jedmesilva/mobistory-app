@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import {
   Camera,
@@ -28,7 +28,8 @@ export default function QuickCaptureScreen() {
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
 
-  const [permission, requestPermission] = useCameraPermissions();
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
   const [facing, setFacing] = useState<CameraType>('back');
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [isRecording, setIsRecording] = useState(false);
@@ -49,12 +50,17 @@ export default function QuickCaptureScreen() {
     };
   }, []);
 
-  if (!permission) {
-    // Camera permissions are still loading
+  if (!cameraPermission || !microphonePermission) {
+    // Permissions are still loading
     return <View style={styles.container} />;
   }
 
-  if (!permission.granted) {
+  const requestAllPermissions = async () => {
+    await requestCameraPermission();
+    await requestMicrophonePermission();
+  };
+
+  if (!cameraPermission.granted || !microphonePermission.granted) {
     // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
@@ -91,11 +97,11 @@ export default function QuickCaptureScreen() {
 
           <TouchableOpacity
             style={styles.permissionButton}
-            onPress={requestPermission}
+            onPress={requestAllPermissions}
             activeOpacity={0.8}
           >
             <Camera size={20} color="#000000" />
-            <Text style={styles.permissionButtonText}>Permitir Acesso à Câmera</Text>
+            <Text style={styles.permissionButtonText}>Permitir Acesso à Câmera e Microfone</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
