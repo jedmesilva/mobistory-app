@@ -7,37 +7,47 @@ import {
   StyleSheet,
   Pressable,
   Animated,
+  Platform,
+  Alert,
+  Image as RNImage,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
+import { Camera, useCameraDevice, useCameraPermission, useMicrophonePermission } from 'react-native-vision-camera';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { Video } from 'expo-av';
 import {
-  Camera,
+  Camera as CameraIcon,
   Image,
   RefreshCw,
   X,
   Zap,
   ZapOff,
+  Check,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 
 export default function QuickCaptureScreen() {
   const router = useRouter();
-  const cameraRef = useRef<CameraView>(null);
+  const cameraRef = useRef<Camera>(null);
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
   const recordingInterval = useRef<NodeJS.Timeout | null>(null);
   const recordingStartTime = useRef<number | null>(null);
-  const recordingPromise = useRef<Promise<any> | null>(null);
 
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
-  const [facing, setFacing] = useState<CameraType>('back');
+  const { hasPermission: hasCameraPermission, requestPermission: requestCameraPermission } = useCameraPermission();
+  const { hasPermission: hasMicrophonePermission, requestPermission: requestMicrophonePermission } = useMicrophonePermission();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+
+  const [cameraPosition, setCameraPosition] = useState<'back' | 'front'>('back');
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPressed, setIsPressed] = useState(false);
+  const [lastMediaUri, setLastMediaUri] = useState<string | null>(null);
+  const [previewMedia, setPreviewMedia] = useState<{ uri: string; type: 'photo' | 'video' } | null>(null);
 
+  const device = useCameraDevice(cameraPosition);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -52,17 +62,36 @@ export default function QuickCaptureScreen() {
     };
   }, []);
 
-  if (!cameraPermission || !microphonePermission) {
-    // Permissions are still loading
-    return <View style={styles.container} />;
-  }
+  // Load last media from gallery
+  useEffect(() => {
+    loadLastMedia();
+  }, [mediaLibraryPermission?.granted]);
+
+  const loadLastMedia = async () => {
+    if (mediaLibraryPermission?.granted) {
+      try {
+        const media = await MediaLibrary.getAssetsAsync({
+          first: 1,
+          sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+          mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
+        });
+
+        if (media.assets.length > 0) {
+          setLastMediaUri(media.assets[0].uri);
+        }
+      } catch (error) {
+        console.error('Error loading last media:', error);
+      }
+    }
+  };
 
   const requestAllPermissions = async () => {
     await requestCameraPermission();
     await requestMicrophonePermission();
+    await requestMediaLibraryPermission();
   };
 
-  if (!cameraPermission.granted || !microphonePermission.granted) {
+  if (!hasCameraPermission || !hasMicrophonePermission) {
     // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
@@ -85,7 +114,7 @@ export default function QuickCaptureScreen() {
         {/* Permission Content */}
         <View style={styles.permissionContainer}>
           <View style={styles.permissionIconContainer}>
-            <Camera size={80} color="#ffffff" strokeWidth={1.5} />
+            <CameraIcon size={80} color="#ffffff" strokeWidth={1.5} />
           </View>
 
           <View style={styles.permissionTextContainer}>
@@ -102,7 +131,7 @@ export default function QuickCaptureScreen() {
             onPress={requestAllPermissions}
             activeOpacity={0.8}
           >
-            <Camera size={20} color="#000000" />
+            <CameraIcon size={20} color="#000000" />
             <Text style={styles.permissionButtonText}>Permitir Acesso à Câmera e Microfone</Text>
           </TouchableOpacity>
 
@@ -113,6 +142,17 @@ export default function QuickCaptureScreen() {
           >
             <Text style={styles.permissionSecondaryButtonText}>Agora Não</Text>
           </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  if (device == null) {
+    return (
+      <View style={styles.container}>
+        <StatusBar style="light" />
+        <View style={styles.permissionContainer}>
+          <Text style={styles.permissionTitle}>Câmera não disponível</Text>
         </View>
       </View>
     );
@@ -151,7 +191,7 @@ export default function QuickCaptureScreen() {
         ? (Date.now() - recordingStartTime.current) / 1000
         : 0;
 
-      // Minimum 2 seconds for reliable video recording
+      // Minimum 2 seconds for reliable video recording (camera needs time to capture frames)
       const MIN_RECORDING_TIME = 2;
 
       if (actualRecordingTime >= MIN_RECORDING_TIME) {
@@ -187,37 +227,58 @@ export default function QuickCaptureScreen() {
         setRecordingTime(prev => prev + 1);
       }, 1000);
 
-      // Start recording - this promise will resolve when stopRecording() is called
-      try {
-        console.log('📹 Calling recordAsync with options...');
-        const video = await cameraRef.current.recordAsync();
+      // Start recording
+      await cameraRef.current.startRecording({
+        flash: flash === 'on' ? 'on' : 'off',
+        onRecordingFinished: async (video) => {
+          console.log('✅ Video gravado com sucesso!');
+          console.log('📁 URI:', video.path);
+          console.log('📦 Duração:', video.duration, 'segundos');
 
-        // Recording completed successfully
-        console.log('✅ Video gravado com sucesso!');
-        console.log('📹 Duração:', video?.duration, 'ms');
-        console.log('📁 URI:', video?.uri);
-        console.log('📦 Objeto completo:', JSON.stringify(video, null, 2));
+          // Clean up
+          recordingStartTime.current = null;
+          setIsRecording(false);
+          setRecordingTime(0);
+          if (recordingInterval.current) {
+            clearInterval(recordingInterval.current);
+            recordingInterval.current = null;
+          }
 
-        // Clean up after successful recording
-        recordingStartTime.current = null;
-        recordingPromise.current = null;
+          // Show preview immediately
+          setPreviewMedia({ uri: `file://${video.path}`, type: 'video' });
 
-        // TODO: Save or process the video
+          // Save video to media library
+          try {
+            if (mediaLibraryPermission?.granted) {
+              const asset = await MediaLibrary.createAssetAsync(`file://${video.path}`);
+              console.log('💾 Video saved to gallery:', asset.uri);
+              setLastMediaUri(asset.uri);
+            } else {
+              console.log('⚠️ Media library permission not granted, requesting...');
+              await requestMediaLibraryPermission();
+            }
+          } catch (saveError) {
+            console.error('❌ Error saving video:', saveError);
+          }
+        },
+        onRecordingError: (error) => {
+          console.error('❌ Erro ao gravar vídeo:', error);
 
-      } catch (recordError: any) {
-        console.error('❌ Erro completo:', recordError);
-        console.error('Message:', recordError.message);
-        console.error('Code:', recordError.code);
-        console.error('Stack:', recordError.stack);
-      }
+          // Clean up
+          recordingStartTime.current = null;
+          setIsRecording(false);
+          setRecordingTime(0);
+          if (recordingInterval.current) {
+            clearInterval(recordingInterval.current);
+            recordingInterval.current = null;
+          }
+        },
+      });
 
     } catch (error) {
       console.error('❌ Error starting video recording:', error);
-    } finally {
-      // Always clean up state
       setIsRecording(false);
       recordingStartTime.current = null;
-      recordingPromise.current = null;
       if (recordingInterval.current) {
         clearInterval(recordingInterval.current);
         recordingInterval.current = null;
@@ -226,21 +287,16 @@ export default function QuickCaptureScreen() {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = async () => {
     try {
       const actualRecordingTime = recordingStartTime.current
         ? (Date.now() - recordingStartTime.current) / 1000
         : 0;
       console.log(`⏹️ Stopping recording: ${actualRecordingTime.toFixed(2)} seconds`);
-      console.log('📹 isRecording:', isRecording);
-      console.log('📹 cameraRef.current:', !!cameraRef.current);
 
-      // ONLY call stopRecording on the camera - DON'T clean up state yet!
-      // The state will be cleaned up in the startRecording's finally block
-      // after the video is successfully saved
       if (cameraRef.current && isRecording) {
-        console.log('🛑 Calling cameraRef.current.stopRecording()...');
-        cameraRef.current.stopRecording();
+        console.log('🛑 Calling stopRecording()...');
+        await cameraRef.current.stopRecording();
         console.log('✅ stopRecording() called successfully');
       } else {
         console.log('⚠️ Cannot stop recording - conditions not met');
@@ -252,17 +308,31 @@ export default function QuickCaptureScreen() {
 
   const takePhoto = async () => {
     try {
-      console.log('Taking photo...');
+      console.log('📸 Taking photo...');
 
       if (cameraRef.current) {
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
+        const photo = await cameraRef.current.takePhoto({
+          flash: flash === 'on' ? 'on' : 'off',
+          enableShutterSound: Platform.OS === 'ios',
         });
-        console.log('Photo taken:', photo);
-        // TODO: Process photo
+
+        console.log('✅ Photo taken:', photo.path);
+
+        // Show preview immediately
+        setPreviewMedia({ uri: `file://${photo.path}`, type: 'photo' });
+
+        // Save to media library
+        if (mediaLibraryPermission?.granted) {
+          const asset = await MediaLibrary.createAssetAsync(`file://${photo.path}`);
+          console.log('💾 Photo saved to gallery:', asset.uri);
+          setLastMediaUri(asset.uri);
+        } else {
+          console.log('⚠️ Media library permission not granted, requesting...');
+          await requestMediaLibraryPermission();
+        }
       }
     } catch (error) {
-      console.error('Error taking photo:', error);
+      console.error('❌ Error taking photo:', error);
     }
   };
 
@@ -283,7 +353,7 @@ export default function QuickCaptureScreen() {
   };
 
   const handleFlipCamera = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setCameraPosition(current => (current === 'back' ? 'front' : 'back'));
   };
 
   const toggleFlash = () => {
@@ -296,16 +366,87 @@ export default function QuickCaptureScreen() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Preview Screen
+  if (previewMedia) {
+    return (
+      <View style={styles.container}>
+        <StatusBar style="light" />
+
+        {/* Preview Media */}
+        {previewMedia.type === 'photo' ? (
+          <RNImage
+            source={{ uri: previewMedia.uri }}
+            style={styles.previewMedia}
+            resizeMode="contain"
+          />
+        ) : (
+          <Video
+            source={{ uri: previewMedia.uri }}
+            style={styles.previewMedia}
+            useNativeControls
+            resizeMode="contain"
+            shouldPlay
+            isLooping
+          />
+        )}
+
+        {/* Preview Header */}
+        <SafeAreaView edges={['top']} style={styles.header}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => setPreviewMedia(null)}
+            >
+              <X size={20} color="#ffffff" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>
+              {previewMedia.type === 'photo' ? 'Foto' : 'Vídeo'}
+            </Text>
+            <View style={styles.headerButton} />
+          </View>
+        </SafeAreaView>
+
+        {/* Preview Bottom Actions */}
+        <SafeAreaView edges={['bottom']} style={styles.bottomControls}>
+          <View style={styles.previewActions}>
+            <TouchableOpacity
+              style={styles.previewButton}
+              onPress={() => setPreviewMedia(null)}
+            >
+              <Text style={styles.previewButtonText}>Voltar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.previewButton, styles.previewButtonPrimary]}
+              onPress={() => {
+                setPreviewMedia(null);
+                // TODO: Navigate to next screen or process media
+              }}
+            >
+              <Check size={20} color="#000000" />
+              <Text style={[styles.previewButtonText, styles.previewButtonTextPrimary]}>
+                Usar {previewMedia.type === 'photo' ? 'Foto' : 'Vídeo'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
 
       {/* Camera View */}
-      <CameraView
+      <Camera
         ref={cameraRef}
         style={styles.camera}
-        facing={facing}
-        flash={flash}
+        device={device}
+        isActive={!previewMedia}
+        photo={true}
+        video={true}
+        audio={hasMicrophonePermission}
       />
 
       {/* Header */}
@@ -353,7 +494,14 @@ export default function QuickCaptureScreen() {
             style={styles.galleryButton}
             onPress={handleGallery}
           >
-            <Image size={24} color="#ffffff" />
+            {lastMediaUri ? (
+              <RNImage
+                source={{ uri: lastMediaUri }}
+                style={styles.galleryThumbnail}
+              />
+            ) : (
+              <Image size={24} color="#ffffff" />
+            )}
           </TouchableOpacity>
 
           {/* Capture Button */}
@@ -554,6 +702,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  galleryThumbnail: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
   },
   captureButtonOuter: {
     width: 80,
@@ -588,5 +742,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#ffffff',
     textAlign: 'center',
+  },
+  previewMedia: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000000',
+  },
+  previewActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    gap: 16,
+  },
+  previewButton: {
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewButtonPrimary: {
+    backgroundColor: '#ffffff',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  previewButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  previewButtonTextPrimary: {
+    color: '#000000',
   },
 });
