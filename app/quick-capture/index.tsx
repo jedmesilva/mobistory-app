@@ -57,20 +57,56 @@ export default function QuickCaptureScreen() {
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <StatusBar style="light" />
+
+        {/* Header */}
+        <SafeAreaView edges={['top']} style={styles.header}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => router.back()}
+            >
+              <X size={20} color="#ffffff" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Captura Rápida</Text>
+            <View style={styles.headerButton} />
+          </View>
+        </SafeAreaView>
+
+        {/* Permission Content */}
         <View style={styles.permissionContainer}>
-          <Camera size={64} color={Colors.text.tertiary} />
-          <Text style={styles.permissionText}>
-            Precisamos de acesso à câmera
-          </Text>
+          <View style={styles.permissionIconContainer}>
+            <Camera size={80} color="#ffffff" strokeWidth={1.5} />
+          </View>
+
+          <View style={styles.permissionTextContainer}>
+            <Text style={styles.permissionTitle}>
+              Acesso à Câmera Necessário
+            </Text>
+            <Text style={styles.permissionDescription}>
+              Para capturar fotos e vídeos do seu veículo, precisamos de permissão para acessar a câmera do dispositivo.
+            </Text>
+          </View>
+
           <TouchableOpacity
             style={styles.permissionButton}
             onPress={requestPermission}
+            activeOpacity={0.8}
           >
-            <Text style={styles.permissionButtonText}>Conceder Permissão</Text>
+            <Camera size={20} color="#000000" />
+            <Text style={styles.permissionButtonText}>Permitir Acesso à Câmera</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.permissionSecondaryButton}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.permissionSecondaryButtonText}>Agora Não</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -312,26 +348,66 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
-    gap: 16,
+    padding: 40,
   },
-  permissionText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.text.primary,
+  permissionIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 32,
+  },
+  permissionTextContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  permissionTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
     textAlign: 'center',
+    marginBottom: 12,
+  },
+  permissionDescription: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
+    lineHeight: 24,
+    paddingHorizontal: 8,
   },
   permissionButton: {
-    backgroundColor: Colors.primary.DEFAULT,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginTop: 8,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    width: '100%',
+    justifyContent: 'center',
   },
   permissionButtonText: {
     fontSize: 16,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  permissionSecondaryButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    marginTop: 16,
+  },
+  permissionSecondaryButtonText: {
+    fontSize: 16,
     fontWeight: '600',
-    color: Colors.background.primary,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   header: {
     position: 'absolute',
