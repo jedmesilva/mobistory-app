@@ -257,7 +257,7 @@ export default function FeedScreen() {
   const handleTabChange = useCallback((tab: 'home' | 'profile') => {
     setActiveTab(tab);
     if (tab === 'profile') {
-      router.push('/vehicle-profile');
+      router.push('/vehicle/linked');
     }
   }, [router]);
 

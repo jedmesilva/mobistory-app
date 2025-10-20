@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   View,
@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Animated,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,41 +25,23 @@ import {
   CircleDot,
 } from 'lucide-react-native';
 import { Colors } from '@/constants';
-import { FeedNavBottom, PostCard } from '@/components/feed';
+import { PostCard } from '@/components/feed';
 import { OdometerIcon } from '@/components/icons';
-import { VehicleHeader } from '@/components/ui';
+import { VehicleHeader, BackButton } from '@/components/ui';
 import { useVehicle } from '@/hooks/vehicle';
 import { useVehicleMoments } from '@/hooks/moment';
-import { useSelectedVehicle } from '@/contexts';
 
-export default function VehicleProfileScreen() {
+export default function VehicleViewScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [activeTab, setActiveTab] = useState<'home' | 'profile'>('profile');
   const [following, setFollowing] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
 
-  // Static animated values (no animation in this screen)
-  const navBottomTranslateY = useRef(new Animated.Value(0)).current;
-  const navBottomOpacity = useRef(new Animated.Value(1)).current;
+  // Get vehicle ID from params
+  const vehicleId = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  // Get selected vehicle from context
-  const { selectedVehicleId: contextVehicleId, setSelectedVehicleId } = useSelectedVehicle();
-  const paramsVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : params.vehicleId;
-
-  // Update context once if navigated from params (e.g., from feed post)
-  // After the first update, always use context (so vehicle changes work properly)
-  React.useEffect(() => {
-    if (paramsVehicleId && paramsVehicleId !== contextVehicleId) {
-      setSelectedVehicleId(paramsVehicleId);
-    }
-  }, [paramsVehicleId]); // Only depend on paramsVehicleId to run once
-
-  // Always use context as source of truth
-  const selectedVehicleId = contextVehicleId;
-
-  // Fetch the vehicle data directly by ID (public access to any vehicle)
-  const { vehicle: vehicleData, loading: vehiclesLoading, error: vehiclesError } = useVehicle(selectedVehicleId);
+  // Fetch the vehicle data directly by ID (public access)
+  const { vehicle: vehicleData, loading: vehiclesLoading } = useVehicle(vehicleId);
 
   // Fetch moments for this vehicle
   const { moments, loading: momentsLoading } = useVehicleMoments(vehicleData?.id);
@@ -133,45 +114,47 @@ export default function VehicleProfileScreen() {
     };
   }), [moments]);
 
-  const handleTabChange = (tab: 'home' | 'profile') => {
-    setActiveTab(tab);
-    if (tab === 'home') {
-      router.push('/feed');
-    }
-  };
+  if (vehiclesLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <StatusBar style="dark" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+          <Text style={styles.loadingText}>Carregando veículo...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar style="dark" />
 
-      {/* Header */}
-      <SafeAreaView edges={['top']}>
-        <VehicleHeader
-          vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
-          vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
-          onVehiclePress={() => router.push({
-            pathname: '/vehicles-link-list',
-            params: { from: 'vehicle-profile' }
-          })}
-          rightButton={
-            <TouchableOpacity
-              style={styles.headerMessageButton}
-              onPress={() => router.push({
-                pathname: '/conversations/[id]',
-                params: {
-                  id: vehicle.id,
-                  name: vehicle.name,
-                  plate: vehicle.plate,
-                  year: vehicle.year,
-                  color: vehicle.color
-                }
-              })}
-            >
-              <MessageCircle size={24} color={Colors.text.secondary} />
-            </TouchableOpacity>
-          }
-        />
-      </SafeAreaView>
+      {/* Header - SEM seletor de veículo */}
+      <VehicleHeader
+        vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
+        vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
+        showChevron={false}
+        showVehicleIcon={false}
+        leftButton={<BackButton />}
+        rightButton={
+          <TouchableOpacity
+            style={styles.headerMessageButton}
+            onPress={() => router.push({
+              pathname: '/conversations/[id]',
+              params: {
+                id: vehicle.id,
+                name: vehicle.name,
+                plate: vehicle.plate,
+                year: vehicle.year,
+                color: vehicle.color
+              }
+            })}
+          >
+            <MessageCircle size={24} color={Colors.text.secondary} />
+          </TouchableOpacity>
+        }
+      />
 
       {/* Conteúdo */}
       <ScrollView
@@ -392,13 +375,7 @@ export default function VehicleProfileScreen() {
         </View>
       </ScrollView>
 
-      {/* Nav Bottom */}
-      <FeedNavBottom
-        translateY={navBottomTranslateY}
-        opacity={navBottomOpacity}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      />
+      {/* SEM Nav Bottom nesta tela */}
     </SafeAreaView>
   );
 }
@@ -420,7 +397,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 80,
+    paddingBottom: 20,
   },
   vehicleImageContainer: {
     width: '100%',

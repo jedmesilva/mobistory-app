@@ -222,7 +222,7 @@ export default function ChatScreen() {
             vehicleName={vehicleName}
             vehicleDetails={vehicleDetails}
             onVehiclePress={() => router.push({
-              pathname: '/vehicle-profile',
+              pathname: '/vehicle/linked',
               params: { vehicleId: vehicle.id }
             })}
             showChevron={false}

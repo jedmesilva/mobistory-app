@@ -124,9 +124,9 @@ export default function Index() {
     if (fromRoute === 'new-update') {
       // Volta para tela de nova atualização com o veículo selecionado
       router.push('/new-update');
-    } else if (fromRoute === 'vehicle-profile') {
+    } else if (fromRoute === 'vehicle-profile' || fromRoute === 'vehicle-linked') {
       // Volta para tela de perfil do veículo com o veículo selecionado
-      router.push('/vehicle-profile');
+      router.push('/vehicle/linked');
     } else if (fromRoute === 'feed') {
       // Feed não precisa selecionar veículo, apenas volta
       router.back();
