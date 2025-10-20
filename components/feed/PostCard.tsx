@@ -75,9 +75,9 @@ export const PostCard: React.FC<PostCardProps> = React.memo(({ post }) => {
   const handleVehiclePress = () => {
     if (post.vehicleId) {
       router.push({
-        pathname: '/vehicle-profile',
+        pathname: '/vehicle/view/[id]',
         params: {
-          vehicleId: post.vehicleId,
+          id: post.vehicleId,
         }
       });
     }
