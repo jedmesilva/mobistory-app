@@ -123,7 +123,7 @@ export default function Index() {
 
     if (fromRoute === 'new-update') {
       // Volta para tela de nova atualização com o veículo selecionado
-      router.push('/new-update');
+      router.push('/(modal)/new-update');
     } else if (fromRoute === 'vehicle-profile' || fromRoute === 'vehicle-linked') {
       // Volta para tela de perfil do veículo com o veículo selecionado
       router.push('/vehicle/linked');

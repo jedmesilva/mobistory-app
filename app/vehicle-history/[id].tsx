@@ -22,7 +22,7 @@ import {
 } from 'lucide-react-native';
 import { OdometerIcon } from '../../components/icons';
 import { ActivityCard } from '../../components/vehicle';
-import { SmartCaptureModal } from '../../components/ui/SmartCaptureModal';
+import { SmartCaptureModal, NewUpdateModal } from '../../components/ui';
 import { VehicleHeader, BackButton } from '@/components/ui';
 import { FeedFAB } from '../../components/feed';
 import { useSelectedVehicle } from '@/contexts';
@@ -105,6 +105,7 @@ export default function VehicleHistoryScreen() {
   }, [vehicleData]);
 
   const [showCaptureModal, setShowCaptureModal] = useState(false);
+  const [showNewUpdateModal, setShowNewUpdateModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
   const scrollViewRef = useRef<any>(null);
@@ -396,8 +397,8 @@ export default function VehicleHistoryScreen() {
   }, [router, selectedVehicle]);
 
   const handleNewUpdatePress = useCallback(() => {
-    router.push('/new-update');
-  }, [router]);
+    setShowNewUpdateModal(true);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -494,6 +495,11 @@ export default function VehicleHistoryScreen() {
           voice: 'Fale os dados do evento',
           gallery: 'Selecione uma foto com os dados',
         }}
+      />
+
+      <NewUpdateModal
+        visible={showNewUpdateModal}
+        onClose={() => setShowNewUpdateModal(false)}
       />
     </SafeAreaView>
   );

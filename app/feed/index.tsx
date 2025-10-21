@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants';
 import { PostCard, FeedHeader, FeedNavBottom, FeedFAB } from '../../components/feed';
+import { NewUpdateModal } from '../../components/ui';
 import { useMoments } from '@/hooks/moment';
 
 interface Post {
@@ -38,7 +39,8 @@ const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para esconder (ajustável)
 export default function FeedScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('home');
-  const { moments, loading } = useMoments();
+  const [showNewUpdateModal, setShowNewUpdateModal] = useState(false);
+  const { moments, loading} = useMoments();
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navBottomHeight, setNavBottomHeight] = useState(0);
@@ -277,8 +279,8 @@ export default function FeedScreen() {
   }, [router]);
 
   const handleNewUpdatePress = useCallback(() => {
-    router.push('/new-update');
-  }, [router]);
+    setShowNewUpdateModal(true);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -347,6 +349,11 @@ export default function FeedScreen() {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         onLayout={setNavBottomHeight}
+      />
+
+      <NewUpdateModal
+        visible={showNewUpdateModal}
+        onClose={() => setShowNewUpdateModal(false)}
       />
     </SafeAreaView>
   );
