@@ -21,6 +21,7 @@ import { VehicleStatsCard } from './vehicle-stats-card';
 import { InsightsCard } from './insights-card';
 import { MoreOptionsModal } from './more-options-modal';
 import { DashboardPhotoCard } from './dashboard-photo-card';
+import { NewUpdateModal } from '@/components/ui/NewUpdateModal';
 
 interface ChatMessage {
   id: number;
@@ -53,9 +54,11 @@ export function ChatConversation({
   placeholder = 'Adicionar evento, fazer pergunta...',
   showCameraButton = true,
   onCameraPress,
+  onNewUpdatePress,
 }: ChatConversationProps) {
   const [inputText, setInputText] = useState('');
   const [moreOptionsVisible, setMoreOptionsVisible] = useState(false);
+  const [newUpdateModalVisible, setNewUpdateModalVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const formatDate = (dateStr: string) => {
@@ -94,6 +97,14 @@ export function ChatConversation({
 
   const handleMoreOptions = (type: string) => {
     console.log('Selected option:', type);
+  };
+
+  const handleNewUpdatePress = () => {
+    if (onNewUpdatePress) {
+      onNewUpdatePress();
+    } else {
+      setNewUpdateModalVisible(true);
+    }
   };
 
   const handleCameraPress = () => {
@@ -243,7 +254,7 @@ export function ChatConversation({
 
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => setMoreOptionsVisible(true)}
+              onPress={handleNewUpdatePress}
             >
               <Plus size={20} color={Colors.text.tertiary} />
             </TouchableOpacity>
@@ -263,6 +274,11 @@ export function ChatConversation({
         visible={moreOptionsVisible}
         onClose={() => setMoreOptionsVisible(false)}
         onOptionSelect={handleMoreOptions}
+      />
+
+      <NewUpdateModal
+        visible={newUpdateModalVisible}
+        onClose={() => setNewUpdateModalVisible(false)}
       />
     </KeyboardAvoidingView>
   );
