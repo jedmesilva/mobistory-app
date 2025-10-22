@@ -19,7 +19,6 @@ import { PriceComparisonCard } from './price-comparison-card';
 import { ConsumptionTrendsCard } from './consumption-trends-card';
 import { VehicleStatsCard } from './vehicle-stats-card';
 import { InsightsCard } from './insights-card';
-import { MoreOptionsModal } from './more-options-modal';
 import { DashboardPhotoCard } from './dashboard-photo-card';
 import { NewUpdateModal } from '@/components/ui/NewUpdateModal';
 
@@ -57,7 +56,6 @@ export function ChatConversation({
   onNewUpdatePress,
 }: ChatConversationProps) {
   const [inputText, setInputText] = useState('');
-  const [moreOptionsVisible, setMoreOptionsVisible] = useState(false);
   const [newUpdateModalVisible, setNewUpdateModalVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -93,10 +91,6 @@ export function ChatConversation({
         console.error('Error sending message:', error);
       }
     }
-  };
-
-  const handleMoreOptions = (type: string) => {
-    console.log('Selected option:', type);
   };
 
   const handleNewUpdatePress = () => {
@@ -269,12 +263,6 @@ export function ChatConversation({
           </TouchableOpacity>
         </View>
       </View>
-
-      <MoreOptionsModal
-        visible={moreOptionsVisible}
-        onClose={() => setMoreOptionsVisible(false)}
-        onOptionSelect={handleMoreOptions}
-      />
 
       <NewUpdateModal
         visible={newUpdateModalVisible}

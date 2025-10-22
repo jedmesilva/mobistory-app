@@ -6,5 +6,4 @@ export { PriceComparisonCard } from './price-comparison-card';
 export { ConsumptionTrendsCard } from './consumption-trends-card';
 export { VehicleStatsCard } from './vehicle-stats-card';
 export { InsightsCard } from './insights-card';
-export { MoreOptionsModal } from './more-options-modal';
 export { DashboardPhotoCard } from './dashboard-photo-card';
