@@ -1,4 +1,5 @@
 export { ChatScreen } from './chat-screen';
+export { ChatConversation } from './ChatConversation';
 export { MessageBubble } from './message-bubble';
 export { FuelAnalysisCard } from './fuel-analysis-card';
 export { PriceComparisonCard } from './price-comparison-card';
