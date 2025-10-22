@@ -30,7 +30,7 @@ export default function ConversationsScreen() {
 
       return {
         id: vehicle.id,
-        name: vehicle.models.model,
+        name: `${vehicle.brands?.brand || ''} ${vehicle.models?.model || ''}`.trim(),
         model: vehicle.model_versions?.version || '',
         plate: activePlate?.plate || '',
         year: vehicle.model_year || 0,

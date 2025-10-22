@@ -237,7 +237,7 @@ export function ChatConversation({
           <View style={styles.leftActions}>
             {showCameraButton && (
               <TouchableOpacity style={styles.actionButton} onPress={handleCameraPress}>
-                <Camera size={16} color={Colors.text.tertiary} />
+                <Camera size={20} color={Colors.text.tertiary} />
               </TouchableOpacity>
             )}
 
@@ -245,7 +245,7 @@ export function ChatConversation({
               style={styles.actionButton}
               onPress={() => setMoreOptionsVisible(true)}
             >
-              <Plus size={16} color={Colors.text.tertiary} />
+              <Plus size={20} color={Colors.text.tertiary} />
             </TouchableOpacity>
           </View>
 
@@ -254,7 +254,7 @@ export function ChatConversation({
             onPress={handleSend}
             disabled={!inputText.trim() || isLoading}
           >
-            <ArrowUp size={16} color={Colors.background.primary} />
+            <ArrowUp size={18} color={Colors.background.primary} />
           </TouchableOpacity>
         </View>
       </View>

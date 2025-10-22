@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
-import { VehicleHeader, BackButton } from '@/components/ui';
+import { VehicleHeader, BackButton, NewUpdateModal } from '@/components/ui';
 import { ChatConversation } from '@/components/chat';
 import { useConversation, useMessages } from '@/hooks/conversation';
 import { useAuthEntity } from '@/contexts';
@@ -84,6 +84,13 @@ export default function ChatScreen() {
     });
   };
 
+  // Modal state for New Update
+  const [showNewUpdateModal, setShowNewUpdateModal] = useState(false);
+
+  const handleNewUpdatePress = () => {
+    setShowNewUpdateModal(true);
+  };
+
   // Loading state
   if (entityLoading || conversationLoading || messagesLoading) {
     return (
@@ -118,7 +125,7 @@ export default function ChatScreen() {
   const vehicle = conversation.vehicles;
   const activePlate = vehicle.plates?.find(p => p.active) || vehicle.plates?.[0];
   const activeColor = vehicle.colors?.find(c => c.active) || vehicle.colors?.[0];
-  const vehicleName = `${vehicle.brands.brand} ${vehicle.models.model}`;
+  const vehicleName = `${vehicle.brands.brand} ${vehicle.models.model}${vehicle.model_versions?.version ? ` ${vehicle.model_versions.version}` : ''}`;
   const vehicleDetails = `${activePlate?.plate || ''} • ${vehicle.model_year || ''}${activeColor?.color ? ` • ${activeColor.color}` : ''}`;
 
   return (
@@ -145,6 +152,13 @@ export default function ChatScreen() {
         messages={messages}
         onSendMessage={handleSendMessage}
         onCameraPress={handleCameraPress}
+        onNewUpdatePress={handleNewUpdatePress}
+      />
+
+      {/* New Update Modal */}
+      <NewUpdateModal
+        visible={showNewUpdateModal}
+        onClose={() => setShowNewUpdateModal(false)}
       />
     </SafeAreaView>
   );

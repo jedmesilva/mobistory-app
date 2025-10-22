@@ -9,12 +9,15 @@ type Model = Database['public']['Tables']['models']['Row']
 type ModelVersion = Database['public']['Tables']['model_versions']['Row']
 type Plate = Database['public']['Tables']['plates']['Row']
 
+type Color = Database['public']['Tables']['colors']['Row']
+
 export type ConversationWithVehicle = Conversation & {
   vehicles: Vehicle & {
     brands: Brand
     models: Model
     model_versions: ModelVersion | null
     plates: Plate[]
+    colors: Color[]
   }
 }
 
