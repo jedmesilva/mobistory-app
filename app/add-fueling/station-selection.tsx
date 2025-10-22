@@ -26,7 +26,11 @@ import {
 } from '@/components/add-fueling';
 import { SearchInput } from '@/components/ui';
 
-export default function StationSelectionScreen() {
+interface StationSelectionScreenProps {
+  onStationSelected?: (station: Station) => void;
+}
+
+export default function StationSelectionScreen({ onStationSelected }: StationSelectionScreenProps = {}) {
   const router = useRouter();
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
   const [stationSearch, setStationSearch] = useState('');
@@ -180,7 +184,15 @@ export default function StationSelectionScreen() {
   };
 
   const handleContinue = () => {
-    router.push('/add-fueling/fuel-input');
+    if (onStationSelected && selectedStation) {
+      onStationSelected(selectedStation);
+    } else if (onStationSelected) {
+      // Continue without station
+      onStationSelected(null as any);
+    } else {
+      // Fallback to old navigation
+      router.push('/add-fueling/fuel-input');
+    }
   };
 
   const favoriteStations = savedStations.filter((s) => s.isFavorite);

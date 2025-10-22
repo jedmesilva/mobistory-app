@@ -94,8 +94,15 @@ export function NewUpdateModal({ visible, onClose }: NewUpdateModalProps) {
 
   const handleActivityPress = (activityId: string) => {
     setSelectedActivity(activityId);
-    console.log('Selected activity:', activityId);
-    // TODO: Navegar para tela específica da atividade
+
+    // Fechar o modal primeiro
+    onClose();
+
+    // Navegar para a tela específica da atividade
+    if (activityId === 'fuel') {
+      router.push('/add-fueling');
+    }
+    // TODO: Adicionar navegação para outras atividades
   };
 
   const handleVehicleSelectorPress = () => {

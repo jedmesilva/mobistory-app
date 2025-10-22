@@ -16,16 +16,19 @@ import {
   ConsumptionDisplay,
   FuelItemCard,
 } from '@/components/add-fueling';
-import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
 import { CaptureButton } from '@/components/ui/CaptureButton';
 import { OdometerIcon } from '@/components/icons';
 
-export default function OdometerInputScreen() {
+interface OdometerInputScreenProps {
+  onSubmit?: (odometer: string, consumption: string) => void;
+  onBack?: () => void;
+}
+
+export default function OdometerInputScreen({ onSubmit, onBack }: OdometerInputScreenProps = {}) {
   const router = useRouter();
   const [km, setKm] = useState('');
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [actionType, setActionType] = useState('');
 
   const currentVehicle = {
@@ -106,7 +109,14 @@ export default function OdometerInputScreen() {
     setTimeout(() => {
       setIsProcessing(false);
       setActionType('');
-      router.push('/add-fueling/summary');
+
+      const consumption = getEstimatedConsumption() || '';
+
+      if (onSubmit) {
+        onSubmit(km, consumption);
+      } else {
+        router.push('/add-fueling/summary');
+      }
     }, 800);
   };
 
@@ -117,20 +127,23 @@ export default function OdometerInputScreen() {
     setTimeout(() => {
       setIsProcessing(false);
       setActionType('');
-      router.push('/add-fueling/summary');
+
+      if (onSubmit) {
+        onSubmit('', '');
+      } else {
+        router.push('/add-fueling/summary');
+      }
     }, 800);
   };
 
-  const simulateKmCapture = (method: string) => {
-    setShowCaptureModal(false);
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      const mockKm = (currentVehicle.lastKm + Math.floor(Math.random() * 500) + 100).toString();
-      const formattedKm = formatKm(mockKm);
-      setKm(formattedKm);
-      setIsProcessing(false);
-    }, 2000);
+  const handleQuickCapture = () => {
+    router.push({
+      pathname: '/quick-capture',
+      params: {
+        from: 'odometer-input',
+        context: 'odometer'
+      }
+    });
   };
 
   const getEstimatedConsumption = () => {
@@ -161,7 +174,7 @@ export default function OdometerInputScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+        <TouchableOpacity onPress={() => onBack ? onBack() : router.back()} style={styles.headerButton}>
           <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -287,7 +300,7 @@ export default function OdometerInputScreen() {
         <SafeAreaView edges={['bottom']}>
           <View style={styles.footer}>
             <CaptureButton
-              onPress={() => setShowCaptureModal(true)}
+              onPress={handleQuickCapture}
               subtitle="Detectar quilometragem automaticamente"
             />
 
@@ -322,21 +335,6 @@ export default function OdometerInputScreen() {
           </View>
         </SafeAreaView>
       </View>
-
-      {/* Capture Modal */}
-      <SmartCaptureModal
-        visible={showCaptureModal}
-        onClose={() => setShowCaptureModal(false)}
-        onCapture={simulateKmCapture}
-        title="Captura Rápida"
-        subtitle="Preencha automaticamente a quilometragem"
-        options={{
-          camera: 'Fotografe o painel do odômetro',
-          voice: 'Fale a quilometragem atual',
-          gallery: 'Selecione foto do painel',
-        }}
-        disabled={isProcessing}
-      />
     </SafeAreaView>
   );
 }

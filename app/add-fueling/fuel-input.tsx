@@ -17,7 +17,6 @@ import {
   AddFuelForm,
   FuelSummaryCard,
 } from '@/components/add-fueling';
-import { SmartCaptureModal } from '@/components/ui/SmartCaptureModal';
 import { CaptureButton } from '@/components/ui/CaptureButton';
 
 interface FuelItem {
@@ -28,7 +27,13 @@ interface FuelItem {
   totalPrice: string;
 }
 
-export default function FuelInputScreen() {
+interface FuelInputScreenProps {
+  selectedStation?: any;
+  onSubmit?: (fuelItems: FuelItem[]) => void;
+  onBack?: () => void;
+}
+
+export default function FuelInputScreen({ selectedStation: propStation, onSubmit, onBack }: FuelInputScreenProps = {}) {
   const router = useRouter();
   const [fuelItems, setFuelItems] = useState<FuelItem[]>([]);
   const [currentItem, setCurrentItem] = useState({
@@ -48,7 +53,6 @@ export default function FuelInputScreen() {
   const [showFuelDropdown, setShowFuelDropdown] = useState(false);
   const [showEditDropdown, setShowEditDropdown] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [showCaptureModal, setShowCaptureModal] = useState(false);
 
   const currentVehicle = {
     name: 'Civic',
@@ -56,7 +60,7 @@ export default function FuelInputScreen() {
     plate: 'ABC-1234',
   };
 
-  const selectedStation = {
+  const selectedStation = propStation || {
     id: 1,
     name: 'Shell Select',
     brand: 'Shell',
@@ -308,36 +312,22 @@ export default function FuelInputScreen() {
       setError('Adicione pelo menos um combustível');
       return;
     }
-    router.push('/add-fueling/odometer-input');
+
+    if (onSubmit) {
+      onSubmit(fuelItems);
+    } else {
+      router.push('/add-fueling/odometer-input');
+    }
   };
 
-  const simulateFuelCapture = (method: string) => {
-    setShowCaptureModal(false);
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      const mockLiters = (Math.random() * 30 + 20).toFixed(1).replace('.', ',');
-      const mockPrice = (Math.random() * 2 + 4).toFixed(2).replace('.', ',');
-      const mockFuelType = fuelTypes[Math.floor(Math.random() * 3)]; // Gasolina Comum, Aditivada ou Etanol
-
-      // Calcula o total
-      const litersNum = parseFloat(mockLiters.replace(',', '.'));
-      const priceNum = parseFloat(mockPrice.replace(',', '.'));
-      const totalPrice = (litersNum * priceNum).toFixed(2).replace('.', ',');
-
-      // Cria o item completo
-      const newItem: FuelItem = {
-        id: Date.now(),
-        fuelType: mockFuelType.name,
-        liters: mockLiters,
-        pricePerLiter: mockPrice,
-        totalPrice: totalPrice,
-      };
-
-      // Adiciona diretamente na lista
-      setFuelItems((prev) => [...prev, newItem]);
-      setIsProcessing(false);
-    }, 2000);
+  const handleQuickCapture = () => {
+    router.push({
+      pathname: '/quick-capture',
+      params: {
+        from: 'fuel-input',
+        context: 'fueling'
+      }
+    });
   };
 
   const totalLiters = fuelItems.reduce((sum, item) => sum + parseFloat(item.liters.replace(',', '.')), 0);
@@ -352,7 +342,7 @@ export default function FuelInputScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+        <TouchableOpacity onPress={() => onBack ? onBack() : router.back()} style={styles.headerButton}>
           <ArrowLeft size={20} color={Colors.text.secondary} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
@@ -456,7 +446,7 @@ export default function FuelInputScreen() {
             {/* Selected Station */}
             <SelectedStationBanner
               station={selectedStation}
-              onChangeStation={() => router.back()}
+              onChangeStation={() => onBack ? onBack() : router.back()}
             />
           </View>
 
@@ -481,7 +471,7 @@ export default function FuelInputScreen() {
         <SafeAreaView edges={['bottom']}>
           <View style={styles.footer}>
             <CaptureButton
-              onPress={() => setShowCaptureModal(true)}
+              onPress={handleQuickCapture}
               subtitle="Detectar valores automaticamente"
             />
 
@@ -497,21 +487,6 @@ export default function FuelInputScreen() {
           </View>
         </SafeAreaView>
       </View>
-
-      {/* Capture Modal */}
-      <SmartCaptureModal
-        visible={showCaptureModal}
-        onClose={() => setShowCaptureModal(false)}
-        onCapture={simulateFuelCapture}
-        title="Captura Rápida"
-        subtitle="Preencha automaticamente os litros abastecidos"
-        options={{
-          camera: 'Fotografe o painel da bomba',
-          voice: 'Fale a quantidade de litros',
-          gallery: 'Selecione foto do painel',
-        }}
-        disabled={isProcessing}
-      />
     </SafeAreaView>
   );
 }

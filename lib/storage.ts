@@ -6,7 +6,7 @@
  * ============================================================================
  */
 
-import { supabase } from './supabase';
+import { supabase } from './supabase/client';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 

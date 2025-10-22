@@ -49,11 +49,11 @@
         }
       ],
       [
-        "expo-camera",
+        "react-native-vision-camera",
         {
-          "cameraPermission": "Permite que o $(PRODUCT_NAME) acesse sua câmera para capturar fotos e vídeos do veículo.",
-          "microphonePermission": "Permite que o $(PRODUCT_NAME) acesse seu microfone para gravar vídeos com áudio.",
-          "recordAudioAndroid": true
+          "cameraPermissionText": "Permite que o $(PRODUCT_NAME) acesse sua câmera para capturar fotos e vídeos do veículo.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "Permite que o $(PRODUCT_NAME) acesse seu microfone para gravar vídeos com áudio."
         }
       ]
     ],

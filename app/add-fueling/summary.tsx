@@ -20,7 +20,13 @@ import {
   ConsumptionAnalysisCard,
 } from '@/components/add-fueling';
 
-export default function SummaryScreen() {
+interface SummaryScreenProps {
+  fuelingData?: any;
+  onComplete?: () => void;
+  onBack?: () => void;
+}
+
+export default function SummaryScreen({ fuelingData, onComplete, onBack }: SummaryScreenProps = {}) {
   const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
 
@@ -89,7 +95,19 @@ export default function SummaryScreen() {
   };
 
   const handleComplete = () => {
-    router.replace('/fuel-history/1');
+    if (onComplete) {
+      onComplete();
+    } else {
+      router.replace('/fuel-history/1');
+    }
+  };
+
+  const handleReview = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.push('/add-fueling/fuel-input');
+    }
   };
 
   return (
@@ -340,7 +358,7 @@ export default function SummaryScreen() {
       <View style={styles.footerContainer}>
         <SafeAreaView edges={['bottom']}>
           <View style={styles.footer}>
-            <TouchableOpacity onPress={() => router.push('/add-fueling/fuel-input')} style={styles.reviewButton}>
+            <TouchableOpacity onPress={handleReview} style={styles.reviewButton}>
               <Text style={styles.reviewButtonText}>Revisar</Text>
             </TouchableOpacity>
 
