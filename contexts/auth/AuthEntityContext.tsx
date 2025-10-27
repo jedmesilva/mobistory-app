@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { useAuth } from './AuthContext';
 
 interface AuthEntityContextType {
   entityId: string | null;
@@ -13,38 +13,26 @@ interface AuthEntityProviderProps {
 }
 
 export function AuthEntityProvider({ children }: AuthEntityProviderProps) {
+  const { user, loading: authLoading } = useAuth();
   const [entityId, setEntityId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch João Silva's entity ID from database
-    // TODO: Replace with real auth logic
-    async function fetchMockEntity() {
-      try {
-        const { data, error } = await supabase
-          .from('entities')
-          .select('id')
-          .eq('name', 'João Silva')
-          .eq('entity_type', 'person')
-          .single();
-
-        if (error) {
-          console.error('Error fetching mock entity:', error);
-        } else if (data) {
-          setEntityId(data.id);
-        }
-      } catch (err) {
-        console.error('Error fetching mock entity:', err);
-      } finally {
-        setLoading(false);
-      }
+    // Por enquanto, usamos o user ID como entity ID
+    // TODO: Implementar busca da entity real do usuário via API
+    if (user) {
+      setEntityId(user.id);
+    } else {
+      setEntityId(null);
     }
-
-    fetchMockEntity();
-  }, []);
+  }, [user]);
 
   return (
-    <AuthEntityContext.Provider value={{ entityId, loading }}>
+    <AuthEntityContext.Provider
+      value={{
+        entityId,
+        loading: authLoading,
+      }}
+    >
       {children}
     </AuthEntityContext.Provider>
   );

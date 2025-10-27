@@ -27,7 +27,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants';
 import { useSelectedVehicle } from '@/contexts';
-import { useVehicle } from '@/hooks/vehicle';
+import { useVehicle } from '@/hooks/vehicle/useVehicles';
 
 type ActivityType = {
   id: string;

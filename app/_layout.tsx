@@ -1,16 +1,14 @@
 import { Stack } from 'expo-router';
-import { SelectedVehicleProvider, AuthEntityProvider } from '@/contexts';
+import { SelectedVehicleProvider } from '@/contexts';
 
 export default function Layout() {
   return (
-    <AuthEntityProvider>
-      <SelectedVehicleProvider>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
-      </SelectedVehicleProvider>
-    </AuthEntityProvider>
+    <SelectedVehicleProvider>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+    </SelectedVehicleProvider>
   );
 }

@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import { VehicleHeader, BackButton, NewUpdateModal } from '@/components/ui';
 import { ChatConversation } from '@/components/chat';
-import { useConversation, useMessages } from '@/hooks/conversation';
+import { useConversations, useMessages } from '@/lib/api/hooks';
 import { useAuthEntity } from '@/contexts';
 
 interface ChatMessage {

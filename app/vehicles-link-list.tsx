@@ -14,20 +14,20 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput, BackButton } from '../components/ui';
 import { SectionHeader, VehicleCard } from '../components/vehicle';
-import { useVehiclesWithLinks } from '@/hooks/vehicle';
+import { useVehicles } from '@/hooks/vehicle';
 import { useSelectedVehicle } from '@/contexts';
 
 export default function Index() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { vehicles: vehiclesData, loading, error } = useVehiclesWithLinks();
+  const { vehicles: vehiclesData, loading, error } = useVehicles();
   const { setSelectedVehicleId } = useSelectedVehicle();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
 
-  // Transform Supabase data to match the expected format
+  // Transform API data to match the expected format
   const vehicles = useMemo(() => {
     // Create a flat list of vehicles with their links
     const vehicleLinks = vehiclesData.flatMap((vehicle) => {
@@ -113,23 +113,26 @@ export default function Index() {
     }));
   };
 
-  // Função para navegar de volta com o veículo selecionado
+  // Função para navegar para o perfil do veículo
   const navigateToVehicleProfile = async (vehicle: any) => {
     // Salva o veículo selecionado globalmente
     await setSelectedVehicleId(vehicle.id);
 
     // Determina para onde navegar baseado no parâmetro 'from'
-    const fromRoute = (Array.isArray(params.from) ? params.from[0] : params.from) || 'vehicle-profile';
+    const fromRoute = (Array.isArray(params.from) ? params.from[0] : params.from);
 
     if (fromRoute === 'new-update') {
       // Volta para tela de nova atualização com o veículo selecionado
       router.push('/(modal)/new-update');
-    } else if (fromRoute === 'vehicle-profile' || fromRoute === 'vehicle-linked') {
-      // Volta para tela de perfil do veículo com o veículo selecionado
+    } else if (fromRoute === 'vehicle-linked') {
+      // Volta para tela de veículo vinculado
       router.push('/vehicle/linked');
     } else if (fromRoute === 'feed') {
       // Feed não precisa selecionar veículo, apenas volta
       router.back();
+    } else {
+      // Navegação padrão: abre o perfil do veículo com ID na URL
+      router.push(`/vehicle/view/${vehicle.id}`);
     }
   };
 

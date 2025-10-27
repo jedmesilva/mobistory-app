@@ -1,3 +1,2 @@
-export { useMoments } from './useMoments'
-export { useVehicleMoments } from './useVehicleMoments'
+export { useMoments, useVehicleMoments } from './useMoments'
 export type { MomentWithDetails } from './useMoments'

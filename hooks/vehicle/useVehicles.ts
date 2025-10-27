@@ -1,77 +1,33 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase/client'
-import type { VehicleWithDetails } from '@/types/database/types'
+import { vehiclesService, type VehicleWithDetails } from '@/lib/api/vehicles';
+import { useEffect, useState } from 'react';
 
+// Hook para buscar todos os veículos
 export function useVehicles() {
-  const [vehicles, setVehicles] = useState<VehicleWithDetails[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [vehicles, setVehicles] = useState<VehicleWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    fetchVehicles()
-  }, [])
+    fetchVehicles();
+  }, []);
 
   async function fetchVehicles() {
     try {
-      setLoading(true)
-      setError(null)
-
-      const { data, error: fetchError } = await supabase
-        .from('vehicles')
-        .select(`
-          *,
-          brands (
-            id,
-            brand
-          ),
-          models (
-            id,
-            model
-          ),
-          model_versions (
-            id,
-            version
-          ),
-          vehicle_categories (
-            id,
-            category
-          ),
-          plates (
-            id,
-            plate,
-            state,
-            active
-          ),
-          colors (
-            id,
-            color,
-            active
-          ),
-          vehicle_fuels (
-            id,
-            active,
-            fuels (
-              id,
-              name,
-              type
-            )
-          )
-        `)
-        .order('created_at', { ascending: false })
-
-      if (fetchError) throw fetchError
-
-      setVehicles(data as VehicleWithDetails[])
+      setLoading(true);
+      setError(null);
+      const data = await vehiclesService.getAllWithDetails();
+      setVehicles(data);
+      console.log('✅ Vehicles loaded from backend:', data.length);
     } catch (err) {
-      setError(err as Error)
-      console.error('Error fetching vehicles:', err)
+      setError(err as Error);
+      console.error('❌ Error fetching vehicles:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function refetch() {
-    await fetchVehicles()
+    await fetchVehicles();
   }
 
   return {
@@ -79,5 +35,46 @@ export function useVehicles() {
     loading,
     error,
     refetch,
+  };
+}
+
+// Hook para buscar um veículo específico por ID
+export function useVehicle(vehicleId: string | undefined) {
+  const [vehicle, setVehicle] = useState<VehicleWithDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (vehicleId) {
+      fetchVehicle();
+    }
+  }, [vehicleId]);
+
+  async function fetchVehicle() {
+    if (!vehicleId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await vehiclesService.getByIdWithDetails(vehicleId);
+      setVehicle(data);
+      console.log('✅ Vehicle with details loaded from backend:', vehicleId);
+    } catch (err) {
+      setError(err as Error);
+      console.error('❌ Error fetching vehicle:', err);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  async function refetch() {
+    await fetchVehicle();
+  }
+
+  return {
+    vehicle,
+    loading,
+    error,
+    refetch,
+  };
 }

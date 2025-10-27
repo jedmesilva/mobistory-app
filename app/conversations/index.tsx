@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { Car, ChevronRight } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { SimpleHeader } from '@/components/ui';
-import { useConversations } from '@/hooks/conversation';
+import { useConversations } from '@/lib/api/hooks';
 import { useAuthEntity } from '@/contexts';
 
 export default function ConversationsScreen() {

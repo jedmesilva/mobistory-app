@@ -1,74 +1,83 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase/client'
-import type { Database } from '@/types/database/types'
+import { vehiclesService } from '@/lib/api/vehicles';
+import { useEffect, useState } from 'react';
 
-type VehicleEntityLink = Database['public']['Tables']['vehicle_entity_links']['Row']
-type Entity = Database['public']['Tables']['entities']['Row']
-
-export type VehicleLinkWithDetails = VehicleEntityLink & {
-  entities: Entity
+export interface LinkedPerson {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string | null;
+  relationshipType: 'owner' | 'renter' | 'authorized_driver';
+  status: 'active' | 'former';
+  linkedDate: string;
+  lastAccess: string;
 }
 
+export interface VehicleLinks {
+  activePeople: LinkedPerson[];
+  formerPeople: LinkedPerson[];
+}
+
+// Hook para buscar vínculos de um veículo específico
 export function useVehicleLinks(vehicleId: string | undefined) {
-  const [links, setLinks] = useState<VehicleLinkWithDetails[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [links, setLinks] = useState<VehicleLinks>({ activePeople: [], formerPeople: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (vehicleId) {
-      fetchVehicleLinks(vehicleId)
-    } else {
-      setLinks([])
-      setLoading(false)
+      fetchVehicleLinks();
     }
-  }, [vehicleId])
+  }, [vehicleId]);
 
-  async function fetchVehicleLinks(vehicleId: string) {
+  async function fetchVehicleLinks() {
+    if (!vehicleId) return;
+
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
+      
+      console.log('🔄 Fetching vehicle links for:', vehicleId);
+      const rawLinks = await vehiclesService.getVehicleLinks(vehicleId);
+      console.log('📊 Raw links received:', rawLinks);
+      
+      // Transform API data to LinkedPerson format
+      const transformedLinks = rawLinks.map((link: any) => ({
+        id: parseInt(link.id),
+        name: link.entity.name,
+        email: link.entity.email || '',
+        avatar: null,
+        relationshipType: link.relationship_type as 'owner' | 'renter' | 'authorized_driver',
+        status: link.status === 'terminated' ? 'former' : 'active' as 'active' | 'former',
+        linkedDate: new Date(link.start_date).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        }),
+        lastAccess: new Date(link.created_at).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        }),
+      }));
 
-      const { data, error: fetchError } = await supabase
-        .from('vehicle_entity_links')
-        .select(`
-          *,
-          entities!vehicle_entity_links_entity_id_fkey (
-            id,
-            entity_type,
-            name,
-            email,
-            phone,
-            document_number,
-            metadata,
-            active,
-            created_at
-          )
-        `)
-        .eq('vehicle_id', vehicleId)
-        .eq('active', true)
-        .order('created_at', { ascending: false })
-
-      if (fetchError) throw fetchError
-
-      console.log('Vehicle Links fetched:', {
-        vehicleId,
-        count: data?.length || 0,
-        data
-      })
-
-      setLinks(data as VehicleLinkWithDetails[])
+      // Separate active and former people
+      const activePeople = transformedLinks.filter((person: LinkedPerson) => person.status === 'active');
+      const formerPeople = transformedLinks.filter((person: LinkedPerson) => person.status === 'former');
+      
+      console.log('✅ Processed links:', { activePeople: activePeople.length, formerPeople: formerPeople.length });
+      
+      setLinks({ activePeople, formerPeople });
+      console.log('✅ Vehicle links loaded from API:', vehicleId);
     } catch (err) {
-      setError(err as Error)
-      console.error('Error fetching vehicle links:', err)
+      setError(err as Error);
+      console.error('❌ Error fetching vehicle links:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function refetch() {
-    if (vehicleId) {
-      await fetchVehicleLinks(vehicleId)
-    }
+    await fetchVehicleLinks();
   }
 
   return {
@@ -76,5 +85,5 @@ export function useVehicleLinks(vehicleId: string | undefined) {
     loading,
     error,
     refetch,
-  }
+  };
 }

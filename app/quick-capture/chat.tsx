@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Check } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { ChatConversation } from '@/components/chat';
-import { useConversation, useMessages } from '@/hooks/conversation';
+import { useConversations, useMessages } from '@/lib/api/hooks';
 import { useAuthEntity } from '@/contexts';
 
 interface CaptureData {

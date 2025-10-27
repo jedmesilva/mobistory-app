@@ -1,20 +1,20 @@
-import React, { useState, useMemo } from 'react';
+import { VehicleHeader } from '@/components/ui';
+import { Colors } from '@/constants';
+import { useSelectedVehicle } from '@/contexts';
+import { useVehicle, useVehicleLinks, type LinkedPerson } from '@/hooks/vehicle';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ArrowLeft, UserPlus } from 'lucide-react-native';
+import React, { useMemo, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '@/constants';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { UserPlus, ArrowLeft } from 'lucide-react-native';
-import { LinkSection, LinkedPerson } from '../../components/vehicle-details';
-import { VehicleHeader } from '@/components/ui';
-import { useSelectedVehicle } from '@/contexts';
-import { useVehicle, useVehicleLinks } from '@/hooks/vehicle';
+import { LinkSection } from '../../components/vehicle-details';
 
 export default function VehicleLinksScreen() {
   const params = useLocalSearchParams();
@@ -70,30 +70,13 @@ export default function VehicleLinksScreen() {
 
   // Transform links to LinkedPerson format
   const linkedPeople = useMemo<LinkedPerson[]>(() => {
-    console.log('Transforming links:', {
+    console.log('Using links from hook:', {
       vehicleId,
-      linksCount: links.length,
-      links
+      activePeople: links.activePeople.length,
+      formerPeople: links.formerPeople.length,
     });
 
-    return links.map((link) => ({
-      id: parseInt(link.id.slice(0, 8), 16), // Convert UUID to number
-      name: link.entities.name,
-      email: link.entities.email || '',
-      avatar: null,
-      relationshipType: link.relationship_type as 'owner' | 'co_owner' | 'renter' | 'authorized_driver',
-      status: link.status === 'terminated' ? 'former' : link.status as 'active' | 'suspended' | 'pending',
-      linkedDate: new Date(link.start_date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
-      lastAccess: new Date(link.created_at).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
-    }));
+    return [...links.activePeople, ...links.formerPeople];
   }, [links, vehicleId]);
 
   const [selectedPerson, setSelectedPerson] = useState<LinkedPerson | null>(null);
