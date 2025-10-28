@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Sparkles,
   Droplet,
+  Zap,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants';
@@ -137,44 +138,51 @@ export default function NewUpdateScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Destaque da Captura Rápida */}
-        <TouchableOpacity
-          style={styles.quickCaptureContainer}
-          onPress={handleQuickCapture}
-          activeOpacity={0.9}
-        >
+        <View style={styles.quickCaptureContainer}>
           <LinearGradient
             colors={['#1a1a1a', '#2d2d2d']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.quickCaptureGradient}
           >
-            <View style={styles.quickCaptureIconContainer}>
-              <Camera size={28} color="#1a1a1a" />
-            </View>
-
-            <View style={styles.quickCaptureTextContainer}>
-              <View style={styles.quickCaptureTitleRow}>
-                <Text style={styles.quickCaptureTitle}>Captura Rápida</Text>
-                <LinearGradient
-                  colors={['#3b82f6', '#8b5cf6']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.aiBadge}
-                >
-                  <Text style={styles.aiBadgeText}>com IA</Text>
-                </LinearGradient>
+            {/* Header com ícone e texto */}
+            <View style={styles.quickCaptureHeader}>
+              <View style={styles.quickCaptureIconContainer}>
+                <Zap size={24} color="#1a1a1a" fill="#1a1a1a" />
               </View>
-              <Text style={styles.quickCaptureDescription}>
-                Tire uma foto e deixe a IA extrair todos os dados
-              </Text>
-              <Text style={styles.quickCaptureCredits}>
-                2 capturas grátis disponíveis
-              </Text>
+
+              <View style={styles.quickCaptureTextContainer}>
+                <View style={styles.quickCaptureTitleRow}>
+                  <Text style={styles.quickCaptureTitle}>Captura Rápida</Text>
+                  <LinearGradient
+                    colors={['#3b82f6', '#8b5cf6']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.aiBadge}
+                  >
+                    <Text style={styles.aiBadgeText}>com IA</Text>
+                  </LinearGradient>
+                </View>
+                <Text style={styles.quickCaptureDescription}>
+                  Tire uma foto e deixe a IA extrair todos os dados
+                </Text>
+                <Text style={styles.quickCaptureCredits}>
+                  2 capturas grátis disponíveis
+                </Text>
+              </View>
             </View>
 
-            <ChevronRight size={20} color="#d1d5db" />
+            {/* Botão Capturar */}
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={handleQuickCapture}
+              activeOpacity={0.8}
+            >
+              <Camera size={20} color="#1a1a1a" />
+              <Text style={styles.captureButtonText}>Capturar</Text>
+            </TouchableOpacity>
           </LinearGradient>
-        </TouchableOpacity>
+        </View>
 
         {/* Divider */}
         <View style={styles.dividerContainer}>
@@ -270,23 +278,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   quickCaptureGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
     padding: 16,
-    gap: 16,
+  },
+  quickCaptureHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 16,
   },
   quickCaptureIconContainer: {
-    width: 56,
-    height: 56,
+    width: 48,
+    height: 48,
     borderRadius: 12,
     backgroundColor: Colors.background.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    flexShrink: 0,
   },
   quickCaptureTextContainer: {
     flex: 1,
@@ -301,9 +308,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.background.primary,
+    lineHeight: 20,
   },
   aiBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 12,
   },
@@ -313,14 +321,29 @@ const styles = StyleSheet.create({
     color: Colors.background.primary,
   },
   quickCaptureDescription: {
-    fontSize: 14,
-    color: '#d1d5db',
-    marginBottom: 8,
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 4,
   },
   quickCaptureCredits: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#4ade80',
+    marginTop: 6,
+  },
+  captureButton: {
+    backgroundColor: Colors.background.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 12,
+    gap: 8,
+  },
+  captureButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1a1a1a',
   },
   dividerContainer: {
     flexDirection: 'row',

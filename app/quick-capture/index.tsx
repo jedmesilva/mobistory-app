@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DeviceEventEmitter } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import CaptureScreen from './capture';
 import ChatScreen from './chat';
@@ -45,6 +46,9 @@ export default function QuickCaptureFlow() {
   };
 
   const handleFlowComplete = () => {
+    // Emit event to notify that capture was completed successfully
+    DeviceEventEmitter.emit('quickCaptureCompleted');
+
     // Navigate back to origin with data
     // TODO: Pass captured data back to origin screen
     router.back();

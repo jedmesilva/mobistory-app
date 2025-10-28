@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,11 @@ import {
   ScrollView,
   Dimensions,
   Modal,
+  DeviceEventEmitter,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
-  Camera,
-  ChevronRight,
   ChevronsUpDown,
   Fuel,
   Gauge,
@@ -28,6 +27,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants';
 import { useSelectedVehicle } from '@/contexts';
 import { useVehicle } from '@/hooks/vehicle/useVehicles';
+import { QuickCaptureCard } from '@/components/new-update/QuickCaptureCard';
 
 type ActivityType = {
   id: string;
@@ -49,6 +49,20 @@ export function NewUpdateModal({ visible, onClose }: NewUpdateModalProps) {
 
   // Fetch vehicle data
   const { vehicle: vehicleData } = useVehicle(selectedVehicleId || undefined);
+
+  // Listen for capture completion
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      'quickCaptureCompleted',
+      () => {
+        onClose();
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [onClose]);
 
   // Transform vehicle data for display
   const selectedVehicleData = React.useMemo(() => {
@@ -88,7 +102,6 @@ export function NewUpdateModal({ visible, onClose }: NewUpdateModalProps) {
   ];
 
   const handleQuickCapture = () => {
-    onClose();
     router.push('/quick-capture');
   };
 
@@ -165,44 +178,7 @@ export function NewUpdateModal({ visible, onClose }: NewUpdateModalProps) {
           showsVerticalScrollIndicator={false}
         >
           {/* Destaque da Captura Rápida */}
-          <TouchableOpacity
-            style={styles.quickCaptureContainer}
-            onPress={handleQuickCapture}
-            activeOpacity={0.9}
-          >
-            <LinearGradient
-              colors={['#1a1a1a', '#2d2d2d']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.quickCaptureGradient}
-            >
-              <View style={styles.quickCaptureIconContainer}>
-                <Camera size={28} color="#1a1a1a" />
-              </View>
-
-              <View style={styles.quickCaptureTextContainer}>
-                <View style={styles.quickCaptureTitleRow}>
-                  <Text style={styles.quickCaptureTitle}>Captura Rápida</Text>
-                  <LinearGradient
-                    colors={['#3b82f6', '#8b5cf6']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.aiBadge}
-                  >
-                    <Text style={styles.aiBadgeText}>com IA</Text>
-                  </LinearGradient>
-                </View>
-                <Text style={styles.quickCaptureDescription}>
-                  Tire uma foto e deixe a IA extrair todos os dados
-                </Text>
-                <Text style={styles.quickCaptureCredits}>
-                  2 capturas grátis disponíveis
-                </Text>
-              </View>
-
-              <ChevronRight size={20} color="#d1d5db" />
-            </LinearGradient>
-          </TouchableOpacity>
+          <QuickCaptureCard onPress={handleQuickCapture} />
 
           {/* Divider */}
           <View style={styles.dividerContainer}>
@@ -299,64 +275,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 24,
-  },
-  quickCaptureContainer: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 16,
-  },
-  quickCaptureGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    gap: 16,
-  },
-  quickCaptureIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
-    backgroundColor: Colors.background.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  quickCaptureTextContainer: {
-    flex: 1,
-  },
-  quickCaptureTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  quickCaptureTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.background.primary,
-  },
-  aiBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  aiBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: Colors.background.primary,
-  },
-  quickCaptureDescription: {
-    fontSize: 14,
-    color: '#d1d5db',
-    marginBottom: 8,
-  },
-  quickCaptureCredits: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4ade80',
   },
   dividerContainer: {
     flexDirection: 'row',
