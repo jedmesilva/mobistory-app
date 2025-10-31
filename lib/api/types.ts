@@ -29,60 +29,121 @@ export interface AuthResponse {
 }
 
 // ===============================
-// Vehicle Types
+// Vehicle Types (Updated for FastAPI Backend)
 // ===============================
 
 export interface Brand {
   id: string;
-  brand: string;
-  created_at: string;
-  updated_at: string;
+  name: string;  // Changed from "brand" to "name"
+  country_of_origin?: string;
+  logo_url?: string;
+  active?: boolean;
+  created_at?: string;
 }
 
 export interface Model {
   id: string;
   brand_id: string;
-  model: string;
-  created_at: string;
-  updated_at: string;
+  name: string;  // Changed from "model" to "name"
+  category?: string;
+  active?: boolean;
+  created_at?: string;
 }
 
 export interface ModelVersion {
   id: string;
   model_id: string;
-  version: string;
+  name: string;  // Changed from "version" to "name"
+  start_year?: number;
+  end_year?: number;
+  fuel_type?: string;
+  transmission?: string;
+  active?: boolean;
+  created_at?: string;
+}
+
+export interface EntityLink {
+  id: string;
+  link_code: string;
+  entity_id: string;
+  vehicle_id: string;
+  link_type_id?: string;
+  status: string;  // pending, active, terminated, etc
+  start_date: string;
+  end_date?: string;
+  observations?: string;
   created_at: string;
   updated_at: string;
+  // Dados da entidade vinculada
+  entity?: {
+    id: string;
+    display_name: string;
+    email?: string;
+    phone?: string;
+    entity_code: string;
+  };
 }
 
 export interface Vehicle {
   id: string;
-  user_id: string;
   brand_id: string;
   model_id: string;
   version_id: string | null;
-  year: number;
-  nickname: string | null;
-  color_id: string | null;
-  plate_id: string | null;
-  current_odometer: number | null;
+  vin: string | null;  // Changed from "chassis" to "vin"
+  renavam: string | null;
+  manufacturing_year: number | null;
+  model_year: number | null;
+  current_plate: string | null;  // Changed from plate_id to current_plate (string)
+  current_color: string | null;  // Changed from color_id to current_color (string)
+  current_km: number | null;  // Changed from current_odometer
+  visibility: string;
+  observations?: string;
   created_at: string;
   updated_at: string;
 }
 
 export interface VehicleWithDetails extends Vehicle {
-  brand?: Brand;
-  model?: Model;
-  version?: ModelVersion;
+  // Relacionamentos com novos nomes
+  brand: Brand | null;     // Changed from "brands" (plural) to "brand" (singular)
+  model: Model | null;     // Changed from "models" (plural) to "model" (singular)
+  version: ModelVersion | null;  // Changed from "model_versions" to "version"
+
+  // Links com entidades (obtidos via endpoint separado)
+  entity_links?: EntityLink[];
+}
+
+// Interface de compatibilidade com código antigo (conversão)
+export interface VehicleWithDetailsLegacy {
+  id: string;
+  brand_id: string;
+  model_id: string;
+  version_id: string | null;
+  chassis: string;
+  model_year: number;
+  manufacture_year: number;
+
+  // Nomes antigos do Supabase
+  brands: { brand: string };
+  models: { model: string };
+  model_versions: { version: string } | null;
+  plates: Array<{ plate: string; active: boolean }>;
+  colors: Array<{ color: string; active: boolean }>;
+  vehicle_entity_links?: EntityLink[];
 }
 
 export interface VehicleCreateRequest {
   brand_id: string;
   model_id: string;
   version_id?: string;
-  year: number;
-  nickname?: string;
-  current_odometer?: number;
+  vin?: string;
+  renavam?: string;
+  manufacturing_year?: number;
+  model_year?: number;
+  current_plate?: string;
+  current_color?: string;
+  current_km?: number;
+  visibility?: string;
+  observations?: string;
 }
 
 // ===============================

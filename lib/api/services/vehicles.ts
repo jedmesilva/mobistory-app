@@ -1,41 +1,93 @@
 import { api } from '../config';
-import type { Vehicle, VehicleWithDetails, VehicleCreateRequest, Brand, Model, ModelVersion } from '../types';
+import type {
+  Vehicle,
+  VehicleWithDetails,
+  VehicleWithDetailsLegacy,
+  VehicleCreateRequest,
+  Brand,
+  Model,
+  ModelVersion
+} from '../types';
+
+// Re-exportar do arquivo vehicles.ts se existir, ou usar tipos locais
+import { convertToLegacyFormat } from '../vehicles';
 
 export const vehiclesService = {
   /**
-   * Listar veículos do usuário
+   * Listar veículos do usuário com detalhes
    */
-  async list(): Promise<VehicleWithDetails[]> {
-    const response = await api.get<VehicleWithDetails[]>('/vehicles');
-    return response.data;
+  async list(): Promise<VehicleWithDetailsLegacy[]> {
+    try {
+      // Buscar veículos
+      const response = await api.get<VehicleWithDetails[]>('/vehicles/');
+      const vehicles = response.data;
+
+      // Para cada veículo, buscar os links
+      const vehiclesWithLinks = await Promise.all(
+        vehicles.map(async (vehicle) => {
+          try {
+            const linksResponse = await api.get(`/vehicles/${vehicle.id}/links`);
+            vehicle.entity_links = linksResponse.data?.links || [];
+          } catch (error) {
+            console.warn(`Failed to fetch links for vehicle ${vehicle.id}:`, error);
+            vehicle.entity_links = [];
+          }
+          return vehicle;
+        })
+      );
+
+      // Converter para formato legacy
+      return vehiclesWithLinks.map(convertToLegacyFormat);
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+      throw error;
+    }
   },
 
   /**
    * Criar novo veículo
    */
   async create(data: VehicleCreateRequest): Promise<Vehicle> {
-    const response = await api.post<Vehicle>('/vehicles', data);
+    const response = await api.post<Vehicle>('/vehicles/', data);
     return response.data;
   },
 
   /**
    * Obter detalhes de um veículo
    */
-  async get(id: string): Promise<VehicleWithDetails> {
-    const response = await api.get<VehicleWithDetails>(`/vehicles/${id}`);
-    return response.data;
+  async get(id: string): Promise<VehicleWithDetailsLegacy> {
+    try {
+      // Buscar veículo
+      const response = await api.get<VehicleWithDetails>(`/vehicles/${id}`);
+      const vehicle = response.data;
+
+      // Buscar links
+      try {
+        const linksResponse = await api.get(`/vehicles/${id}/links`);
+        vehicle.entity_links = linksResponse.data?.links || [];
+      } catch (error) {
+        console.warn(`Failed to fetch links for vehicle ${id}:`, error);
+        vehicle.entity_links = [];
+      }
+
+      // Converter para formato legacy
+      return convertToLegacyFormat(vehicle);
+    } catch (error) {
+      console.error(`Error fetching vehicle ${id}:`, error);
+      throw error;
+    }
   },
 
   /**
-   * Atualizar veículo
+   * Atualizar veículo (parcial)
    */
   async update(id: string, data: Partial<VehicleCreateRequest>): Promise<Vehicle> {
-    const response = await api.put<Vehicle>(`/vehicles/${id}`, data);
+    const response = await api.patch<Vehicle>(`/vehicles/${id}`, data);
     return response.data;
   },
 
   /**
-   * Deletar veículo
+   * Deletar veículo (soft delete)
    */
   async delete(id: string): Promise<void> {
     await api.delete(`/vehicles/${id}`);

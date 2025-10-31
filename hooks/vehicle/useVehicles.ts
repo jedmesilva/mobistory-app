@@ -1,9 +1,10 @@
-import { vehiclesService, type VehicleWithDetails } from '@/lib/api/vehicles';
+import { vehiclesService } from '@/lib/api/services/vehicles';
+import type { VehicleWithDetailsLegacy } from '@/lib/api/types';
 import { useEffect, useState } from 'react';
 
 // Hook para buscar todos os veículos
 export function useVehicles() {
-  const [vehicles, setVehicles] = useState<VehicleWithDetails[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleWithDetailsLegacy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -15,7 +16,7 @@ export function useVehicles() {
     try {
       setLoading(true);
       setError(null);
-      const data = await vehiclesService.getAllWithDetails();
+      const data = await vehiclesService.list();
       setVehicles(data);
       console.log('✅ Vehicles loaded from backend:', data.length);
     } catch (err) {
@@ -40,7 +41,7 @@ export function useVehicles() {
 
 // Hook para buscar um veículo específico por ID
 export function useVehicle(vehicleId: string | undefined) {
-  const [vehicle, setVehicle] = useState<VehicleWithDetails | null>(null);
+  const [vehicle, setVehicle] = useState<VehicleWithDetailsLegacy | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -56,7 +57,7 @@ export function useVehicle(vehicleId: string | undefined) {
     try {
       setLoading(true);
       setError(null);
-      const data = await vehiclesService.getByIdWithDetails(vehicleId);
+      const data = await vehiclesService.get(vehicleId);
       setVehicle(data);
       console.log('✅ Vehicle with details loaded from backend:', vehicleId);
     } catch (err) {
