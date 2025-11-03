@@ -1,4 +1,4 @@
-export { SearchableInput } from './SearchableInput';
+export { SearchableInput, type SuggestionItem } from './SearchableInput';
 export { StepHeader } from './StepHeader';
 export { ColorSelector, type ColorOption } from './ColorSelector';
 export { FuelTypeSelector, type FuelTypeOption } from './FuelTypeSelector';
@@ -10,3 +10,4 @@ export { ConfirmationScreen } from './ConfirmationScreen';
 export { ActionFooter } from './ActionFooter';
 export { YearInput } from './YearInput';
 export { PlateAndColorStep } from './PlateAndColorStep';
+export { QuickCaptureButton } from './QuickCaptureButton';

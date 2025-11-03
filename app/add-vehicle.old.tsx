@@ -1,8 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
+  Text,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
@@ -24,42 +26,36 @@ import {
   PlateAndColorStep,
   type ColorOption,
   type FuelTypeOption,
+  type SuggestionItem,
 } from '../components/add-vehicle';
 import { SmartCaptureModal } from '../components/ui/SmartCaptureModal';
+import { useVehicleCatalog } from '../hooks/vehicle/useVehicleCatalog';
+import { vehiclesService } from '../lib/api/services/vehicles';
 
 interface VehicleData {
+  // IDs do catálogo (quando usa item existente)
+  brand_id: string;
+  model_id: string;
+  version_id: string;
+
+  // Nomes para exibição
   brand: string;
   model: string;
   name: string;
+
+  // Flags para indicar se deve criar novo (customizado)
+  isNewBrand: boolean;
+  isNewModel: boolean;
+  isNewVersion: boolean;
+
+  // Outros dados
   year: string;
   plate: string;
   color: string;
   fuelType: string;
 }
 
-const brands = [
-  'Audi', 'BMW', 'Chevrolet', 'Citroën', 'Fiat', 'Ford', 'Honda', 'Hyundai',
-  'Jeep', 'Kia', 'Land Rover', 'Mercedes-Benz', 'Mitsubishi', 'Nissan',
-  'Peugeot', 'Renault', 'Subaru', 'Suzuki', 'Toyota', 'Volkswagen', 'Volvo',
-];
-
-const modelsByBrand: { [key: string]: string[] } = {
-  'Honda': ['Accord', 'City', 'Civic', 'CR-V', 'Fit', 'HR-V', 'Pilot'],
-  'Toyota': ['Camry', 'Corolla', 'Etios', 'Hilux', 'Prius', 'RAV4', 'Yaris'],
-  'Volkswagen': ['Amarok', 'Fox', 'Gol', 'Golf', 'Jetta', 'Passat', 'Polo', 'T-Cross', 'Tiguan'],
-  'Chevrolet': ['Captiva', 'Cruze', 'Equinox', 'Onix', 'Prisma', 'S10', 'Spin', 'Tracker'],
-  'Ford': ['EcoSport', 'Edge', 'Fiesta', 'Focus', 'Fusion', 'Ka', 'Ranger', 'Territory'],
-  'Fiat': ['Argo', 'Cronos', 'Ducato', 'Mobi', 'Palio', 'Siena', 'Strada', 'Toro', 'Uno'],
-};
-
-const versionsByModel: { [key: string]: string[] } = {
-  'Civic': ['LX', 'LXR', 'LXS', 'EX', 'EXL', 'Sport', 'Touring', 'Si', 'Type R'],
-  'Corolla': ['GLi', 'XEi', 'Altis', 'XRS', 'Hybrid'],
-  'Gol': ['1.0', '1.6', 'Trendline', 'Comfortline', 'Highline', 'GTI'],
-  'Onix': ['Joy', 'LT', 'LTZ', 'Premier', 'RS'],
-  'Ka': ['SE', 'SE Plus', 'SEL', 'Freestyle'],
-  'Argo': ['Drive', 'Trekking', 'Precision', 'HGT'],
-};
+// Removido: arrays estáticos substituídos pela API
 
 const fuelTypes: FuelTypeOption[] = [
   { id: 'gasoline', label: 'Gasolina', icon: 'fuel' },
@@ -88,6 +84,7 @@ export default function AddVehicleScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasAutoData, setHasAutoData] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [brandSearch, setBrandSearch] = useState('');
   const [modelSearch, setModelSearch] = useState('');
@@ -96,37 +93,62 @@ export default function AddVehicleScreen() {
   const [showModelSuggestions, setShowModelSuggestions] = useState(false);
   const [showVersionSuggestions, setShowVersionSuggestions] = useState(false);
 
+  // Hook do catálogo
+  const catalog = useVehicleCatalog();
+
   const [vehicleData, setVehicleData] = useState<VehicleData>({
+    brand_id: '',
+    model_id: '',
+    version_id: '',
     brand: '',
     model: '',
     name: '',
+    isNewBrand: false,
+    isNewModel: false,
+    isNewVersion: false,
     year: '',
     plate: '',
     color: '',
     fuelType: '',
   });
 
-  const getFilteredBrands = () => {
-    if (!brandSearch) return brands;
-    return brands.filter((brand) =>
-      brand.toLowerCase().includes(brandSearch.toLowerCase())
-    );
+  const getFilteredBrands = (): SuggestionItem[] => {
+    const filtered = brandSearch
+      ? catalog.brands.filter((brand) =>
+          brand.name.toLowerCase().includes(brandSearch.toLowerCase())
+        )
+      : catalog.brands;
+
+    return filtered.map(b => ({
+      name: b.name,
+      verified: b.verified,
+    }));
   };
 
-  const getFilteredModels = () => {
-    const models = modelsByBrand[vehicleData.brand] || [];
-    if (!modelSearch) return models;
-    return models.filter((model) =>
-      model.toLowerCase().includes(modelSearch.toLowerCase())
-    );
+  const getFilteredModels = (): SuggestionItem[] => {
+    const filtered = modelSearch
+      ? catalog.models.filter((model) =>
+          model.name.toLowerCase().includes(modelSearch.toLowerCase())
+        )
+      : catalog.models;
+
+    return filtered.map(m => ({
+      name: m.name,
+      verified: m.verified,
+    }));
   };
 
-  const getFilteredVersions = () => {
-    const versions = versionsByModel[vehicleData.model] || [];
-    if (!versionSearch) return versions;
-    return versions.filter((version) =>
-      version.toLowerCase().includes(versionSearch.toLowerCase())
-    );
+  const getFilteredVersions = (): SuggestionItem[] => {
+    const filtered = versionSearch
+      ? catalog.versions.filter((version) =>
+          version.name.toLowerCase().includes(versionSearch.toLowerCase())
+        )
+      : catalog.versions;
+
+    return filtered.map(v => ({
+      name: v.name,
+      verified: v.verified,
+    }));
   };
 
   const simulateAutoCapture = (method: string) => {
@@ -161,28 +183,140 @@ export default function AddVehicleScreen() {
     }));
   };
 
-  const handleBrandSelect = (brand: string) => {
-    setBrandSearch(brand);
-    handleInputChange('brand', brand);
-    setShowBrandSuggestions(false);
-    // Limpa modelo ao trocar de marca
-    handleInputChange('model', '');
-    setModelSearch('');
+  const handleBrandSelect = async (brandName: string) => {
+    try {
+      setBrandSearch(brandName);
+      setShowBrandSuggestions(false);
+
+      // Buscar marca existente na lista local
+      const existingBrand = catalog.brands.find(
+        b => b.name.toLowerCase() === brandName.toLowerCase()
+      );
+
+      if (existingBrand) {
+        // Marca existe - usar ID existente
+        setVehicleData(prev => ({
+          ...prev,
+          brand_id: existingBrand.id,
+          brand: existingBrand.name,
+          isNewBrand: false,
+          model_id: '',
+          model: '',
+          isNewModel: false,
+          version_id: '',
+          name: '',
+          isNewVersion: false,
+        }));
+
+        // Carrega modelos da marca selecionada
+        await catalog.loadModels(existingBrand.id);
+      } else {
+        // Marca NÃO existe - marcar para criar depois
+        setVehicleData(prev => ({
+          ...prev,
+          brand_id: '',
+          brand: brandName,
+          isNewBrand: true,
+          model_id: '',
+          model: '',
+          isNewModel: false,
+          version_id: '',
+          name: '',
+          isNewVersion: false,
+        }));
+
+        // Limpa modelos (nova marca não tem modelos ainda)
+        catalog.resetModel();
+      }
+
+      // Reseta modelo e versão
+      setModelSearch('');
+      setVersionSearch('');
+      catalog.resetVersion();
+    } catch (error) {
+      console.error('Error selecting brand:', error);
+    }
   };
 
-  const handleModelSelect = (model: string) => {
-    setModelSearch(model);
-    handleInputChange('model', model);
-    setShowModelSuggestions(false);
-    // Limpa versão ao trocar de modelo
-    handleInputChange('name', '');
-    setVersionSearch('');
+  const handleModelSelect = async (modelName: string) => {
+    try {
+      setModelSearch(modelName);
+      setShowModelSuggestions(false);
+
+      // Buscar modelo existente na lista local
+      const existingModel = catalog.models.find(
+        m => m.name.toLowerCase() === modelName.toLowerCase()
+      );
+
+      if (existingModel) {
+        // Modelo existe - usar ID existente
+        setVehicleData(prev => ({
+          ...prev,
+          model_id: existingModel.id,
+          model: existingModel.name,
+          isNewModel: false,
+          version_id: '',
+          name: '',
+          isNewVersion: false,
+        }));
+
+        // Carrega versões do modelo selecionado (somente se marca também existe)
+        if (vehicleData.brand_id) {
+          await catalog.loadVersions(vehicleData.brand_id, existingModel.id);
+        }
+      } else {
+        // Modelo NÃO existe - marcar para criar depois
+        setVehicleData(prev => ({
+          ...prev,
+          model_id: '',
+          model: modelName,
+          isNewModel: true,
+          version_id: '',
+          name: '',
+          isNewVersion: false,
+        }));
+
+        // Limpa versões (novo modelo não tem versões ainda)
+        catalog.resetVersion();
+      }
+
+      // Reseta versão
+      setVersionSearch('');
+    } catch (error) {
+      console.error('Error selecting model:', error);
+    }
   };
 
-  const handleVersionSelect = (version: string) => {
-    setVersionSearch(version);
-    handleInputChange('name', version);
-    setShowVersionSuggestions(false);
+  const handleVersionSelect = async (versionName: string) => {
+    try {
+      setVersionSearch(versionName);
+      setShowVersionSuggestions(false);
+
+      // Buscar versão existente na lista local
+      const existingVersion = catalog.versions.find(
+        v => v.name.toLowerCase() === versionName.toLowerCase()
+      );
+
+      if (existingVersion) {
+        // Versão existe - usar ID existente
+        setVehicleData(prev => ({
+          ...prev,
+          version_id: existingVersion.id,
+          name: existingVersion.name,
+          isNewVersion: false,
+        }));
+      } else {
+        // Versão NÃO existe - marcar para criar depois
+        setVehicleData(prev => ({
+          ...prev,
+          version_id: '',
+          name: versionName,
+          isNewVersion: true,
+        }));
+      }
+    } catch (error) {
+      console.error('Error selecting version:', error);
+    }
   };
 
   const handleCreateNewBrand = () => {
@@ -228,9 +362,71 @@ export default function AddVehicleScreen() {
     setCurrentStep(step);
   };
 
-  const handleSaveVehicle = () => {
-    console.log('Salvando veículo:', vehicleData);
-    router.back();
+  const handleSaveVehicle = async () => {
+    try {
+      setIsSaving(true);
+
+      let finalBrandId = vehicleData.brand_id;
+      let finalModelId = vehicleData.model_id;
+      let finalVersionId = vehicleData.version_id;
+
+      // 1. Criar marca se necessário
+      if (vehicleData.isNewBrand) {
+        console.log('Criando nova marca:', vehicleData.brand);
+        const newBrand = await catalog.selectOrCreateBrand(vehicleData.brand);
+        finalBrandId = newBrand.id;
+      }
+
+      // 2. Criar modelo se necessário
+      if (vehicleData.isNewModel && finalBrandId) {
+        console.log('Criando novo modelo:', vehicleData.model);
+        const newModel = await catalog.selectOrCreateModel(
+          finalBrandId,
+          vehicleData.model
+        );
+        finalModelId = newModel.id;
+      }
+
+      // 3. Criar versão se necessário
+      if (vehicleData.isNewVersion && finalBrandId && finalModelId) {
+        console.log('Criando nova versão:', vehicleData.name);
+        const newVersion = await catalog.selectOrCreateVersion(
+          finalBrandId,
+          finalModelId,
+          vehicleData.name,
+          {}
+        );
+        finalVersionId = newVersion.id;
+      }
+
+      // 4. Criar o veículo com os IDs finais
+      console.log('Criando veículo com:', {
+        brand_id: finalBrandId,
+        model_id: finalModelId,
+        version_id: finalVersionId,
+      });
+
+      const newVehicle = await vehiclesService.create({
+        brand_id: finalBrandId,
+        model_id: finalModelId,
+        version_id: finalVersionId || undefined,
+        manufacturing_year: parseInt(vehicleData.year),
+        model_year: parseInt(vehicleData.year),
+        current_plate: vehicleData.plate,
+        current_color: vehicleData.color,
+        visibility: 'private',
+      });
+
+      console.log('Veículo criado com sucesso:', newVehicle);
+
+      // Voltar para a tela anterior
+      router.back();
+    } catch (error) {
+      console.error('Erro ao salvar veículo:', error);
+      // TODO: Mostrar mensagem de erro ao usuário
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getStepProgress = () => {

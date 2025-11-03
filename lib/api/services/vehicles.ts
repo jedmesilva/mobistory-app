@@ -96,52 +96,88 @@ export const vehiclesService = {
 
 export const catalogService = {
   /**
-   * Listar marcas
+   * Listar marcas (apenas verificadas por padrão)
    */
-  async listBrands(): Promise<Brand[]> {
-    const response = await api.get<Brand[]>('/catalog/brands');
+  async listBrands(verifiedOnly: boolean = true): Promise<Brand[]> {
+    const response = await api.get<Brand[]>('/brands', {
+      params: {
+        verified_only: verifiedOnly,
+        active_only: true,
+      }
+    });
     return response.data;
   },
 
   /**
-   * Criar marca
+   * Criar marca (criada como não verificada)
    */
-  async createBrand(brand: string): Promise<Brand> {
-    const response = await api.post<Brand>('/catalog/brands', { brand });
+  async createBrand(name: string, countryOfOrigin?: string): Promise<Brand> {
+    const response = await api.post<Brand>('/brands', {
+      name,
+      country_of_origin: countryOfOrigin,
+    });
     return response.data;
   },
 
   /**
-   * Listar modelos (opcionalmente filtrar por marca)
+   * Listar modelos de uma marca específica (apenas verificados por padrão)
    */
-  async listModels(brandId?: string): Promise<Model[]> {
-    const params = brandId ? { brand_id: brandId } : {};
-    const response = await api.get<Model[]>('/catalog/models', { params });
+  async listModels(brandId: string, verifiedOnly: boolean = true): Promise<Model[]> {
+    const response = await api.get<Model[]>(`/brands/${brandId}/models`, {
+      params: {
+        verified_only: verifiedOnly,
+        active_only: true,
+      }
+    });
     return response.data;
   },
 
   /**
-   * Criar modelo
+   * Criar modelo para uma marca (criado como não verificado)
    */
-  async createModel(brandId: string, model: string): Promise<Model> {
-    const response = await api.post<Model>('/catalog/models', { brand_id: brandId, model });
+  async createModel(brandId: string, name: string, category?: string): Promise<Model> {
+    const response = await api.post<Model>(`/brands/${brandId}/models`, {
+      name,
+      brand_id: brandId,
+      category,
+    });
     return response.data;
   },
 
   /**
-   * Listar versões (opcionalmente filtrar por modelo)
+   * Listar versões de um modelo específico (apenas verificadas por padrão)
    */
-  async listVersions(modelId?: string): Promise<ModelVersion[]> {
-    const params = modelId ? { model_id: modelId } : {};
-    const response = await api.get<ModelVersion[]>('/catalog/versions', { params });
+  async listVersions(brandId: string, modelId: string, verifiedOnly: boolean = true): Promise<ModelVersion[]> {
+    const response = await api.get<ModelVersion[]>(`/brands/${brandId}/models/${modelId}/versions`, {
+      params: {
+        verified_only: verifiedOnly,
+        active_only: true,
+      }
+    });
     return response.data;
   },
 
   /**
-   * Criar versão
+   * Criar versão para um modelo (criada como não verificada)
    */
-  async createVersion(modelId: string, version: string): Promise<ModelVersion> {
-    const response = await api.post<ModelVersion>('/catalog/versions', { model_id: modelId, version });
+  async createVersion(
+    brandId: string,
+    modelId: string,
+    name: string,
+    specs?: {
+      fuel_type?: string;
+      transmission?: string;
+      engine_power?: number;
+      doors?: number;
+      seats?: number;
+      tank_capacity_liters?: number;
+    }
+  ): Promise<ModelVersion> {
+    const response = await api.post<ModelVersion>(`/brands/${brandId}/models/${modelId}/versions`, {
+      name,
+      model_id: modelId,
+      ...specs,
+    });
     return response.data;
   },
 };

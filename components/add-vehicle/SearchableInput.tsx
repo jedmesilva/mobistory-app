@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Colors } from '@/constants';
-import { Plus, Check, X } from 'lucide-react-native';
+import { Plus, Check, X, BadgeCheck, BadgeAlert } from 'lucide-react-native';
+
+export interface SuggestionItem {
+  name: string;
+  verified?: boolean;
+}
 
 interface SearchableInputProps {
   value: string;
@@ -9,7 +14,7 @@ interface SearchableInputProps {
   onFocus: () => void;
   placeholder: string;
   showSuggestions: boolean;
-  suggestions: string[];
+  suggestions: string[] | SuggestionItem[];
   selectedValue?: string;
   onSelectSuggestion: (value: string) => void;
   onCreateNew: () => void;
@@ -77,16 +82,37 @@ export const SearchableInput = ({
             nestedScrollEnabled
             keyboardShouldPersistTaps="always"
           >
-            {suggestions.map((suggestion) => (
-              <TouchableOpacity
-                key={suggestion}
-                onPress={() => onSelectSuggestion(suggestion)}
-                style={styles.suggestionItem}
-                activeOpacity={1}
-              >
-                <Text style={styles.suggestionText}>{suggestion}</Text>
-              </TouchableOpacity>
-            ))}
+            {suggestions.map((suggestion, index) => {
+              // Suporte para string[] (legado) ou SuggestionItem[]
+              const name = typeof suggestion === 'string' ? suggestion : suggestion.name;
+              const verified = typeof suggestion === 'object' ? suggestion.verified : undefined;
+
+              return (
+                <TouchableOpacity
+                  key={`${name}-${index}`}
+                  onPress={() => onSelectSuggestion(name)}
+                  style={styles.suggestionItem}
+                  activeOpacity={1}
+                >
+                  <Text style={styles.suggestionText}>{name}</Text>
+                  {verified !== undefined && (
+                    <View style={styles.badgeContainer}>
+                      {verified ? (
+                        <>
+                          <BadgeCheck size={16} color={Colors.success.DEFAULT} />
+                          <Text style={styles.verifiedBadgeText}>Verificada</Text>
+                        </>
+                      ) : (
+                        <>
+                          <BadgeAlert size={16} color={Colors.text.placeholder} />
+                          <Text style={styles.unverifiedBadgeText}>Não verificada</Text>
+                        </>
+                      )}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
 
             <TouchableOpacity
               onPress={onCreateNew}
@@ -159,13 +185,33 @@ const styles = StyleSheet.create({
     maxHeight: 238,
   },
   suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.background.tertiary,
   },
   suggestionText: {
+    flex: 1,
     fontSize: 16,
     color: Colors.primary.dark,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginLeft: 8,
+  },
+  verifiedBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.success.DEFAULT,
+  },
+  unverifiedBadgeText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: Colors.text.placeholder,
   },
   createNewItem: {
     flexDirection: 'row',

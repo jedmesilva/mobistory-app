@@ -38,6 +38,7 @@ export interface Brand {
   country_of_origin?: string;
   logo_url?: string;
   active?: boolean;
+  verified?: boolean;
   created_at?: string;
 }
 
@@ -47,6 +48,7 @@ export interface Model {
   name: string;  // Changed from "model" to "name"
   category?: string;
   active?: boolean;
+  verified?: boolean;
   created_at?: string;
 }
 
@@ -59,6 +61,7 @@ export interface ModelVersion {
   fuel_type?: string;
   transmission?: string;
   active?: boolean;
+  verified?: boolean;
   created_at?: string;
 }
 
