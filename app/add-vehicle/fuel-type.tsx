@@ -2,7 +2,8 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
-import { FuelTypeSelector, StepHeader, VehicleHeader, type FuelTypeOption } from '@/components/add-vehicle';
+import { FuelTypeSelector, StepHeader, VehicleHeader, QuickCaptureButton, type FuelTypeOption } from '@/components/add-vehicle';
+import type { VehicleData } from './index';
 
 const fuelTypes: FuelTypeOption[] = [
   { id: 'gasoline', label: 'Gasolina', icon: 'fuel' },
@@ -14,12 +15,14 @@ const fuelTypes: FuelTypeOption[] = [
 ];
 
 interface FuelTypeScreenProps {
+  vehicleData?: VehicleData;
   onFuelTypeSelected: (fuelType: string) => void;
   onBack: () => void;
+  onShowCaptureModal: () => void;
 }
 
-export default function FuelTypeScreen({ onFuelTypeSelected, onBack }: FuelTypeScreenProps) {
-  const [selectedFuelType, setSelectedFuelType] = React.useState('');
+export default function FuelTypeScreen({ vehicleData, onFuelTypeSelected, onBack, onShowCaptureModal }: FuelTypeScreenProps) {
+  const [selectedFuelType, setSelectedFuelType] = React.useState(vehicleData?.fuelType || '');
 
   const handleSelect = (fuelType: string) => {
     setSelectedFuelType(fuelType);
@@ -48,6 +51,13 @@ export default function FuelTypeScreen({ onFuelTypeSelected, onBack }: FuelTypeS
           onSelectFuelType={handleSelect}
         />
       </View>
+
+      {/* Botão de Captura Rápida */}
+      <QuickCaptureButton
+        onPress={onShowCaptureModal}
+        label="Capturar Combustível"
+        description="Identificar tipo de combustível"
+      />
     </SafeAreaView>
   );
 }

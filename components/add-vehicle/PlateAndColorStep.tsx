@@ -9,7 +9,7 @@ interface PlateAndColorStepProps {
   selectedColor: string;
   colors: ColorOption[];
   onPlateChange: (text: string) => void;
-  onColorSelect: (colorId: string) => void;
+  onColorSelect: (colorId: string, data?: { colorId?: string; colorName?: string; finishType?: string }) => void;
   onSubmitEditing?: () => void;
 }
 

@@ -77,32 +77,35 @@ export const ConfirmationScreen = ({
         <View style={styles.confirmationRow}>
           <ConfirmationField
             label="Cor"
-            value={colors.find((c) => c.id === vehicleData.color)?.label || ''}
-            onEdit={() => onEdit(4)}
+            value={vehicleData.color || 'Não informada'}
+            onEdit={() => onEdit(5)}
             isHalf
-            renderValue={() => (
-              <View style={styles.confirmationColorRow}>
-                <View
-                  style={[
-                    styles.confirmationColorCircle,
-                    {
-                      backgroundColor: colors.find(
-                        (c) => c.id === vehicleData.color
-                      )?.hex,
-                    },
-                  ]}
-                />
-                <Text style={styles.confirmationValue}>
-                  {colors.find((c) => c.id === vehicleData.color)?.label}
-                </Text>
-              </View>
-            )}
+            renderValue={() => {
+              // Buscar cor pelo nome (label), não pelo ID
+              const selectedColor = colors.find((c) => c.label === vehicleData.color);
+
+              return (
+                <View style={styles.confirmationColorRow}>
+                  <View
+                    style={[
+                      styles.confirmationColorCircle,
+                      {
+                        backgroundColor: selectedColor?.hex || '#E5E7EB',
+                      },
+                    ]}
+                  />
+                  <Text style={styles.confirmationValue}>
+                    {vehicleData.color || 'Não informada'}
+                  </Text>
+                </View>
+              );
+            }}
           />
 
           <ConfirmationField
             label="Combustível"
             value={fuelTypes.find((f) => f.id === vehicleData.fuelType)?.label || ''}
-            onEdit={() => onEdit(5)}
+            onEdit={() => onEdit(6)}
             isHalf
           />
         </View>

@@ -14,6 +14,7 @@ import type { VehicleData } from './index';
 
 interface SelectBrandScreenProps {
   catalog: any;
+  vehicleData?: VehicleData;
   onBrandSelected: (data: Partial<VehicleData>) => void;
   onBack: () => void;
   onShowCaptureModal: () => void; // Navega para /quick-capture
@@ -21,13 +22,14 @@ interface SelectBrandScreenProps {
 
 export default function SelectBrandScreen({
   catalog,
+  vehicleData,
   onBrandSelected,
   onBack,
   onShowCaptureModal,
 }: SelectBrandScreenProps) {
-  const [brandSearch, setBrandSearch] = useState('');
+  const [brandSearch, setBrandSearch] = useState(vehicleData?.brand || '');
   const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState(vehicleData?.brand || '');
 
   const getFilteredBrands = (): SuggestionItem[] => {
     const filtered = brandSearch
@@ -142,7 +144,8 @@ export default function SelectBrandScreen({
       {/* Botão de Captura Rápida */}
       <QuickCaptureButton
         onPress={onShowCaptureModal}
-        label="Captura Rápida da Marca"
+        label="Capturar Marca"
+        description="Identificar fabricante"
       />
     </SafeAreaView>
   );

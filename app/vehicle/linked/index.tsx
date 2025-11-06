@@ -1,38 +1,39 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Animated,
-} from 'react-native';
-import { Image } from 'expo-image';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import {
-  MessageCircle,
-  FileText,
-  Activity,
-  Calendar,
-  Users,
-  Fuel,
-  Car,
-  ChevronDown,
-  ChevronUp,
-  Droplet,
-  Palette,
-} from 'lucide-react-native';
-import { Colors } from '@/constants';
 import { FeedNavBottom, PostCard } from '@/components/feed';
 import { OdometerIcon } from '@/components/icons';
 import { VehicleHeader } from '@/components/ui';
-import { useVehicle } from '@/hooks/vehicle';
-import { useVehicleMoments } from '@/hooks/moment';
+import { EmptyVehicleState } from '@/components/vehicle';
+import { Colors } from '@/constants';
 import { useSelectedVehicle } from '@/contexts';
-import { colorNameToHex } from '@/utils/colorMapping';
+import { useVehicleMoments } from '@/hooks/moment';
+import { useVehicle } from '@/hooks/vehicle';
+import { Image } from 'expo-image';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import {
+  Activity,
+  Calendar,
+  Car,
+  ChevronDown,
+  ChevronUp,
+  CircleDot,
+  Droplet,
+  FileText,
+  Fuel,
+  MessageCircle,
+  Palette,
+  Users,
+} from 'lucide-react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Animated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function VehicleProfileScreen() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function VehicleProfileScreen() {
   const navBottomOpacity = useRef(new Animated.Value(1)).current;
 
   // Get selected vehicle from context
-  const { selectedVehicleId: contextVehicleId, setSelectedVehicleId } = useSelectedVehicle();
+  const { selectedVehicleId: contextVehicleId, setSelectedVehicleId, clearSelectedVehicle } = useSelectedVehicle();
   const paramsVehicleId = Array.isArray(params.vehicleId) ? params.vehicleId[0] : params.vehicleId;
 
   // Update context once if navigated from params (e.g., from feed post)
@@ -140,6 +141,39 @@ export default function VehicleProfileScreen() {
       router.push('/feed');
     }
   };
+
+  const handleAddVehicle = () => {
+    router.push('/add-vehicle');
+  };
+
+  const handleSelectVehicle = () => {
+    router.push({
+      pathname: '/vehicles-link-list',
+      params: { from: 'vehicle-linked' }
+    });
+  };
+
+  // Se não há veículo selecionado, mostra o estado vazio
+  if (!selectedVehicleId) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <StatusBar style="dark" />
+        
+        <EmptyVehicleState
+          onAddVehicle={handleAddVehicle}
+          onSelectVehicle={handleSelectVehicle}
+        />
+
+        {/* Navegação inferior */}
+        <FeedNavBottom
+          translateY={navBottomTranslateY}
+          opacity={navBottomOpacity}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>

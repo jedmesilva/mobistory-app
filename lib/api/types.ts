@@ -134,6 +134,107 @@ export interface VehicleWithDetailsLegacy {
   vehicle_entity_links?: EntityLink[];
 }
 
+export interface PlateModel {
+  id: string;
+  code: string;
+  name: string;
+  country: string;
+  description?: string;
+  format_pattern?: string;
+  format_regex?: string;
+  format_example?: string;
+  valid_from?: string;
+  valid_until?: string;
+  has_qrcode: boolean;
+  has_chip: boolean;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PlateType {
+  id: string;
+  plate_model_id: string;
+  code: string;
+  name: string;
+  description?: string;
+  color_code: string;
+  background_color?: string;
+  text_color?: string;
+  border_color?: string;
+  vehicle_category?: string;
+  requires_special_license: boolean;
+  active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PlateDetectionResult {
+  detected: boolean;
+  model?: {
+    id: string;
+    code: string;
+    name: string;
+    format_pattern?: string;
+    format_example?: string;
+    has_qrcode: boolean;
+    has_chip: boolean;
+  };
+  available_types?: PlateType[];
+  message?: string;
+  available_models?: Array<{
+    id: string;
+    code: string;
+    name: string;
+    format_pattern?: string;
+    format_example?: string;
+  }>;
+}
+
+export interface Color {
+  id: string;
+  name: string;
+  description?: string;
+  hex_code?: string;
+  rgb_r?: number;
+  rgb_g?: number;
+  rgb_b?: number;
+  cmyk_c?: number;
+  cmyk_m?: number;
+  cmyk_y?: number;
+  cmyk_k?: number;
+  finish_type?: string;  // solid, metallic, pearlescent, matte, glossy
+  verified: boolean;
+  active: boolean;
+  created_by?: string;
+  verified_by?: string;
+  verified_at?: string;
+  created_at: string;
+}
+
+export interface ColorCreateRequest {
+  name: string;
+  description?: string;
+  hex_code?: string;
+  rgb_r?: number;
+  rgb_g?: number;
+  rgb_b?: number;
+  cmyk_c?: number;
+  cmyk_m?: number;
+  cmyk_y?: number;
+  cmyk_k?: number;
+  finish_type?: string;
+}
+
+export interface VehicleColor {
+  id: string;
+  vehicle_id: string;
+  color_id: string;
+  is_primary: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface VehicleCreateRequest {
   brand_id: string;
   model_id: string;
@@ -147,6 +248,21 @@ export interface VehicleCreateRequest {
   current_km?: number;
   visibility?: string;
   observations?: string;
+
+  // Campos para criação de placa (opcional)
+  plate_number?: string;
+  plate_type_id?: string;
+  licensing_date?: string;
+  licensing_country?: string;
+  plate_state?: string;
+  plate_city?: string;
+
+  // Campo para criar relacionamento cor-veículo (opcional)
+  color_id?: string;
+
+  // Campo para criar link com entidade (opcional)
+  entity_id?: string;
+  link_type_id?: string;
 }
 
 // ===============================

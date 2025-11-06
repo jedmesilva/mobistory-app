@@ -1,5 +1,5 @@
 export { authService } from './auth';
-export { vehiclesService, catalogService } from './vehicles';
+export { vehiclesService, catalogService, plateModelsService, plateTypesService, colorsService } from './vehicles';
 export { conversationsService, messagesService } from './conversations';
 export { fuelingService } from './fueling';
 export { maintenanceService } from './maintenance';

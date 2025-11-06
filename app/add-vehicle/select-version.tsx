@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Edit3 } from 'lucide-react-native';
 import { Colors } from '@/constants';
-import { SearchableInput, StepHeader, VehicleHeader, type SuggestionItem } from '@/components/add-vehicle';
+import { SearchableInput, StepHeader, VehicleHeader, QuickCaptureButton, type SuggestionItem } from '@/components/add-vehicle';
 import type { VehicleData } from './index';
 
 interface SelectVersionScreenProps {
@@ -11,9 +11,10 @@ interface SelectVersionScreenProps {
   vehicleData: VehicleData;
   onVersionSelected: (data: Partial<VehicleData>) => void;
   onBack: () => void;
+  onShowCaptureModal: () => void;
 }
 
-export default function SelectVersionScreen({ catalog, vehicleData, onVersionSelected, onBack }: SelectVersionScreenProps) {
+export default function SelectVersionScreen({ catalog, vehicleData, onVersionSelected, onBack, onShowCaptureModal }: SelectVersionScreenProps) {
   const [versionSearch, setVersionSearch] = useState('');
   const [showVersionSuggestions, setShowVersionSuggestions] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState('');
@@ -69,6 +70,13 @@ export default function SelectVersionScreen({ catalog, vehicleData, onVersionSel
           />
         </View>
       </ScrollView>
+
+      {/* Botão de Captura Rápida */}
+      <QuickCaptureButton
+        onPress={onShowCaptureModal}
+        label="Capturar Versão"
+        description="Identificar versão/especificação"
+      />
     </SafeAreaView>
   );
 }

@@ -1,20 +1,20 @@
-import React, { useMemo } from 'react';
+import { SimpleHeader } from '@/components/ui';
+import { Colors } from '@/constants';
+import { useAuthEntity } from '@/contexts';
+import { useConversations } from '@/lib/api/hooks';
+import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Car, ChevronRight } from 'lucide-react-native';
+import React, { useMemo } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Car, ChevronRight } from 'lucide-react-native';
-import { Colors } from '@/constants';
-import { SimpleHeader } from '@/components/ui';
-import { useConversations } from '@/lib/api/hooks';
-import { useAuthEntity } from '@/contexts';
 
 export default function ConversationsScreen() {
   const router = useRouter();
@@ -83,7 +83,7 @@ export default function ConversationsScreen() {
             </View>
             <Text style={styles.emptyStateTitle}>Nenhuma conversa</Text>
             <Text style={styles.emptyStateSubtitle}>
-              Você ainda não tem conversas com veículos
+              Você ainda não tem conversas para visualizar
             </Text>
           </View>
         ) : (

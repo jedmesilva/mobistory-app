@@ -7,6 +7,7 @@ import {
   SearchableInput,
   StepHeader,
   VehicleHeader,
+  QuickCaptureButton,
   type SuggestionItem,
 } from '@/components/add-vehicle';
 import type { VehicleData } from './index';
@@ -16,6 +17,7 @@ interface SelectModelScreenProps {
   vehicleData: VehicleData;
   onModelSelected: (data: Partial<VehicleData>) => void;
   onBack: () => void;
+  onShowCaptureModal: () => void;
 }
 
 export default function SelectModelScreen({
@@ -23,6 +25,7 @@ export default function SelectModelScreen({
   vehicleData,
   onModelSelected,
   onBack,
+  onShowCaptureModal,
 }: SelectModelScreenProps) {
   const [modelSearch, setModelSearch] = useState('');
   const [showModelSuggestions, setShowModelSuggestions] = useState(false);
@@ -146,6 +149,13 @@ export default function SelectModelScreen({
           />
         </View>
       </ScrollView>
+
+      {/* Botão de Captura Rápida */}
+      <QuickCaptureButton
+        onPress={onShowCaptureModal}
+        label="Capturar Modelo"
+        description="Identificar modelo do veículo"
+      />
     </SafeAreaView>
   );
 }

@@ -6,7 +6,12 @@ import type {
   VehicleCreateRequest,
   Brand,
   Model,
-  ModelVersion
+  ModelVersion,
+  PlateModel,
+  PlateType,
+  PlateDetectionResult,
+  Color,
+  ColorCreateRequest
 } from '../types';
 
 // Re-exportar do arquivo vehicles.ts se existir, ou usar tipos locais
@@ -178,6 +183,108 @@ export const catalogService = {
       model_id: modelId,
       ...specs,
     });
+    return response.data;
+  },
+};
+
+export const plateModelsService = {
+  /**
+   * Listar modelos de placa
+   */
+  async list(params?: {
+    country?: string;
+    active_only?: boolean;
+    include_expired?: boolean;
+  }): Promise<PlateModel[]> {
+    const response = await api.get<PlateModel[]>('/plate-models/', {
+      params: {
+        country: params?.country,
+        active_only: params?.active_only ?? true,
+        include_expired: params?.include_expired ?? false,
+      }
+    });
+    return response.data;
+  },
+
+  /**
+   * Obter um modelo de placa específico
+   */
+  async get(plateModelId: string): Promise<PlateModel> {
+    const response = await api.get<PlateModel>(`/plate-models/${plateModelId}`);
+    return response.data;
+  },
+
+  /**
+   * Detectar modelo de placa baseado no número
+   */
+  async detect(plateNumber: string): Promise<PlateDetectionResult> {
+    const response = await api.post<PlateDetectionResult>('/plate-models/detect', {
+      plate_number: plateNumber
+    });
+    return response.data;
+  },
+};
+
+export const plateTypesService = {
+  /**
+   * Listar tipos de placa
+   */
+  async list(params?: {
+    plate_model_id?: string;
+    vehicle_category?: string;
+    active_only?: boolean;
+  }): Promise<PlateType[]> {
+    const response = await api.get<PlateType[]>('/plate-types/', {
+      params: {
+        plate_model_id: params?.plate_model_id,
+        vehicle_category: params?.vehicle_category,
+        active_only: params?.active_only ?? true,
+      }
+    });
+    return response.data;
+  },
+
+  /**
+   * Obter um tipo de placa específico
+   */
+  async get(plateTypeId: string): Promise<PlateType> {
+    const response = await api.get<PlateType>(`/plate-types/${plateTypeId}`);
+    return response.data;
+  },
+};
+
+export const colorsService = {
+  /**
+   * Listar cores (apenas verificadas por padrão)
+   */
+  async list(params?: {
+    verified_only?: boolean;
+    active_only?: boolean;
+    finish_type?: string;
+  }): Promise<Color[]> {
+    const response = await api.get<Color[]>('/colors/', {
+      params: {
+        verified_only: params?.verified_only ?? true,
+        active_only: params?.active_only ?? true,
+        finish_type: params?.finish_type,
+      }
+    });
+    return response.data;
+  },
+
+  /**
+   * Criar cor personalizada (criada como não verificada)
+   */
+  async create(data: ColorCreateRequest): Promise<Color> {
+    const response = await api.post<Color>('/colors/', data);
+    return response.data;
+  },
+
+  /**
+   * Obter uma cor específica
+   */
+  async get(colorId: string): Promise<Color> {
+    const response = await api.get<Color>(`/colors/${colorId}`);
     return response.data;
   },
 };

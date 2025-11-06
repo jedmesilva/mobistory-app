@@ -1,16 +1,19 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
-import { YearInput, VehicleHeader } from '@/components/add-vehicle';
+import { YearInput, VehicleHeader, QuickCaptureButton } from '@/components/add-vehicle';
 import { StyleSheet } from 'react-native';
+import type { VehicleData } from './index';
 
 interface SelectYearScreenProps {
+  vehicleData?: VehicleData;
   onYearSelected: (year: string) => void;
   onBack: () => void;
+  onShowCaptureModal: () => void;
 }
 
-export default function SelectYearScreen({ onYearSelected, onBack }: SelectYearScreenProps) {
-  const [year, setYear] = React.useState('');
+export default function SelectYearScreen({ vehicleData, onYearSelected, onBack, onShowCaptureModal }: SelectYearScreenProps) {
+  const [year, setYear] = React.useState(vehicleData?.year || '');
 
   const handleSubmit = () => {
     if (year.trim()) {
@@ -32,6 +35,13 @@ export default function SelectYearScreen({ onYearSelected, onBack }: SelectYearS
         value={year}
         onChangeText={setYear}
         onSubmitEditing={handleSubmit}
+      />
+
+      {/* Botão de Captura Rápida */}
+      <QuickCaptureButton
+        onPress={onShowCaptureModal}
+        label="Capturar Ano"
+        description="Identificar ano de fabricação"
       />
     </SafeAreaView>
   );

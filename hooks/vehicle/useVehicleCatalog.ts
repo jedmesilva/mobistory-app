@@ -39,12 +39,12 @@ export function useVehicleCatalog() {
   }, []);
 
   /**
-   * Carregar modelos de uma marca específica (apenas verificados)
+   * Carregar modelos de uma marca específica (incluindo não verificados)
    */
   const loadModels = useCallback(async (brandId: string) => {
     setLoadingModels(true);
     try {
-      const data = await catalogService.listModels(brandId, true); // verified_only=true
+      const data = await catalogService.listModels(brandId, false); // verified_only=false - mostrar todos
       setModels(data);
     } catch (error) {
       console.error('Error loading models:', error);
@@ -55,12 +55,12 @@ export function useVehicleCatalog() {
   }, []);
 
   /**
-   * Carregar versões de um modelo específico (apenas verificadas)
+   * Carregar versões de um modelo específico (incluindo não verificadas)
    */
   const loadVersions = useCallback(async (brandId: string, modelId: string) => {
     setLoadingVersions(true);
     try {
-      const data = await catalogService.listVersions(brandId, modelId, true); // verified_only=true
+      const data = await catalogService.listVersions(brandId, modelId, false); // verified_only=false - mostrar todos
       setVersions(data);
     } catch (error) {
       console.error('Error loading versions:', error);
