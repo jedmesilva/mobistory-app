@@ -11,7 +11,7 @@ import {
   Keyboard,
   ActivityIndicator,
 } from 'react-native';
-import { ArrowUp, Plus, Camera, Calendar } from 'lucide-react-native';
+import { ArrowUp, Plus, Camera, Calendar, MessageCircle, Sparkles } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { MessageBubble } from './message-bubble';
 import { FuelAnalysisCard } from './fuel-analysis-card';
@@ -165,62 +165,112 @@ export function ChatConversation({
       <ScrollView
         ref={scrollViewRef}
         style={styles.messagesContainer}
-        contentContainerStyle={styles.messagesContent}
+        contentContainerStyle={[
+          styles.messagesContent,
+          messages.length === 0 && styles.messagesContentEmpty,
+        ]}
         showsVerticalScrollIndicator={false}
       >
-        {(() => {
-          const groupedHistory: { [key: string]: ChatMessage[] } = {};
-          messages.forEach((msg) => {
-            const dateKey = formatDate(msg.date);
-            if (!groupedHistory[dateKey]) {
-              groupedHistory[dateKey] = [];
-            }
-            groupedHistory[dateKey].push(msg);
-          });
+        {messages.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <View style={styles.emptyStateIconWrapper}>
+              <MessageCircle size={48} color={Colors.primary.DEFAULT} strokeWidth={1.5} />
+              <View style={styles.sparkleIcon}>
+                <Sparkles size={20} color={Colors.primary.light} strokeWidth={2} />
+              </View>
+            </View>
 
-          const sortedGroupEntries = Object.entries(groupedHistory).sort(([dateA], [dateB]) => {
-            const getActualDate = (displayDate: string) => {
-              if (displayDate === 'Hoje') return new Date();
-              if (displayDate === 'Ontem') {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                return yesterday;
-              }
-              const msg = messages.find((m) => formatDate(m.date) === displayDate);
-              return msg ? new Date(msg.date) : new Date();
-            };
+            <Text style={styles.emptyStateTitle}>Comece uma conversa</Text>
+            <Text style={styles.emptyStateDescription}>
+              Converse com seu veículo para registrar atualizações, tirar dúvidas ou compartilhar momentos
+            </Text>
 
-            return getActualDate(dateA).getTime() - getActualDate(dateB).getTime();
-          });
-
-          return sortedGroupEntries.map(([dateGroup, msgs]) => (
-            <View key={dateGroup} style={styles.dateGroup}>
-              <View style={styles.dateHeader}>
-                <Calendar size={14} color={Colors.text.tertiary} />
-                <Text style={styles.dateHeaderText}>{dateGroup}</Text>
+            <View style={styles.suggestionsList}>
+              <View style={styles.suggestionItem}>
+                <View style={styles.suggestionIcon}>
+                  <Camera size={16} color={Colors.primary.DEFAULT} />
+                </View>
+                <Text style={styles.suggestionText}>
+                  Tire foto do painel ou documentos
+                </Text>
               </View>
 
-              {msgs.map((msg) => (
-                <MessageBubble
-                  key={msg.id}
-                  type={msg.type}
-                  message={msg.message}
-                  timestamp={msg.timestamp}
-                  hasImage={msg.hasImage}
-                  data={msg.data}
-                >
-                  {msg.card && renderCard(msg.card)}
-                </MessageBubble>
-              ))}
-            </View>
-          ));
-        })()}
+              <View style={styles.suggestionItem}>
+                <View style={styles.suggestionIcon}>
+                  <Plus size={16} color={Colors.primary.DEFAULT} />
+                </View>
+                <Text style={styles.suggestionText}>
+                  Adicione abastecimento, manutenção ou despesas
+                </Text>
+              </View>
 
-        {isLoading && (
-          <View style={styles.loadingIndicator}>
-            <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
-            <Text style={styles.loadingText}>Processando...</Text>
+              <View style={styles.suggestionItem}>
+                <View style={styles.suggestionIcon}>
+                  <MessageCircle size={16} color={Colors.primary.DEFAULT} />
+                </View>
+                <Text style={styles.suggestionText}>
+                  Pergunte sobre histórico e estatísticas
+                </Text>
+              </View>
+            </View>
           </View>
+        ) : (
+          <>
+            {(() => {
+              const groupedHistory: { [key: string]: ChatMessage[] } = {};
+              messages.forEach((msg) => {
+                const dateKey = formatDate(msg.date);
+                if (!groupedHistory[dateKey]) {
+                  groupedHistory[dateKey] = [];
+                }
+                groupedHistory[dateKey].push(msg);
+              });
+
+              const sortedGroupEntries = Object.entries(groupedHistory).sort(([dateA], [dateB]) => {
+                const getActualDate = (displayDate: string) => {
+                  if (displayDate === 'Hoje') return new Date();
+                  if (displayDate === 'Ontem') {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    return yesterday;
+                  }
+                  const msg = messages.find((m) => formatDate(m.date) === displayDate);
+                  return msg ? new Date(msg.date) : new Date();
+                };
+
+                return getActualDate(dateA).getTime() - getActualDate(dateB).getTime();
+              });
+
+              return sortedGroupEntries.map(([dateGroup, msgs]) => (
+                <View key={dateGroup} style={styles.dateGroup}>
+                  <View style={styles.dateHeader}>
+                    <Calendar size={14} color={Colors.text.tertiary} />
+                    <Text style={styles.dateHeaderText}>{dateGroup}</Text>
+                  </View>
+
+                  {msgs.map((msg) => (
+                    <MessageBubble
+                      key={msg.id}
+                      type={msg.type}
+                      message={msg.message}
+                      timestamp={msg.timestamp}
+                      hasImage={msg.hasImage}
+                      data={msg.data}
+                    >
+                      {msg.card && renderCard(msg.card)}
+                    </MessageBubble>
+                  ))}
+                </View>
+              ));
+            })()}
+
+            {isLoading && (
+              <View style={styles.loadingIndicator}>
+                <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
+                <Text style={styles.loadingText}>Processando...</Text>
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
 
@@ -282,6 +332,71 @@ const styles = StyleSheet.create({
   },
   messagesContent: {
     padding: 16,
+  },
+  messagesContentEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 48,
+  },
+  emptyStateIconWrapper: {
+    position: 'relative',
+    marginBottom: 24,
+  },
+  sparkleIcon: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: Colors.background.primary,
+    borderRadius: 12,
+  },
+  emptyStateTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.primary.dark,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateDescription: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  suggestionsList: {
+    width: '100%',
+    gap: 12,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: Colors.background.secondary,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border.DEFAULT,
+  },
+  suggestionIcon: {
+    width: 32,
+    height: 32,
+    backgroundColor: Colors.primary.background,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  suggestionText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    color: Colors.text.secondary,
+    fontWeight: '500',
   },
   dateGroup: {
     marginBottom: 24,
