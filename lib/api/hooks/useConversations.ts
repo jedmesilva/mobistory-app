@@ -97,7 +97,7 @@ export const useConversation = (params: { vehicleId?: string; entityId?: string 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const findOrCreateConversation = useCallback(async () => {
+  const findConversation = useCallback(async () => {
     if (!params.vehicleId || !params.entityId) {
       setLoading(false);
       setConversation(null);
@@ -108,7 +108,7 @@ export const useConversation = (params: { vehicleId?: string; entityId?: string 
       setLoading(true);
       setError(null);
 
-      // Buscar conversa existente para este veículo e entidade
+      // Apenas buscar conversa existente, NÃO criar
       const result = await conversationsService.list({
         vehicle_id: params.vehicleId,
         entity_id: params.entityId,
@@ -120,16 +120,11 @@ export const useConversation = (params: { vehicleId?: string; entityId?: string 
         // Conversa encontrada
         setConversation(result.conversations[0]);
       } else {
-        // Criar nova conversa
-        const newConv = await conversationsService.create(params.entityId, {
-          primary_vehicle_id: params.vehicleId,
-          conversation_type: 'private',
-          title: null,
-        });
-        setConversation(newConv);
+        // Nenhuma conversa encontrada - será criada ao enviar primeira mensagem
+        setConversation(null);
       }
     } catch (err: any) {
-      const message = err.response?.data?.detail || 'Failed to load or create conversation';
+      const message = err.response?.data?.detail || 'Failed to load conversation';
       setError(message);
       console.error('Error in useConversation:', err);
     } finally {
@@ -138,14 +133,35 @@ export const useConversation = (params: { vehicleId?: string; entityId?: string 
   }, [params.vehicleId, params.entityId]);
 
   useEffect(() => {
-    findOrCreateConversation();
-  }, [findOrCreateConversation]);
+    findConversation();
+  }, [findConversation]);
+
+  const createConversation = async () => {
+    if (!params.vehicleId || !params.entityId) {
+      throw new Error('Vehicle ID and Entity ID are required');
+    }
+
+    try {
+      const newConv = await conversationsService.create(params.entityId, {
+        primary_vehicle_id: params.vehicleId,
+        conversation_type: 'private',
+        title: null,
+      });
+      setConversation(newConv);
+      return newConv;
+    } catch (err: any) {
+      const message = err.response?.data?.detail || 'Failed to create conversation';
+      console.error('Error creating conversation:', err);
+      throw new Error(message);
+    }
+  };
 
   return {
     conversation,
     loading,
     error,
-    reload: findOrCreateConversation,
+    reload: findConversation,
+    createConversation,
   };
 };
 

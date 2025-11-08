@@ -38,8 +38,8 @@ export default function ChatScreen() {
   // Get vehicle ID from params (passed as 'id')
   const vehicleId = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  // Fetch or create conversation (only when entityId is available)
-  const { conversation, loading: conversationLoading, error: conversationError } = useConversation({
+  // Fetch conversation (only when entityId is available) - NOT create
+  const { conversation, loading: conversationLoading, error: conversationError, createConversation } = useConversation({
     vehicleId,
     entityId: entityId || undefined,
   });
@@ -71,9 +71,24 @@ export default function ChatScreen() {
   });
 
   const handleSendMessage = async (messageText: string) => {
-    if (conversation && entityId) {
+    if (!entityId || !vehicleId) return;
+
+    let conversationToUse = conversation;
+
+    // Se não há conversa, criar antes de enviar a primeira mensagem
+    if (!conversationToUse) {
+      try {
+        conversationToUse = await createConversation();
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        return;
+      }
+    }
+
+    // Enviar mensagem
+    if (conversationToUse) {
       await sendMessage({
-        conversation_id: conversation.id,
+        conversation_id: conversationToUse.id,
         sender_entity_id: entityId,
         content: messageText,
         message_type: 'text',

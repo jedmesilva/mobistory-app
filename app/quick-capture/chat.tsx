@@ -49,8 +49,8 @@ export default function ChatScreen({
   const { entityId, loading: entityLoading } = useAuthEntity();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Fetch or create conversation
-  const { conversation, loading: conversationLoading } = useConversation({
+  // Fetch conversation (NOT create automatically)
+  const { conversation, loading: conversationLoading, createConversation } = useConversation({
     vehicleId,
     entityId: entityId || undefined,
   });
@@ -83,7 +83,21 @@ export default function ChatScreen({
 
   // Send initial message with captured media
   useEffect(() => {
-    if (captureData && conversation && entityId && messages.length === 0) {
+    const sendInitialMessage = async () => {
+      if (!captureData || !entityId || !vehicleId || messages.length > 0) return;
+
+      let conversationToUse = conversation;
+
+      // Criar conversa se não existir
+      if (!conversationToUse) {
+        try {
+          conversationToUse = await createConversation();
+        } catch (error) {
+          console.error('Error creating conversation:', error);
+          return;
+        }
+      }
+
       const contextMessages: { [key: string]: string } = {
         open: 'Capturei esta imagem do meu veículo. O que você consegue identificar?',
         fueling: 'Capturei o painel da bomba de combustível. Consegue extrair os dados?',
@@ -93,19 +107,38 @@ export default function ChatScreen({
       const message = contextMessages[context] || 'Capturei esta imagem.';
 
       // TODO: Send message with media attachment
-      sendMessage({
-        conversation_id: conversation.id,
-        sender_entity_id: entityId,
-        content: message,
-        message_type: 'text',
-      });
-    }
-  }, [captureData, conversation, entityId, context, messages.length]);
+      if (conversationToUse) {
+        sendMessage({
+          conversation_id: conversationToUse.id,
+          sender_entity_id: entityId,
+          content: message,
+          message_type: 'text',
+        });
+      }
+    };
+
+    sendInitialMessage();
+  }, [captureData, conversation, entityId, vehicleId, context, messages.length]);
 
   const handleSendMessage = async (messageText: string) => {
-    if (conversation && entityId) {
+    if (!entityId || !vehicleId) return;
+
+    let conversationToUse = conversation;
+
+    // Se não há conversa, criar antes de enviar a mensagem
+    if (!conversationToUse) {
+      try {
+        conversationToUse = await createConversation();
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        return;
+      }
+    }
+
+    // Enviar mensagem
+    if (conversationToUse) {
       await sendMessage({
-        conversation_id: conversation.id,
+        conversation_id: conversationToUse.id,
         sender_entity_id: entityId,
         content: messageText,
         message_type: 'text',
