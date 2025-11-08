@@ -129,8 +129,8 @@ export default function ChatScreen() {
     );
   }
 
-  // Error state
-  if (conversationError || !conversation) {
+  // Error state (apenas se houver erro real, não se apenas não existir conversa)
+  if (conversationError) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <StatusBar style="dark" />
@@ -144,14 +144,14 @@ export default function ChatScreen() {
     );
   }
 
-  // Extract vehicle info from conversation
-  const vehicle = conversation.primary_vehicle;
+  // Extract vehicle info from conversation (se houver) ou usar dados mínimos
+  const vehicle = conversation?.primary_vehicle;
 
   // Build vehicle name from brand and model
   const brandName = vehicle?.brand?.name || vehicle?.custom_brand || '';
   const modelName = vehicle?.model?.name || vehicle?.custom_model || '';
   const versionName = vehicle?.version?.name || vehicle?.custom_version || '';
-  const vehicleName = `${brandName} ${modelName} ${versionName}`.trim() || conversation.title || 'Veículo';
+  const vehicleName = `${brandName} ${modelName} ${versionName}`.trim() || conversation?.title || 'Veículo';
 
   // Build vehicle details from plate, year, and color
   const activePlate = vehicle?.plates?.find((p: any) => p.status === 'active') || vehicle?.plates?.[0];
