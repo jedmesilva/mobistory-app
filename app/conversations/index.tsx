@@ -19,7 +19,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function ConversationsScreen() {
   const router = useRouter();
   const { entityId, loading: entityLoading } = useAuthEntity();
-  const { conversations, loading: conversationsLoading } = useConversations(entityId);
+  const { conversations, loading: conversationsLoading } = useConversations({
+    entityId: entityId || undefined,
+  });
 
   // Transform conversations to display format
   const vehicles = useMemo(() => {
