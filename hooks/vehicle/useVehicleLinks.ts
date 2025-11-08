@@ -44,7 +44,7 @@ export function useVehicleLinks(vehicleId: string | undefined) {
         name: link.entity.name,
         email: link.entity.email || '',
         avatar: null,
-        relationshipType: link.relationship_type as 'owner' | 'renter' | 'authorized_driver',
+        relationshipType: link.link_type?.code as 'owner' | 'renter' | 'authorized_driver',
         status: link.status === 'terminated' ? 'former' : 'active' as 'active' | 'former',
         linkedDate: new Date(link.start_date).toLocaleDateString('pt-BR', {
           day: '2-digit',
