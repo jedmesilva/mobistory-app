@@ -14,6 +14,7 @@ import { VehicleHeader, BackButton, NewUpdateModal } from '@/components/ui';
 import { ChatConversation } from '@/components/chat';
 import { useConversation, useMessages } from '@/lib/api/hooks';
 import { useAuthEntity } from '@/contexts';
+import { useVehicle } from '@/hooks/vehicle';
 
 interface ChatMessage {
   id: number;
@@ -37,6 +38,9 @@ export default function ChatScreen() {
 
   // Get vehicle ID from params (passed as 'id')
   const vehicleId = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  // Fetch vehicle data directly (independent of conversation)
+  const { vehicle: vehicleData } = useVehicle(vehicleId || undefined);
 
   // Fetch conversation (only when entityId is available) - NOT create
   const { conversation, loading: conversationLoading, error: conversationError, createConversation } = useConversation({
@@ -144,21 +148,18 @@ export default function ChatScreen() {
     );
   }
 
-  // Extract vehicle info from conversation (se houver) ou usar dados mínimos
-  const vehicle = conversation?.primary_vehicle;
-
-  // Build vehicle name from brand and model
-  const brandName = vehicle?.brand?.name || vehicle?.custom_brand || '';
-  const modelName = vehicle?.model?.name || vehicle?.custom_model || '';
-  const versionName = vehicle?.version?.name || vehicle?.custom_version || '';
-  const vehicleName = `${brandName} ${modelName} ${versionName}`.trim() || conversation?.title || 'Veículo';
+  // Build vehicle name from vehicleData (fetched directly)
+  const brandName = vehicleData?.brands?.brand || '';
+  const modelName = vehicleData?.models?.model || '';
+  const versionName = vehicleData?.model_versions?.version || '';
+  const vehicleName = `${brandName} ${modelName} ${versionName}`.trim() || 'Veículo';
 
   // Build vehicle details from plate, year, and color
-  const activePlate = vehicle?.plates?.find((p: any) => p.status === 'active') || vehicle?.plates?.[0];
-  const plateNumber = activePlate?.plate_number || vehicle?.current_plate || '';
-  const year = vehicle?.model_year || vehicle?.manufacturing_year || '';
-  const primaryColor = vehicle?.vehicle_colors?.find((c: any) => c.is_primary) || vehicle?.vehicle_colors?.[0];
-  const colorName = primaryColor?.color || vehicle?.current_color || '';
+  const activePlate = vehicleData?.plates?.find((p: any) => p.active) || vehicleData?.plates?.[0];
+  const plateNumber = activePlate?.plate || '';
+  const year = vehicleData?.model_year?.toString() || vehicleData?.manufacture_year?.toString() || '';
+  const activeColor = vehicleData?.colors?.find((c: any) => c.active) || vehicleData?.colors?.[0];
+  const colorName = activeColor?.color || '';
 
   const vehicleDetails = [plateNumber, year, colorName]
     .filter(Boolean)
