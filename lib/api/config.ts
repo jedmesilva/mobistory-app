@@ -2,16 +2,15 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // URL base do backend
-// Nota: localhost funciona em celular físico se você usar: adb reverse tcp:8000 tcp:8000
-// Para emulador Android use: 10.0.2.2:8000
-// Para rede local, use o IP da máquina: 172.31.3.210
+// Nota: localhost funciona com adb reverse tcp:8000 tcp:8000 (dispositivo físico ou emulador)
+// Para rede local sem USB, use o IP da máquina: 172.31.3.210 ou 10.95.182.74
 export const API_BASE_URL = __DEV__
-  ? 'http://172.31.3.210:8000/api/v1'
+  ? 'http://localhost:8000/api/v1'  // Localhost via adb reverse
   : 'https://api.mobistory.com/api/v1'; // Substituir pela URL de produção
 
 // WebSocket URL
 export const WS_BASE_URL = __DEV__
-  ? 'ws://172.31.3.210:8000/api/v1'
+  ? 'ws://localhost:8000/api/v1'  // Localhost via adb reverse
   : 'wss://api.mobistory.com/api/v1';
 
 // Chave para armazenar token

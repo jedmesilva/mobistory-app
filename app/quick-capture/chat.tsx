@@ -56,12 +56,20 @@ export default function ChatScreen({
   });
 
   // Fetch messages for this conversation
-  const { messages: dbMessages, loading: messagesLoading, sendMessage } = useMessages(conversation?.id);
+  const {
+    messages: dbMessages,
+    loading: messagesLoading,
+    sendMessage,
+  } = useMessages(conversation?.id, entityId || undefined);
 
   // Transform database messages to ChatMessage format
   const messages: ChatMessage[] = dbMessages.map((msg, index) => {
-    const isBot = msg.sender.entity_type === 'ai_assistant';
-    const timestamp = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    // Considera como bot se não for o próprio usuário
+    const isBot = msg.sender_entity_id !== entityId;
+    const timestamp = new Date(msg.created_at).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     const date = new Date(msg.created_at).toISOString().split('T')[0];
 
     return {
@@ -86,10 +94,10 @@ export default function ChatScreen({
 
       // TODO: Send message with media attachment
       sendMessage({
-        conversationId: conversation.id,
-        senderId: entityId,
+        conversation_id: conversation.id,
+        sender_entity_id: entityId,
         content: message,
-        messageType: 'text',
+        message_type: 'text',
       });
     }
   }, [captureData, conversation, entityId, context, messages.length]);
@@ -97,10 +105,10 @@ export default function ChatScreen({
   const handleSendMessage = async (messageText: string) => {
     if (conversation && entityId) {
       await sendMessage({
-        conversationId: conversation.id,
-        senderId: entityId,
+        conversation_id: conversation.id,
+        sender_entity_id: entityId,
         content: messageText,
-        messageType: 'text',
+        message_type: 'text',
       });
     }
   };

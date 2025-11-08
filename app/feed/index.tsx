@@ -13,6 +13,8 @@ import { Colors } from '@/constants';
 import { PostCard, FeedHeader, FeedNavBottom, FeedFAB } from '../../components/feed';
 import { NewUpdateModal } from '../../components/ui';
 import { useMoments } from '@/hooks/moment';
+import { useAuthEntity } from '@/contexts';
+import { EntityAuthBanner } from '@/components/EntityAuthBanner';
 
 interface Post {
   id: number;
@@ -41,6 +43,7 @@ export default function FeedScreen() {
   const [activeTab, setActiveTab] = useState<'home' | 'profile'>('home');
   const [showNewUpdateModal, setShowNewUpdateModal] = useState(false);
   const { moments, loading} = useMoments();
+  const { entity, loading: entityLoading } = useAuthEntity();
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navBottomHeight, setNavBottomHeight] = useState(0);
@@ -312,6 +315,14 @@ export default function FeedScreen() {
             Compartilhe os momentos com seu veículo e deixe-os eternizados na história.
           </Text>
         </View>
+
+        {/* Entity Auth Banner - Show if no entity */}
+        {!entityLoading && !entity && (
+          <EntityAuthBanner
+            onEnter={() => router.push('/login')}
+            onCreateAccount={() => router.push('/login')} // TODO: Create signup screen
+          />
+        )}
 
         {/* Loading State */}
         {loading && (

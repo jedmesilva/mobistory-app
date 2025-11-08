@@ -1,2 +1,2 @@
 export { SelectedVehicleProvider, useSelectedVehicle } from './SelectedVehicleContext';
-export { useAuthEntity } from './auth';
+export { AuthEntityProvider, useAuthEntity } from './auth';

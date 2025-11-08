@@ -266,68 +266,229 @@ export interface VehicleCreateRequest {
 }
 
 // ===============================
-// Conversation Types
+// Conversation Types (Updated to match FastAPI Backend)
 // ===============================
 
-export type ContextType =
-  | 'fueling'
-  | 'maintenance'
-  | 'odometer'
-  | 'vehicle_update'
-  | 'vehicle_register'
-  | 'document'
-  | 'insurance'
-  | 'issue'
-  | 'general';
-
-export type ContextStatus = 'draft' | 'completed' | 'cancelled';
-
-export interface ConversationContext {
+// Context de conversa (tabela: conversation_contexts)
+export interface ConversationContextSchema {
   id: string;
-  conversation_id: string;
-  context_type: ContextType;
-  status: ContextStatus;
-  title: string | null;
-  summary: string | null;
-  metadata: Record<string, any>;
-  context_hint: string | null;
-  ai_confidence: number | null;
-  confirmed_by_user: boolean;
-  started_at: string;
-  completed_at: string | null;
+  code: string;
+  category: string | null;
+  name: string;
+  description: string | null;
+  keywords: Record<string, any> | null;
+  available_actions: Record<string, any> | null;
+  ai_instructions: string | null;
+  requires_link: boolean | null;
+  required_permissions: Record<string, any> | null;
   active: boolean;
   created_at: string;
-  updated_at: string;
 }
 
+// Conversa principal (tabela: conversations)
 export interface Conversation {
   id: string;
-  user_id: string;
-  vehicle_id: string | null;
+  conversation_code: string;
+  primary_vehicle_id: string | null;
+  vehicle_ids: string | null;
+  conversation_type: string | null;  // private, group, support
   title: string | null;
+  summary: string | null;
+  status: string;  // active, archived, closed
+  main_context_id: string | null;
+  total_participants: number;
+  active_participants: number;
+  total_messages: number;
+  total_actions_executed: number;
+  started_at: string | null;
+  last_message_at: string | null;
+  finished_at: string | null;
+  archived_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
+// Participante de conversa (tabela: conversation_participants)
+export interface ConversationParticipant {
+  id: string;
+  conversation_id: string;
+  entity_id: string;
+  link_id: string | null;
+  role: string;  // owner, admin, driver, viewer
+  participant_type: string;  // human, ai, system
+  joined_at: string | null;
+  left_at: string | null;
+  is_active: boolean;
+  invited_by_entity_id: string | null;
+  invited_by_participant_id: string | null;
+  invitation_reason: string | null;
+  removed_by_entity_id: string | null;
+  removal_reason: string | null;
+  permissions: Record<string, any> | null;
+  context_summary_at_join: string | null;
+  auto_leave_config: Record<string, any> | null;
+  notification_enabled: boolean;
+  last_read_message_id: string | null;
+  last_read_at: string | null;
+  unread_count: number;
+  metadata: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Mensagem de conversa (tabela: conversation_messages)
+export interface ConversationMessage {
+  id: string;
+  conversation_id: string;
+  sender_entity_id: string;
+  sender_participant_id: string | null;
+  directed_to_entity_id: string | null;
+  directed_to_participant_id: string | null;
+  content: string;
+  message_type: string;  // text, image, video, audio, system, action
+  context_id: string | null;
+  context_confidence: number | null;
+  detected_intent: string | null;
+  extracted_entities: Record<string, any> | null;
+  action_id: string | null;
+  action_executed: boolean;
+  action_result: Record<string, any> | null;
+  requires_confirmation: boolean;
+  confirmed: boolean;
+  confirmed_at: string | null;
+  confirmed_by_entity_id: string | null;
+  attachments_urls: string | null;
+  visible_to_participant_ids: string | null;
+  is_private: boolean;
+  requires_user_interaction: boolean;
+  interaction_reason: string | null;
+  auto_processed: boolean;
+  processed: boolean;
+  processed_at: string | null;
+  reactions: Record<string, any> | null;
+  created_at: string;
+}
+
+// Participante com informações da entidade
+export interface ConversationParticipantWithEntity extends ConversationParticipant {
+  entity?: {
+    id: string;
+    display_name: string;
+    email: string | null;
+    phone: string | null;
+    entity_code: string;
+  } | null;
+}
+
+// Mensagem com informações de sender e contexto
+export interface ConversationMessageWithDetails extends ConversationMessage {
+  sender_entity?: {
+    id: string;
+    display_name: string;
+    email: string | null;
+    phone: string | null;
+    entity_code: string;
+  } | null;
+  context?: ConversationContextSchema | null;
+}
+
+// Conversa com detalhes completos
 export interface ConversationWithDetails extends Conversation {
-  vehicle?: Vehicle;
-  contexts?: ConversationContext[];
-  message_count?: number;
-  last_message?: Message;
+  primary_vehicle?: Vehicle | null;
+  main_context?: ConversationContextSchema | null;
+  participants: ConversationParticipantWithEntity[];
+  messages: ConversationMessageWithDetails[];
 }
 
+// Response de listagem de conversas
+export interface ConversationListResponse {
+  conversations: Conversation[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+// Response detalhado de conversa com permissões
+export interface ConversationDetailResponse {
+  conversation: ConversationWithDetails;
+  can_send_message: boolean;
+  can_invite_participants: boolean;
+  can_manage_conversation: boolean;
+}
+
+// Request para criar conversa
 export interface ConversationCreateRequest {
-  vehicle_id?: string;
+  primary_vehicle_id?: string;
+  vehicle_ids?: string;
+  conversation_type?: string;
   title?: string;
+  main_context_id?: string;
+}
+
+// Request para atualizar conversa
+export interface ConversationUpdateRequest {
+  primary_vehicle_id?: string;
+  vehicle_ids?: string;
+  conversation_type?: string;
+  title?: string;
+  summary?: string;
+  status?: string;
+  main_context_id?: string;
+}
+
+// Request para criar mensagem
+export interface ConversationMessageCreateRequest {
+  conversation_id: string;
+  sender_entity_id: string;
+  sender_participant_id?: string;
+  directed_to_entity_id?: string;
+  directed_to_participant_id?: string;
+  content: string;
+  message_type?: string;
+  context_id?: string;
+  attachments_urls?: string;
+  is_private?: boolean;
+  requires_confirmation?: boolean;
+}
+
+// Request para atualizar mensagem
+export interface ConversationMessageUpdateRequest {
+  content?: string;
+  confirmed?: boolean;
+  confirmed_by_entity_id?: string;
+  processed?: boolean;
+  reactions?: Record<string, any>;
+}
+
+// Request para criar participante
+export interface ConversationParticipantCreateRequest {
+  conversation_id: string;
+  entity_id: string;
+  link_id?: string;
+  role?: string;
+  participant_type?: string;
+  invited_by_entity_id?: string;
+  invitation_reason?: string;
+  permissions?: Record<string, any>;
+  notification_enabled?: boolean;
+}
+
+// Request para atualizar participante
+export interface ConversationParticipantUpdateRequest {
+  role?: string;
+  permissions?: Record<string, any>;
+  notification_enabled?: boolean;
+  is_active?: boolean;
 }
 
 // ===============================
-// Message Types
+// Legacy Types (Backwards Compatibility)
 // ===============================
 
-export type MessageType = 'text' | 'voice' | 'image';
+export type MessageType = 'text' | 'image' | 'video' | 'audio' | 'voice';
 export type SenderType = 'user' | 'assistant';
 
+// Legacy Message type (for backwards compatibility)
 export interface Message {
   id: string;
   conversation_id: string;
@@ -340,6 +501,7 @@ export interface Message {
   updated_at: string;
 }
 
+// Legacy MessageCreateRequest (for backwards compatibility)
 export interface MessageCreateRequest {
   conversation_id: string;
   message_type: MessageType;

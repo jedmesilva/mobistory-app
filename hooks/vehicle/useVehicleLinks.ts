@@ -1,4 +1,4 @@
-import { vehiclesService } from '@/lib/api/vehicles';
+import { vehiclesService } from '@/lib/api/services/vehicles';
 import { useEffect, useState } from 'react';
 
 export interface LinkedPerson {
@@ -36,9 +36,7 @@ export function useVehicleLinks(vehicleId: string | undefined) {
       setLoading(true);
       setError(null);
       
-      console.log('🔄 Fetching vehicle links for:', vehicleId);
       const rawLinks = await vehiclesService.getVehicleLinks(vehicleId);
-      console.log('📊 Raw links received:', rawLinks);
       
       // Transform API data to LinkedPerson format
       const transformedLinks = rawLinks.map((link: any) => ({
@@ -63,8 +61,6 @@ export function useVehicleLinks(vehicleId: string | undefined) {
       // Separate active and former people
       const activePeople = transformedLinks.filter((person: LinkedPerson) => person.status === 'active');
       const formerPeople = transformedLinks.filter((person: LinkedPerson) => person.status === 'former');
-      
-      console.log('✅ Processed links:', { activePeople: activePeople.length, formerPeople: formerPeople.length });
       
       setLinks({ activePeople, formerPeople });
       console.log('✅ Vehicle links loaded from API:', vehicleId);

@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants';
 import { VehicleHeader, BackButton, NewUpdateModal } from '@/components/ui';
 import { ChatConversation } from '@/components/chat';
-import { useConversations, useMessages } from '@/lib/api/hooks';
+import { useConversation, useMessages } from '@/lib/api/hooks';
 import { useAuthEntity } from '@/contexts';
 
 interface ChatMessage {
@@ -45,12 +45,20 @@ export default function ChatScreen() {
   });
 
   // Fetch messages for this conversation
-  const { messages: dbMessages, loading: messagesLoading, sendMessage } = useMessages(conversation?.id);
+  const {
+    messages: dbMessages,
+    loading: messagesLoading,
+    sendMessage,
+  } = useMessages(conversation?.id, entityId || undefined);
 
   // Transform database messages to ChatMessage format
   const messages: ChatMessage[] = dbMessages.map((msg, index) => {
-    const isBot = msg.sender.entity_type === 'ai_assistant';
-    const timestamp = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    // Considera como bot se não for o próprio usuário
+    const isBot = msg.sender_entity_id !== entityId;
+    const timestamp = new Date(msg.created_at).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
     const date = new Date(msg.created_at).toISOString().split('T')[0];
 
     return {
@@ -65,10 +73,10 @@ export default function ChatScreen() {
   const handleSendMessage = async (messageText: string) => {
     if (conversation && entityId) {
       await sendMessage({
-        conversationId: conversation.id,
-        senderId: entityId,
+        conversation_id: conversation.id,
+        sender_entity_id: entityId,
         content: messageText,
-        messageType: 'text',
+        message_type: 'text',
       });
     }
   };
@@ -122,11 +130,24 @@ export default function ChatScreen() {
   }
 
   // Extract vehicle info from conversation
-  const vehicle = conversation.vehicles;
-  const activePlate = vehicle.plates?.find(p => p.active) || vehicle.plates?.[0];
-  const activeColor = vehicle.colors?.find(c => c.active) || vehicle.colors?.[0];
-  const vehicleName = `${vehicle.brands.brand} ${vehicle.models.model}${vehicle.model_versions?.version ? ` ${vehicle.model_versions.version}` : ''}`;
-  const vehicleDetails = `${activePlate?.plate || ''} • ${vehicle.model_year || ''}${activeColor?.color ? ` • ${activeColor.color}` : ''}`;
+  const vehicle = conversation.primary_vehicle;
+
+  // Build vehicle name from brand and model
+  const brandName = vehicle?.brand?.name || vehicle?.custom_brand || '';
+  const modelName = vehicle?.model?.name || vehicle?.custom_model || '';
+  const versionName = vehicle?.version?.name || vehicle?.custom_version || '';
+  const vehicleName = `${brandName} ${modelName} ${versionName}`.trim() || conversation.title || 'Veículo';
+
+  // Build vehicle details from plate, year, and color
+  const activePlate = vehicle?.plates?.find((p: any) => p.status === 'active') || vehicle?.plates?.[0];
+  const plateNumber = activePlate?.plate_number || vehicle?.current_plate || '';
+  const year = vehicle?.model_year || vehicle?.manufacturing_year || '';
+  const primaryColor = vehicle?.vehicle_colors?.find((c: any) => c.is_primary) || vehicle?.vehicle_colors?.[0];
+  const colorName = primaryColor?.color || vehicle?.current_color || '';
+
+  const vehicleDetails = [plateNumber, year, colorName]
+    .filter(Boolean)
+    .join(' • ') || 'Sem informações';
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -139,7 +160,7 @@ export default function ChatScreen() {
           vehicleDetails={vehicleDetails}
           onVehiclePress={() => router.push({
             pathname: '/vehicle/linked',
-            params: { vehicleId: vehicle.id }
+            params: { vehicleId }
           })}
           showChevron={false}
           showVehicleIcon={false}

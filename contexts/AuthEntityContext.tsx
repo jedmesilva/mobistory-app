@@ -16,8 +16,8 @@ import React, {
   useCallback,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { entitiesService, Entity, AnonymousEntityCreate } from '../../lib/api/entities';
-import { collectDeviceFingerprint } from '../../lib/utils/deviceFingerprint';
+import { entitiesService, Entity, AnonymousEntityCreate } from '../lib/api/entities';
+import { collectDeviceFingerprint } from '../lib/utils/deviceFingerprint';
 
 const ENTITY_ID_KEY = '@mobistory:entity_id';
 
@@ -51,35 +51,29 @@ export function AuthEntityProvider({ children }: { children: React.ReactNode }) 
    */
   const loadEntity = useCallback(async () => {
     try {
-      console.log('🔵 [FRONTEND] Iniciando carregamento de entidade do AsyncStorage...');
       setLoading(true);
 
       // Check if entity ID exists in AsyncStorage
       const storedEntityId = await AsyncStorage.getItem(ENTITY_ID_KEY);
-      console.log('🔵 [FRONTEND] Entity ID no AsyncStorage:', storedEntityId || 'Nenhum');
 
       if (storedEntityId) {
         // Fetch entity from backend
-        console.log('🔵 [FRONTEND] Buscando entidade no backend...');
         const fetchedEntity = await entitiesService.getById(storedEntityId);
-        console.log('✅ [FRONTEND] Entidade carregada:', fetchedEntity.name);
         setEntity(fetchedEntity);
         setEntityId(fetchedEntity.id);
       } else {
         // No entity found
-        console.log('ℹ️ [FRONTEND] Nenhuma entidade salva. Usuário precisa fazer login ou criar entidade anônima.');
         setEntity(null);
         setEntityId(null);
       }
     } catch (error) {
-      console.error('❌ [FRONTEND] Erro ao carregar entidade:', error);
+      console.error('Error loading entity:', error);
       // If entity not found or error, clear storage
       await AsyncStorage.removeItem(ENTITY_ID_KEY);
       setEntity(null);
       setEntityId(null);
     } finally {
       setLoading(false);
-      console.log('✅ [FRONTEND] Carregamento de entidade concluído');
     }
   }, []);
 
@@ -90,12 +84,8 @@ export function AuthEntityProvider({ children }: { children: React.ReactNode }) 
     try {
       setLoading(true);
 
-      console.log('🔵 [FRONTEND] Iniciando criação de entidade anônima...');
-
       // Collect device fingerprint
-      console.log('🔵 [FRONTEND] Coletando device fingerprint...');
       const deviceFingerprint = await collectDeviceFingerprint();
-      console.log('🔵 [FRONTEND] Device fingerprint coletado:', deviceFingerprint.deviceId);
 
       // Create anonymous entity
       const anonymousEntityData: AnonymousEntityCreate = {
@@ -103,27 +93,18 @@ export function AuthEntityProvider({ children }: { children: React.ReactNode }) 
         name: 'Usuário Anônimo',
       };
 
-      console.log('🔵 [FRONTEND] Enviando requisição para criar entidade anônima...');
       const newEntity = await entitiesService.createAnonymous(anonymousEntityData);
-      console.log('✅ [FRONTEND] Entidade anônima criada!', {
-        id: newEntity.id,
-        name: newEntity.name,
-        is_anonymous: newEntity.is_anonymous,
-      });
 
       // Store entity ID in AsyncStorage
-      console.log('🔵 [FRONTEND] Salvando ID da entidade no AsyncStorage...');
       await AsyncStorage.setItem(ENTITY_ID_KEY, newEntity.id);
-      console.log('✅ [FRONTEND] ID salvo no AsyncStorage:', newEntity.id);
 
       // Update state
       setEntity(newEntity);
       setEntityId(newEntity.id);
 
-      console.log('✅ [FRONTEND] Processo de criação de entidade anônima concluído!');
       return newEntity;
     } catch (error) {
-      console.error('❌ [FRONTEND] Erro ao criar entidade anônima:', error);
+      console.error('Error creating anonymous entity:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -182,12 +163,10 @@ export function AuthEntityProvider({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  // Load entity on mount (only once)
+  // Load entity on mount
   useEffect(() => {
-    console.log('🔵 [FRONTEND] AuthEntityProvider montado, carregando entidade...');
     loadEntity();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only on mount
+  }, [loadEntity]);
 
   const contextValue: AuthEntityContextData = {
     entity,

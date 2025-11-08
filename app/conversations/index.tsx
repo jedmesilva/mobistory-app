@@ -21,29 +21,46 @@ export default function ConversationsScreen() {
   const { entityId, loading: entityLoading } = useAuthEntity();
   const { conversations, loading: conversationsLoading } = useConversations(entityId);
 
-  // Transform conversations to display format (mantendo estrutura original)
+  // Transform conversations to display format
   const vehicles = useMemo(() => {
-    return conversations.map((conversation) => {
-      const vehicle = conversation.vehicles;
-      const activePlate = vehicle.plates?.find(p => p.active) || vehicle.plates?.[0];
-      const activeColor = vehicle.colors?.find(c => c.active) || vehicle.colors?.[0];
+    return conversations
+      .filter(conversation => conversation.primary_vehicle_id && conversation.primary_vehicle) // Apenas conversas com veículo
+      .map((conversation) => {
+        const vehicle = conversation.primary_vehicle;
 
-      return {
-        id: vehicle.id,
-        name: `${vehicle.brands?.brand || ''} ${vehicle.models?.model || ''}`.trim(),
-        model: vehicle.model_versions?.version || '',
-        plate: activePlate?.plate || '',
-        year: vehicle.model_year || 0,
-        color: activeColor?.color || '',
-      };
-    });
+        // Buscar marca e modelo
+        const brandName = vehicle?.brand?.name || vehicle?.custom_brand || '';
+        const modelName = vehicle?.model?.name || vehicle?.custom_model || '';
+        const versionName = vehicle?.version?.name || vehicle?.custom_version || '';
+
+        // Buscar placa ativa
+        const activePlate = vehicle?.plates?.find((p: any) => p.status === 'active') || vehicle?.plates?.[0];
+        const plateNumber = activePlate?.plate_number || vehicle?.current_plate || '';
+
+        // Buscar cor primária
+        const primaryColor = vehicle?.vehicle_colors?.find((c: any) => c.is_primary) || vehicle?.vehicle_colors?.[0];
+        const colorName = primaryColor?.color || vehicle?.current_color || '';
+
+        // Nome do veículo
+        const vehicleName = `${brandName} ${modelName} ${versionName}`.trim() || conversation.title || 'Veículo sem identificação';
+
+        return {
+          vehicleId: conversation.primary_vehicle_id!,
+          conversationId: conversation.id,
+          name: vehicleName,
+          model: versionName,
+          plate: plateNumber || 'Sem placa',
+          year: vehicle?.model_year || vehicle?.manufacturing_year || 0,
+          color: colorName || 'Sem cor',
+        };
+      });
   }, [conversations]);
 
   const handleVehiclePress = (vehicleId: string) => {
     router.push({
       pathname: '/conversations/[id]',
       params: {
-        id: vehicleId,
+        id: vehicleId, // Passa o vehicleId para a tela de conversa
       }
     });
   };
@@ -87,13 +104,13 @@ export default function ConversationsScreen() {
             </Text>
           </View>
         ) : (
-          /* Lista de Veículos */
+          /* Lista de Conversas */
           <View style={styles.vehiclesList}>
             {vehicles.map((vehicle) => (
               <TouchableOpacity
-                key={vehicle.id}
+                key={vehicle.conversationId}
                 style={styles.vehicleCard}
-                onPress={() => handleVehiclePress(vehicle.id)}
+                onPress={() => handleVehiclePress(vehicle.vehicleId)}
                 activeOpacity={0.7}
               >
                 <View style={styles.vehicleCardLeft}>
@@ -103,10 +120,10 @@ export default function ConversationsScreen() {
 
                   <View style={styles.vehicleInfo}>
                     <Text style={styles.vehicleName}>
-                      {vehicle.name} {vehicle.model}
+                      {vehicle.name}
                     </Text>
                     <Text style={styles.vehicleDetails}>
-                      {vehicle.plate} • {vehicle.year} • {vehicle.color}
+                      {vehicle.plate} • {vehicle.year > 0 ? vehicle.year : 'Sem ano'} • {vehicle.color}
                     </Text>
                   </View>
                 </View>

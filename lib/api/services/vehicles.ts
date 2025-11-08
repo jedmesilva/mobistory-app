@@ -97,6 +97,23 @@ export const vehiclesService = {
   async delete(id: string): Promise<void> {
     await api.delete(`/vehicles/${id}`);
   },
+
+  /**
+   * Obter vínculos de um veículo (incluindo histórico)
+   */
+  async getVehicleLinks(vehicleId: string): Promise<any[]> {
+    try {
+      const response = await api.get(`/vehicles/${vehicleId}/links`, {
+        params: {
+          active_only: false, // Incluir vínculos inativos para histórico completo
+        }
+      });
+      return response.data?.links || [];
+    } catch (error) {
+      console.error(`Error fetching links for vehicle ${vehicleId}:`, error);
+      throw error;
+    }
+  },
 };
 
 export const catalogService = {
