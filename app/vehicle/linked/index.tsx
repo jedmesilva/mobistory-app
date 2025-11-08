@@ -183,7 +183,7 @@ export default function VehicleProfileScreen() {
       <SafeAreaView edges={['top']}>
         <VehicleHeader
           vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
-          vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
+          vehicleDetails={`${vehicle.plate} • ${vehicle.year} • ${vehicle.color}`}
           onVehiclePress={() => router.push({
             pathname: '/vehicles-link-list',
             params: { from: 'vehicle-linked' }

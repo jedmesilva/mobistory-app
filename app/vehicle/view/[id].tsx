@@ -134,7 +134,7 @@ export default function VehicleViewScreen() {
       {/* Header - SEM seletor de veículo */}
       <VehicleHeader
         vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
-        vehicleDetails={`${vehicle.plate} • ${vehicle.year}`}
+        vehicleDetails={`${vehicle.plate} • ${vehicle.year} • ${vehicle.color}`}
         showChevron={false}
         showVehicleIcon={false}
         leftButton={<BackButton />}
