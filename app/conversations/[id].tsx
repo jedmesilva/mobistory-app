@@ -141,7 +141,7 @@ export default function ChatScreen() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
           <Text style={styles.loadingText}>
-            {entityLoading ? 'Carregando usuário...' : 'Carregando conversa...'}
+            {entityLoading ? 'Carregando usuário...' : 'Iniciando conversa...'}
           </Text>
         </View>
       </SafeAreaView>
