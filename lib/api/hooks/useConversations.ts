@@ -255,12 +255,15 @@ export const useMessages = (conversationId?: string, entityId?: string) => {
   }, [loadMessages]);
 
   const sendMessage = async (data: ConversationMessageCreateRequest) => {
-    if (!conversationId) {
+    // Permite passar conversation_id no próprio data (fluxo atômico)
+    const targetConversationId = data.conversation_id || conversationId;
+
+    if (!targetConversationId) {
       throw new Error('No conversation ID provided');
     }
 
     try {
-      const newMessage = await conversationMessagesService.send(conversationId, data);
+      const newMessage = await conversationMessagesService.send(targetConversationId, data);
       setMessages((prev) => [...prev, newMessage]);
       return newMessage;
     } catch (err: any) {

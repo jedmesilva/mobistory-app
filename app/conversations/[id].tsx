@@ -43,7 +43,7 @@ export default function ChatScreen() {
   const { vehicle: vehicleData } = useVehicle(vehicleId || undefined);
 
   // Fetch conversation (only when entityId is available) - NOT create
-  const { conversation, loading: conversationLoading, error: conversationError, createConversation } = useConversation({
+  const { conversation, loading: conversationLoading, error: conversationError, createConversation, reload: reloadConversation } = useConversation({
     vehicleId,
     entityId: entityId || undefined,
   });
@@ -53,6 +53,7 @@ export default function ChatScreen() {
     messages: dbMessages,
     loading: messagesLoading,
     sendMessage,
+    reload: reloadMessages,
   } = useMessages(conversation?.id, entityId || undefined);
 
   // Transform database messages to ChatMessage format
@@ -77,26 +78,40 @@ export default function ChatScreen() {
   const handleSendMessage = async (messageText: string) => {
     if (!entityId || !vehicleId) return;
 
-    let conversationToUse = conversation;
+    try {
+      let conversationToUse = conversation;
 
-    // Se não há conversa, criar antes de enviar a primeira mensagem
-    if (!conversationToUse) {
-      try {
+      // FLUXO ATÔMICO: Criar conversa + enviar mensagem em sequência
+      if (!conversationToUse) {
+        console.log('🔵 [Atomic Flow] No conversation exists, creating one...');
+
+        // 1. Criar conversa primeiro
         conversationToUse = await createConversation();
-      } catch (error) {
-        console.error('Error creating conversation:', error);
-        return;
-      }
-    }
 
-    // Enviar mensagem
-    if (conversationToUse) {
+        if (!conversationToUse) {
+          throw new Error('Failed to create conversation');
+        }
+
+        console.log('✅ [Atomic Flow] Conversation created:', conversationToUse.id);
+
+        // 2. Recarregar estado da conversa para garantir sincronização
+        await reloadConversation();
+      }
+
+      // 3. Enviar mensagem usando a conversa criada/existente
+      console.log('📤 [Atomic Flow] Sending message to conversation:', conversationToUse.id);
+
       await sendMessage({
         conversation_id: conversationToUse.id,
         sender_entity_id: entityId,
         content: messageText,
         message_type: 'text',
       });
+
+      console.log('✅ [Atomic Flow] Message sent successfully');
+    } catch (error) {
+      console.error('❌ [Atomic Flow] Error:', error);
+      throw error; // Propaga o erro para o componente ChatConversation mostrar feedback
     }
   };
 
