@@ -87,7 +87,7 @@ export default function VehicleProfileScreen() {
     const activePlate = vehicleData.plates?.find(p => p.active) || vehicleData.plates?.[0];
     const activeColor = vehicleData.colors?.find(c => c.active) || vehicleData.colors?.[0];
     const activeFuel = vehicleData.vehicle_fuels?.find(f => f.active) || vehicleData.vehicle_fuels?.[0];
-    const primaryImage = vehicleData.vehicle_images?.find(img => img.is_primary) || vehicleData.vehicle_images?.[0];
+    const primaryCover = vehicleData.covers?.find(cover => cover.is_primary) || vehicleData.covers?.[0];
 
     return {
       id: vehicleData.id,
@@ -99,7 +99,7 @@ export default function VehicleProfileScreen() {
       year: vehicleData.model_year || 0,
       odometer: 0, // TODO: Get from vehicle_odometer_readings table
       fuelType: activeFuel?.fuels?.name || '',
-      imageUrl: primaryImage?.image_url || null,
+      imageUrl: primaryCover?.image_url || vehicleData.primary_cover_url || null,
     };
   }, [vehicleData]);
 
@@ -108,7 +108,7 @@ export default function VehicleProfileScreen() {
     const activePlate = moment.vehicles.plates?.find(p => p.active) || moment.vehicles.plates?.[0];
     const activeColor = moment.vehicles.colors?.find(c => c.active) || moment.vehicles.colors?.[0];
     const vehicleName = `${moment.vehicles.brands.brand} ${moment.vehicles.models.model}`;
-    const primaryVehicleImage = moment.vehicles.vehicle_images?.find(img => img.is_primary) || moment.vehicles.vehicle_images?.[0];
+    const primaryVehicleCover = moment.vehicles.covers?.find(cover => cover.is_primary) || moment.vehicles.covers?.[0];
 
     return {
       id: parseInt(moment.id.slice(0, 8), 16),
@@ -119,7 +119,7 @@ export default function VehicleProfileScreen() {
       vehicleName,
       vehiclePlate: activePlate?.plate || '',
       vehicleColor: activeColor?.color || '',
-      vehicleImageUrl: primaryVehicleImage?.image_url,
+      vehicleImageUrl: primaryVehicleCover?.image_url || moment.vehicles.primary_cover_url,
       date: new Date(moment.created_at).toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: 'short',
@@ -148,7 +148,7 @@ export default function VehicleProfileScreen() {
 
   const handleSelectVehicle = () => {
     router.push({
-      pathname: '/vehicles-link-list',
+      pathname: '/entity-links',
       params: { from: 'vehicle-linked' }
     });
   };
@@ -185,7 +185,7 @@ export default function VehicleProfileScreen() {
           vehicleName={`${vehicle.brand} ${vehicle.name} ${vehicle.model}`}
           vehicleDetails={`${vehicle.plate} • ${vehicle.year} • ${vehicle.color}`}
           onVehiclePress={() => router.push({
-            pathname: '/vehicles-link-list',
+            pathname: '/entity-links',
             params: { from: 'vehicle-linked' }
           })}
           rightButton={

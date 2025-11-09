@@ -114,7 +114,7 @@ export default function NewUpdateScreen() {
           <TouchableOpacity
             style={styles.vehicleSelector}
             onPress={() => router.push({
-              pathname: '/vehicles-link-list',
+              pathname: '/entity-links',
               params: { from: 'new-update' }
             })}
             activeOpacity={0.7}

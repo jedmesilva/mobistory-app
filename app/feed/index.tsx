@@ -272,7 +272,7 @@ export default function FeedScreen() {
 
   const handleVehiclePress = useCallback(() => {
     router.push({
-      pathname: '/vehicles-link-list',
+      pathname: '/entity-links',
       params: { from: 'feed' }
     });
   }, [router]);
