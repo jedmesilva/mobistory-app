@@ -1,7 +1,7 @@
 import { Colors } from '@/constants';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Plus, Search } from 'lucide-react-native';
+import { Plus, Search, User } from 'lucide-react-native';
 import React, { useRef, useState, useMemo } from 'react';
 import {
     Animated,
@@ -12,10 +12,11 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SearchInput, BackButton } from '../components/ui';
+import { Image } from 'expo-image';
+import { SearchInput } from '../components/ui';
 import { SectionHeader, VehicleCard } from '../components/vehicle';
 import { useVehicles } from '@/hooks/vehicle';
-import { useSelectedVehicle } from '@/contexts';
+import { useSelectedVehicle, useAuthEntity } from '@/contexts';
 
 export default function Index() {
   const router = useRouter();
@@ -23,9 +24,13 @@ export default function Index() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { vehicles: vehiclesData, loading, error } = useVehicles();
   const { setSelectedVehicleId } = useSelectedVehicle();
+  const { entity } = useAuthEntity();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showHistoryFor, setShowHistoryFor] = useState<{[key: string]: boolean}>({});
+
+  // Entity profile image URL (quando implementado no backend)
+  const entityImageUrl = null; // TODO: entity?.profile_picture_url
 
   // Transform API data to match the expected format
   const vehicles = useMemo(() => {
@@ -155,8 +160,29 @@ export default function Index() {
           },
         ]}
       >
-        <BackButton />
+        {/* Entity Avatar/Profile Button */}
+        <TouchableOpacity
+          style={styles.avatarButton}
+          onPress={() => {
+            // TODO: Navigate to entity menu/profile screen
+            console.log('Open entity menu');
+          }}
+        >
+          {entityImageUrl ? (
+            <Image
+              source={{ uri: entityImageUrl }}
+              style={styles.avatarImage}
+              contentFit="cover"
+            />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <User size={20} color={Colors.text.secondary} />
+            </View>
+          )}
+        </TouchableOpacity>
+
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
+
         <TouchableOpacity
           style={styles.newLinkButton}
           onPress={() => router.push('/select-vehicle-for-link')}
@@ -320,6 +346,27 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: Colors.background.primary,
     borderBottomColor: Colors.border.DEFAULT,
+  },
+  avatarButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  avatarPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.background.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border.DEFAULT,
   },
   headerTitle: {
     fontSize: 20,
