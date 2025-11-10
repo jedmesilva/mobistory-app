@@ -6,9 +6,11 @@ import ChatScreen from './chat';
 
 type Step = 'capture' | 'chat';
 
-interface CaptureData {
+interface CapturedMedia {
+  id: string;
   uri: string;
   type: 'photo' | 'video';
+  timestamp: number;
 }
 
 export default function QuickCaptureFlow() {
@@ -17,28 +19,14 @@ export default function QuickCaptureFlow() {
   const { from, context, vehicleId } = params;
 
   const [currentStep, setCurrentStep] = useState<Step>('capture');
-  const [captureData, setCaptureData] = useState<CaptureData | null>(null);
+  const [captureData, setCaptureData] = useState<CapturedMedia[]>([]);
 
-  // Determine if we need chat step based on context
-  const needsChatStep = () => {
-    // 'open' context always needs chat (from Nova Atualização)
-    if (context === 'open') return true;
-
-    // 'fueling' and 'odometer' can skip chat if data is clear
-    // For now, we'll implement simple logic - can be enhanced with AI/OCR
-    return false; // Skip chat for specific contexts for now
-  };
-
-  const handleCaptureComplete = (data: CaptureData) => {
+  // SEMPRE vai para o chat após captura para a AI processar os dados
+  const handleCaptureComplete = (data: CapturedMedia[]) => {
     setCaptureData(data);
 
-    if (needsChatStep()) {
-      // Go to chat step
-      setCurrentStep('chat');
-    } else {
-      // Skip chat and return to origin
-      handleFlowComplete();
-    }
+    // Sempre vai para o chat step para a AI processar
+    setCurrentStep('chat');
   };
 
   const handleChatComplete = () => {

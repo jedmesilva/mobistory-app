@@ -47,55 +47,18 @@ export function AuthEntityProvider({ children }: { children: React.ReactNode }) 
   const [loading, setLoading] = useState(true);
 
   /**
-   * Load entity from AsyncStorage on app start
-   */
-  const loadEntity = useCallback(async () => {
-    try {
-      console.log('🔵 [FRONTEND] Iniciando carregamento de entidade do AsyncStorage...');
-      setLoading(true);
-
-      // Check if entity ID exists in AsyncStorage
-      const storedEntityId = await AsyncStorage.getItem(ENTITY_ID_KEY);
-      console.log('🔵 [FRONTEND] Entity ID no AsyncStorage:', storedEntityId || 'Nenhum');
-
-      if (storedEntityId) {
-        // Fetch entity from backend
-        console.log('🔵 [FRONTEND] Buscando entidade no backend...');
-        const fetchedEntity = await entitiesService.getById(storedEntityId);
-        console.log('✅ [FRONTEND] Entidade carregada:', fetchedEntity.name);
-        setEntity(fetchedEntity);
-        setEntityId(fetchedEntity.id);
-      } else {
-        // No entity found
-        console.log('ℹ️ [FRONTEND] Nenhuma entidade salva. Usuário precisa fazer login ou criar entidade anônima.');
-        setEntity(null);
-        setEntityId(null);
-      }
-    } catch (error) {
-      console.error('❌ [FRONTEND] Erro ao carregar entidade:', error);
-      // If entity not found or error, clear storage
-      await AsyncStorage.removeItem(ENTITY_ID_KEY);
-      setEntity(null);
-      setEntityId(null);
-    } finally {
-      setLoading(false);
-      console.log('✅ [FRONTEND] Carregamento de entidade concluído');
-    }
-  }, []);
-
-  /**
    * Create anonymous entity with device fingerprint
    */
   const createAnonymousEntity = useCallback(async (): Promise<Entity> => {
     try {
       setLoading(true);
 
-      console.log('🔵 [FRONTEND] Iniciando criação de entidade anônima...');
+      console.log('[FRONTEND] Iniciando criação de entidade anônima...');
 
       // Collect device fingerprint
-      console.log('🔵 [FRONTEND] Coletando device fingerprint...');
+      console.log('[FRONTEND] Coletando device fingerprint...');
       const deviceFingerprint = await collectDeviceFingerprint();
-      console.log('🔵 [FRONTEND] Device fingerprint coletado:', deviceFingerprint.deviceId);
+      console.log('[FRONTEND] Device fingerprint coletado:', deviceFingerprint.deviceId);
 
       // Create anonymous entity
       const anonymousEntityData: AnonymousEntityCreate = {
@@ -103,32 +66,90 @@ export function AuthEntityProvider({ children }: { children: React.ReactNode }) 
         name: 'Usuário Anônimo',
       };
 
-      console.log('🔵 [FRONTEND] Enviando requisição para criar entidade anônima...');
+      console.log('[FRONTEND] Enviando requisição para criar entidade anônima...');
       const newEntity = await entitiesService.createAnonymous(anonymousEntityData);
-      console.log('✅ [FRONTEND] Entidade anônima criada!', {
+      console.log('[FRONTEND] Entidade anônima criada!', {
         id: newEntity.id,
         name: newEntity.name,
         is_anonymous: newEntity.is_anonymous,
       });
 
       // Store entity ID in AsyncStorage
-      console.log('🔵 [FRONTEND] Salvando ID da entidade no AsyncStorage...');
+      console.log('[FRONTEND] Salvando ID da entidade no AsyncStorage...');
       await AsyncStorage.setItem(ENTITY_ID_KEY, newEntity.id);
-      console.log('✅ [FRONTEND] ID salvo no AsyncStorage:', newEntity.id);
+      console.log('[FRONTEND] ID salvo no AsyncStorage:', newEntity.id);
 
       // Update state
       setEntity(newEntity);
       setEntityId(newEntity.id);
 
-      console.log('✅ [FRONTEND] Processo de criação de entidade anônima concluído!');
+      console.log('[FRONTEND] Processo de criação de entidade anônima concluído!');
       return newEntity;
     } catch (error) {
-      console.error('❌ [FRONTEND] Erro ao criar entidade anônima:', error);
+      console.error('[FRONTEND] Erro ao criar entidade anônima:', error);
       throw error;
     } finally {
       setLoading(false);
     }
   }, []);
+
+  /**
+   * Load entity from AsyncStorage on app start
+   */
+  const loadEntity = useCallback(async () => {
+    try {
+      console.log('[FRONTEND] Iniciando carregamento de entidade do AsyncStorage...');
+      setLoading(true);
+
+      // Check if entity ID exists in AsyncStorage
+      const storedEntityId = await AsyncStorage.getItem(ENTITY_ID_KEY);
+      console.log('[FRONTEND] Entity ID no AsyncStorage:', storedEntityId || 'Nenhum');
+
+      if (storedEntityId) {
+        // Fetch entity from backend
+        try {
+          console.log('[FRONTEND] Buscando entidade no backend...');
+          const fetchedEntity = await entitiesService.getById(storedEntityId);
+          console.log('[FRONTEND] Entidade carregada:', fetchedEntity.name);
+          setEntity(fetchedEntity);
+          setEntityId(fetchedEntity.id);
+        } catch (fetchError: any) {
+          console.warn('[FRONTEND] Erro ao buscar entidade do backend:', fetchError?.message || fetchError);
+
+          // Check if entity was deleted (404) or just network error
+          if (fetchError?.response?.status === 404) {
+            console.log('[FRONTEND] Entidade não existe mais no backend (404), limpando storage...');
+            await AsyncStorage.removeItem(ENTITY_ID_KEY);
+            setEntity(null);
+            setEntityId(null);
+          } else {
+            // Network error or server error - keep the ID for retry later
+            console.log('[FRONTEND] Erro de rede ou servidor, mantendo ID armazenado para retry');
+            setEntityId(storedEntityId);
+            setEntity(null); // Data not available, but ID is kept
+          }
+        }
+      } else {
+        // No entity found - create one automatically
+        console.log('[FRONTEND] Nenhuma entidade salva, criando entidade anônima automaticamente...');
+        try {
+          await createAnonymousEntity();
+          console.log('[FRONTEND] Entidade anônima criada automaticamente com sucesso!');
+        } catch (createError) {
+          console.error('[FRONTEND] Erro ao criar entidade anônima automaticamente:', createError);
+          setEntity(null);
+          setEntityId(null);
+        }
+      }
+    } catch (error) {
+      console.error('[FRONTEND] Erro inesperado ao carregar entidade:', error);
+      // Don't clear storage on unexpected errors
+      setEntity(null);
+    } finally {
+      setLoading(false);
+      console.log('[FRONTEND] Carregamento de entidade concluído');
+    }
+  }, [createAnonymousEntity]);
 
   /**
    * Convert anonymous entity to verified entity

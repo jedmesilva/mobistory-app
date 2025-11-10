@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "setup-adb": "adb reverse tcp:8000 tcp:8000",
+    "setup-adb": "adb reverse tcp:8000 tcp:8000 && adb reverse tcp:8081 tcp:8081",
     "start": "npm run setup-adb && expo start",
     "start:no-adb": "expo start",
     "reset-project": "node ./scripts/reset-project.js",

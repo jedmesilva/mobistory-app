@@ -116,6 +116,17 @@ export interface VehicleWithDetails extends Vehicle {
 }
 
 // Interface de compatibilidade com código antigo (conversão)
+export interface VehicleCover {
+  id: string;
+  vehicle_id: string;
+  file_id: string;
+  is_primary: boolean;
+  display_order: number;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface VehicleWithDetailsLegacy {
   id: string;
   brand_id: string;
@@ -132,6 +143,8 @@ export interface VehicleWithDetailsLegacy {
   plates: Array<{ plate: string; active: boolean }>;
   colors: Array<{ color: string; active: boolean }>;
   vehicle_entity_links?: EntityLink[];
+  covers?: VehicleCover[];
+  primary_cover_url?: string | null;
 }
 
 export interface PlateModel {

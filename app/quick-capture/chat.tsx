@@ -12,16 +12,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Check } from 'lucide-react-native';
 import { Colors } from '@/constants';
 import { ChatConversation } from '@/components/chat';
-import { useConversations, useMessages } from '@/lib/api/hooks';
+import { useConversation, useMessages } from '@/lib/api/hooks/useConversations';
 import { useAuthEntity } from '@/contexts';
 
-interface CaptureData {
+interface CapturedMedia {
+  id: string;
   uri: string;
   type: 'photo' | 'video';
+  timestamp: number;
 }
 
 interface ChatScreenProps {
-  captureData: CaptureData | null;
+  captureData: CapturedMedia[];
   vehicleId: string;
   context: string;
   onComplete: () => void;
@@ -84,7 +86,7 @@ export default function ChatScreen({
   // Send initial message with captured media
   useEffect(() => {
     const sendInitialMessage = async () => {
-      if (!captureData || !entityId || !vehicleId || messages.length > 0) return;
+      if (!captureData || captureData.length === 0 || !entityId || !vehicleId || messages.length > 0) return;
 
       let conversationToUse = conversation;
 
@@ -99,12 +101,12 @@ export default function ChatScreen({
       }
 
       const contextMessages: { [key: string]: string } = {
-        open: 'Capturei esta imagem do meu veículo. O que você consegue identificar?',
-        fueling: 'Capturei o painel da bomba de combustível. Consegue extrair os dados?',
-        odometer: 'Capturei o painel do odômetro. Qual a quilometragem?',
+        open: `Capturei ${captureData.length} ${captureData.length === 1 ? 'arquivo' : 'arquivos'} do meu veículo. O que você consegue identificar?`,
+        fueling: `Capturei ${captureData.length} ${captureData.length === 1 ? 'imagem' : 'imagens'} do painel da bomba de combustível. Consegue extrair os dados?`,
+        odometer: `Capturei ${captureData.length} ${captureData.length === 1 ? 'imagem' : 'imagens'} do painel do odômetro. Qual a quilometragem?`,
       };
 
-      const message = contextMessages[context] || 'Capturei esta imagem.';
+      const message = contextMessages[context] || `Capturei ${captureData.length} ${captureData.length === 1 ? 'arquivo' : 'arquivos'}.`;
 
       // TODO: Send message with media attachment
       if (conversationToUse) {
@@ -118,7 +120,7 @@ export default function ChatScreen({
     };
 
     sendInitialMessage();
-  }, [captureData, conversation, entityId, vehicleId, context, messages.length]);
+  }, [captureData.length, conversation, entityId, vehicleId, context, messages.length]);
 
   const handleSendMessage = async (messageText: string) => {
     if (!entityId || !vehicleId) return;
@@ -193,13 +195,18 @@ export default function ChatScreen({
       </View>
 
       {/* Captured Media Preview */}
-      {captureData && (
+      {captureData && captureData.length > 0 && (
         <View style={styles.mediaPreview}>
           <RNImage
-            source={{ uri: captureData.uri }}
+            source={{ uri: captureData[0].uri }}
             style={styles.mediaImage}
             resizeMode="cover"
           />
+          {captureData.length > 1 && (
+            <View style={styles.mediaCount}>
+              <Text style={styles.mediaCountText}>+{captureData.length - 1}</Text>
+            </View>
+          )}
         </View>
       )}
 
@@ -278,5 +285,19 @@ const styles = StyleSheet.create({
   mediaImage: {
     width: '100%',
     height: '100%',
+  },
+  mediaCount: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  mediaCountText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.background.primary,
   },
 });
