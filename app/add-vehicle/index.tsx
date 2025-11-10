@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useVehicleCatalog } from '@/hooks/vehicle/useVehicleCatalog';
 import { vehiclesService, colorsService } from '@/lib/api/services';
 import SelectBrandScreen from './select-brand';
@@ -46,6 +46,7 @@ export interface VehicleData {
 
 export default function AddVehicleFlow() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const catalog = useVehicleCatalog();
 
   const [currentStep, setCurrentStep] = useState<Step>('brand');
@@ -286,7 +287,14 @@ export default function AddVehicleFlow() {
 
       console.log('✓✓✓ VEÍCULO CRIADO COM SUCESSO ✓✓✓');
       console.log('Veículo:', newVehicle);
-      router.back();
+
+      // Check if we need to navigate back to select-vehicle-for-link
+      const fromRoute = Array.isArray(params.from) ? params.from[0] : params.from;
+      if (fromRoute === 'select-vehicle-for-link') {
+        router.push('/select-vehicle-for-link');
+      } else {
+        router.back();
+      }
     } catch (error: any) {
       console.error('❌ ERRO AO SALVAR VEÍCULO ❌');
       console.error('Tipo:', error?.constructor?.name);

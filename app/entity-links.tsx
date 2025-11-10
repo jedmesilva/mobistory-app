@@ -157,6 +157,13 @@ export default function Index() {
       >
         <BackButton />
         <Text style={styles.headerTitle}>Meus Vínculos</Text>
+        <TouchableOpacity
+          style={styles.newLinkButton}
+          onPress={() => router.push('/select-vehicle-for-link')}
+        >
+          <Plus size={20} color={Colors.background.primary} />
+          <Text style={styles.newLinkButtonText}>Novo Vínculo</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       <Animated.ScrollView
@@ -292,21 +299,6 @@ export default function Index() {
             </View>
           )}
 
-          {/* Add Vehicle Button */}
-          <TouchableOpacity
-            style={styles.addButton}
-            activeOpacity={0.7}
-            onPress={() => router.push('/add-vehicle')}
-          >
-            <View style={styles.addButtonIcon}>
-              <Plus size={24} color={Colors.background.primary} />
-            </View>
-            <View style={styles.addButtonTextContainer}>
-              <Text style={styles.addButtonTitle}>Adicionar Veículo</Text>
-              <Text style={styles.addButtonSubtitle}>Registre um novo vínculo</Text>
-            </View>
-          </TouchableOpacity>
-
           <View style={{ height: 40 }} />
         </View>
       </Animated.ScrollView>
@@ -334,6 +326,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.text.primary,
     flex: 1,
+  },
+  newLinkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: Colors.primary.DEFAULT,
+    borderRadius: 12,
+  },
+  newLinkButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.background.primary,
   },
   scrollContainer: {
     flex: 1,
@@ -365,38 +371,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.text.tertiary,
     marginHorizontal: 16,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: Colors.background.primary,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: Colors.border.dark,
-    borderRadius: 16,
-    gap: 16,
-  },
-  addButtonIcon: {
-    width: 48,
-    height: 48,
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addButtonTextContainer: {
-    flex: 1,
-  },
-  addButtonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.primary.dark,
-  },
-  addButtonSubtitle: {
-    fontSize: 14,
-    color: Colors.text.tertiary,
-    marginTop: 2,
   },
   emptyState: {
     alignItems: 'center',
