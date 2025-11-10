@@ -58,6 +58,7 @@ export function ChatConversation({
   const [inputText, setInputText] = useState('');
   const [newUpdateModalVisible, setNewUpdateModalVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInput>(null);
 
   const formatDate = (dateStr: string) => {
     const today = new Date();
@@ -80,6 +81,15 @@ export function ChatConversation({
       }, 100);
     }
   }, [messages.length]);
+
+  // Auto-focus input when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSend = async () => {
     if (inputText.trim()) {
@@ -278,6 +288,7 @@ export function ChatConversation({
       <View style={styles.inputContainer}>
         <View style={styles.inputWrapper}>
           <TextInput
+            ref={inputRef}
             style={styles.input}
             placeholder={placeholder}
             placeholderTextColor={Colors.text.placeholder}
