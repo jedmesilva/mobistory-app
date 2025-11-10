@@ -7,7 +7,7 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Home, Car } from 'lucide-react-native';
+import { Home, Link2 } from 'lucide-react-native';
 import { Colors } from '@/constants';
 
 interface FeedNavBottomProps {
@@ -67,7 +67,7 @@ export const FeedNavBottom: React.FC<FeedNavBottomProps> = React.memo(({
               pressed && styles.buttonPressed,
             ]}
           >
-            <Car
+            <Link2
               size={24}
               color={
                 activeTab === 'profile'
