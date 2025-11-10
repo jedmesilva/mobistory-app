@@ -13,7 +13,7 @@ import { Colors } from '@/constants';
 import { PostCard, FeedHeader, FeedNavBottom, FeedFAB } from '../../components/feed';
 import { NewUpdateModal } from '../../components/ui';
 import { useMoments } from '@/hooks/moment';
-import { useAuthEntity } from '@/contexts';
+import { useAuthEntity, useSelectedVehicle } from '@/contexts';
 import { EntityAuthBanner } from '@/components/EntityAuthBanner';
 
 interface Post {
@@ -44,6 +44,7 @@ export default function FeedScreen() {
   const [showNewUpdateModal, setShowNewUpdateModal] = useState(false);
   const { moments, loading} = useMoments();
   const { entity, loading: entityLoading } = useAuthEntity();
+  const { selectedVehicleId } = useSelectedVehicle();
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navBottomHeight, setNavBottomHeight] = useState(0);
@@ -262,9 +263,14 @@ export default function FeedScreen() {
   const handleTabChange = useCallback((tab: 'home' | 'profile') => {
     setActiveTab(tab);
     if (tab === 'profile') {
-      router.push('/vehicle/linked');
+      // Navigate based on vehicle selection
+      if (selectedVehicleId) {
+        router.push('/vehicle/linked');
+      } else {
+        router.push('/entity-links');
+      }
     }
-  }, [router]);
+  }, [router, selectedVehicleId]);
 
   const handleSearchPress = useCallback(() => {
     router.push('/feed/search');

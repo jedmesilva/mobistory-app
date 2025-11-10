@@ -139,6 +139,9 @@ export default function VehicleProfileScreen() {
     setActiveTab(tab);
     if (tab === 'home') {
       router.push('/feed');
+    } else if (tab === 'profile') {
+      // Toggle back to entity links when clicking profile from vehicle profile
+      router.push('/entity-links');
     }
   };
 
